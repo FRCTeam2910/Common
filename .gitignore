@@ -3,6 +3,7 @@
 out/
 
 # Gradle files
+.gradle/
 build/
 
 # Test outputs
