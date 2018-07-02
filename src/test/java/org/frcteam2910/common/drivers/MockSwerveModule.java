@@ -8,13 +8,13 @@ import static org.junit.Assert.assertTrue;
 public final class MockSwerveModule extends SwerveModule {
 	private double angleRotations;
 	private double targetAngleRotations;
-	private double driveRotations;
-	private double driveRotationRate;
+	private double driveDistance;
+	private double driveRate;
 	private double targetDrivePercentage;
 	private boolean driveInverted;
 
-	public MockSwerveModule(Vector2 modulePosition, double adjustmentAngle, double wheelDiameter) {
-		super(modulePosition, adjustmentAngle, wheelDiameter);
+	public MockSwerveModule(Vector2 modulePosition, double adjustmentAngle) {
+		super(modulePosition, adjustmentAngle);
 	}
 
 	@Override
@@ -27,21 +27,21 @@ public final class MockSwerveModule extends SwerveModule {
 	}
 
 	@Override
-	protected double getDriveEncoderRotations() {
-		return driveRotations;
+	public double getCurrentDistance() {
+		return driveDistance;
 	}
 
-	public void setDriveRotations(double driveEncoderRotations) {
-		this.driveRotations = driveEncoderRotations;
+	public void setCurrentDistance(double driveEncoderRotations) {
+		this.driveDistance = driveEncoderRotations;
 	}
 
 	@Override
-	protected double getDriveEncoderRate() {
-		return driveRotationRate;
+	public double getCurrentRate() {
+		return driveRate;
 	}
 
-	public void setDriveRotationRate(double driveEncoderRate) {
-		this.driveRotationRate = driveEncoderRate;
+	public void setCurrentRate(double driveEncoderRate) {
+		this.driveRate = driveEncoderRate;
 	}
 
 	public double getTargetAngleRotations() {
@@ -64,7 +64,7 @@ public final class MockSwerveModule extends SwerveModule {
 
 	@Override
 	public void zeroDistance() {
-		this.driveRotations = 0;
+		this.driveDistance = 0;
 	}
 
 	@Override
@@ -90,6 +90,6 @@ public final class MockSwerveModule extends SwerveModule {
 	}
 
 	public void accumulateRates(double deltaTime) {
-		driveRotations += driveRotationRate * deltaTime;
+		driveDistance += driveRate * deltaTime;
 	}
 }

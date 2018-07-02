@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 public class SwerveModuleTest {
 	@Test
 	public void setTargetAngleTest() {
-		MockSwerveModule module = new MockSwerveModule(new Vector2(0, 0), 0, 4.0);
+		MockSwerveModule module = new MockSwerveModule(new Vector2(0, 0), 0);
 
 		module.setAngleRotations(0.0);
 		module.setTargetAngle(0.0);
@@ -31,23 +31,23 @@ public class SwerveModuleTest {
 
 	@Test
 	public void kinematicsTest() {
-		MockSwerveModule module = new MockSwerveModule(new Vector2(0, 0), 0, 4.0);
-		module.setDriveRotations(0.0);
+		MockSwerveModule module = new MockSwerveModule(new Vector2(0, 0), 0);
+		module.setCurrentDistance(0.0);
 		module.updateKinematics(0.0);
-		module.setDriveRotations(1);
+		module.setCurrentDistance(1);
 		module.updateKinematics(0.0);
 
-		assertEquals(new Vector2(4 * Math.PI, 0.0), module.getKinematicPosition());
+		assertEquals(new Vector2(1, 0.0), module.getKinematicPosition());
 
 
-		module = new MockSwerveModule(new Vector2(0, 0), 0, 4.0);
+		module = new MockSwerveModule(new Vector2(0, 0), 0);
 
-		module.setDriveRotations(0.0);
+		module.setCurrentDistance(0.0);
 		module.setAngleRotations(0.25);
 		module.updateKinematics(-90.0);
-		module.setDriveRotations(5.0);
+		module.setCurrentDistance(5.0);
 		module.updateKinematics(-90.0);
 
-		assertEquals(new Vector2(5 * 4 * Math.PI, 0), module.getKinematicPosition());
+		assertEquals(new Vector2(5, 0), module.getKinematicPosition());
 	}
 }
