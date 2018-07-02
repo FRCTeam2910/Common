@@ -8,3 +8,9 @@ build/
 
 # Test outputs
 *.csv
+
+# Eclipse files
+.classpath
+.project
+.settings/
+bin/
