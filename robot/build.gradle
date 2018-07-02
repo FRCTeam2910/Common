@@ -1,0 +1,14 @@
+plugins {
+    id 'jaci.openrio.gradle.GradleRIO'
+    id 'java'
+}
+
+version = '1.0.0'
+
+dependencies {
+    compile wpilib()
+    compile navx()
+    compile ctre()
+
+    compile project(':common')
+}
