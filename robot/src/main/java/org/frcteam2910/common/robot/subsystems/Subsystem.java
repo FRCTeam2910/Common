@@ -6,6 +6,8 @@ public abstract class Subsystem extends edu.wpi.first.wpilibj.command.Subsystem 
 
 	public void updateKinematics(double timestamp) {}
 
+	public void resetKinematics(double timestamp) {}
+
 	public abstract void outputToSmartDashboard();
 
 	public abstract void stop();

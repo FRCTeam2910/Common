@@ -13,15 +13,21 @@ public abstract class SwerveModule {
 	private double previousAngle;
 	private double previousDistance;
 	private Vector2 currentPosition = new Vector2();
-
-	private final double wheelDiameter;
+	private String name = "Unknown";
 
 	private boolean inverted = false;
 
-	public SwerveModule(Vector2 modulePosition, double adjustmentAngle, double wheelDiameter) {
+	public SwerveModule(Vector2 modulePosition, double adjustmentAngle) {
 		this.modulePosition = new Vector2(modulePosition);
 		this.adjustmentAngle = adjustmentAngle;
-		this.wheelDiameter = wheelDiameter;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -30,20 +36,6 @@ public abstract class SwerveModule {
 	 * @return The amount of times the angle encoder has rotated.
 	 */
 	protected abstract double getAngleEncoderRotations();
-
-	/**
-	 * Get the amount of times the encoder on the driving motor has rotated.
-	 *
-	 * @return The amount of times the drive encoder has rotated.
-	 */
-	protected abstract double getDriveEncoderRotations();
-
-	/**
-	 * Get the drive encoder's rotations per second.
-	 *
-	 * @return The rotations per second of the drive encoder.
-	 */
-	protected abstract double getDriveEncoderRate();
 
 	protected abstract void setTargetAngleRotations(double rotations);
 
@@ -102,9 +94,13 @@ public abstract class SwerveModule {
 	 *
 	 * @return The distance driven.
 	 */
-	public final double getCurrentDistance() {
-		return getDriveEncoderRotations() * (Math.PI * wheelDiameter);
-	}
+	public abstract double getCurrentDistance();
+
+	/**
+	 * Get the rate that the module is driving in inches per second.
+	 * @return The rate in inches per second.
+	 */
+	public abstract double getCurrentRate();
 
 	public final void setInverted(boolean inverted) {
 		this.inverted = inverted;
@@ -167,6 +163,10 @@ public abstract class SwerveModule {
 		double averagedAngle = (currentAngle + previousAngle) / 2.0;
 
 		Vector2 deltaPosition = Vector2.fromAngle(Math.toRadians(averagedAngle)).multiply(deltaDistance);
+		if (inverted) {
+			deltaPosition = deltaPosition.inverse();
+		}
+
 		currentPosition = currentPosition.add(deltaPosition);
 		previousDistance = currentDistance;
 		previousAngle = currentAngle;
@@ -175,8 +175,8 @@ public abstract class SwerveModule {
 	public synchronized void resetKinematics(double heading) {
 		heading = MathUtils.boundDegrees(heading);
 
-		currentPosition = new Vector2();
-		previousDistance = getCurrentDistance();
+		currentPosition = Vector2.ZERO;
+		previousDistance = 0;
 		previousAngle = getFieldCentricAngle(heading);
 	}
 }

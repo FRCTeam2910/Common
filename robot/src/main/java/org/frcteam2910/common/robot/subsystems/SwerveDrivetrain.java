@@ -1,5 +1,6 @@
 package org.frcteam2910.common.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frcteam2910.common.drivers.SwerveModule;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.robot.Constants;
@@ -57,12 +58,21 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
         Vector2 averagePosition = new Vector2();
         for (SwerveModule module : swerveModules) {
             module.updateKinematics(heading);
-            averagePosition.add(module.getKinematicPosition());
+            averagePosition = averagePosition.add(module.getKinematicPosition());
         }
-        averagePosition.multiply(1.0 / swerveModules.length);
+        averagePosition = averagePosition.multiply(1.0 / swerveModules.length);
 
         kinematicVelocity = averagePosition.subtract(kinematicPosition).multiply(1 / (timestamp - lastKinematicTimestamp));
         kinematicPosition = averagePosition;
+        lastKinematicTimestamp = timestamp;
+    }
+
+    public synchronized void resetKinematics(double timestamp) {
+        for (SwerveModule module : getSwerveModules()) {
+            module.resetKinematics(getGyroscope().getAngle());
+        }
+        kinematicVelocity = Vector2.ZERO;
+        kinematicPosition = Vector2.ZERO;
         lastKinematicTimestamp = timestamp;
     }
 
@@ -80,7 +90,9 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     public void outputToSmartDashboard() {
         super.outputToSmartDashboard();
         for (SwerveModule module : getSwerveModules()) {
-//			module.outputToSmartDashboard();
+            SmartDashboard.putNumber(String.format("%s module output %%", module.getName()), module.getCurrentDrivePercentage());
+            SmartDashboard.putNumber(String.format("%s module drive distance", module.getName()), module.getCurrentDistance());
+            SmartDashboard.putString(String.format("%s module position", module.getName()), module.getKinematicPosition().toString());
         }
     }
 }

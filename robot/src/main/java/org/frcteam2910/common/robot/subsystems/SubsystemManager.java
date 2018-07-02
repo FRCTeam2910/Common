@@ -26,6 +26,10 @@ public final class SubsystemManager {
 	}
 
 	public void enableKinematicLoop(double period) {
+		final double timestamp = Timer.getFPGATimestamp();
+		for (Subsystem subsystem : subsystems) {
+			subsystem.resetKinematics(timestamp);
+		}
 		kinematicThread.startPeriodic(period);
 	}
 

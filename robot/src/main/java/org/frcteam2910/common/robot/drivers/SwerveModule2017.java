@@ -14,7 +14,9 @@ import static org.frcteam2910.common.robot.Constants.CAN_TIMEOUT_MS;
  * Driver for the 2017 revision of the 2910 swerve module
  */
 public final class SwerveModule2017 extends SwerveModule {
-	private static final double SCRUB_FACTOR = 0.0;
+	private static final double SCRUB_FACTOR = 1.0; // TODO: Figure out actual scrub factor (Take from 1323?)
+
+	private static final double TICKS_PER_INCH = 36.65; // TODO: Find actual number
 
 	private final TalonSRX angleMotor, driveMotor;
 
@@ -22,7 +24,7 @@ public final class SwerveModule2017 extends SwerveModule {
 	                        double adjustmentAngle,
 	                        int angleMotor,
 	                        int driveMotor) {
-		super(modulePosition, adjustmentAngle, 4);
+		super(modulePosition, adjustmentAngle);
 		this.angleMotor = new TalonSRX(angleMotor);
 		this.driveMotor = new TalonSRX(driveMotor);
 
@@ -37,6 +39,7 @@ public final class SwerveModule2017 extends SwerveModule {
 
 		// Configure drive motor
 		this.driveMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, CAN_TIMEOUT_MS);
+		this.driveMotor.setSensorPhase(true);
 		this.driveMotor.config_kP(0, 15, CAN_TIMEOUT_MS);
 		this.driveMotor.config_kI(0, 0.01, CAN_TIMEOUT_MS);
 		this.driveMotor.config_kD(0, 0.1, CAN_TIMEOUT_MS);
@@ -55,13 +58,13 @@ public final class SwerveModule2017 extends SwerveModule {
 	}
 
 	@Override
-	protected double getDriveEncoderRotations() {
-		return driveMotor.getSelectedSensorPosition(0) * (1.0 / 80.0);
+	public double getCurrentDistance() {
+		return driveMotor.getSelectedSensorPosition(0) * (1.0 / TICKS_PER_INCH) * (driveMotor.getInverted() ? -1 : 1);
 	}
 
 	@Override
-	protected double getDriveEncoderRate() {
-		return driveMotor.getSelectedSensorVelocity(0) * (1.0 / 80.0) * (100.0 / Constants.MILLISECONDS);
+	public double getCurrentRate() {
+		return driveMotor.getSelectedSensorVelocity(0) * (1.0 / TICKS_PER_INCH) * (100.0 / Constants.MILLISECONDS);
 	}
 
 	@Override

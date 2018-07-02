@@ -7,6 +7,7 @@ public abstract class Axis {
 	public static final double ZERO_EPSILON = 0.025;
 
 	private boolean inverted = false;
+	private double scale = 1.0;
 
 	public boolean isInverted() {
 		return inverted;
@@ -14,6 +15,14 @@ public abstract class Axis {
 
 	public void setInverted(boolean inverted) {
 		this.inverted = inverted;
+	}
+
+	public double getScale() {
+		return scale;
+	}
+
+	public void setScale(double scale) {
+		this.scale = scale;
 	}
 
 	public abstract double getRaw();

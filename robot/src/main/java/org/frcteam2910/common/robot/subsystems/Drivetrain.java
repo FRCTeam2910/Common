@@ -1,5 +1,6 @@
 package org.frcteam2910.common.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frcteam2910.common.drivers.Gyroscope;
 import org.frcteam2910.common.math.Vector2;
 
@@ -16,7 +17,9 @@ public abstract class Drivetrain extends Subsystem {
 
 	public abstract Vector2 getKinematicVelocity();
 
-	public void outputToSmartDashboard() { }
+	public void outputToSmartDashboard() {
+		SmartDashboard.putString("Drivetrain position", getKinematicPosition().toString());
+	}
 	
 	public void zeroSensors() {}
 }
