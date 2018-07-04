@@ -2,6 +2,7 @@ package org.frcteam2910.common.robot.drivers;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
 import org.frcteam2910.common.drivers.Gyroscope;
+import org.frcteam2910.common.math.Rotation2;
 
 public final class AnalogGyroscope extends Gyroscope {
 
@@ -21,8 +22,8 @@ public final class AnalogGyroscope extends Gyroscope {
 	}
 
 	@Override
-	public double getUnadjustedAngle() {
-		return gyro.getAngle();
+	public Rotation2 getUnadjustedAngle() {
+		return Rotation2.fromDegrees(gyro.getAngle());
 	}
 
 	@Override

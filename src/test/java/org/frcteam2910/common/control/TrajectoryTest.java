@@ -23,32 +23,6 @@ public class TrajectoryTest {
 	}
 
 	@Test
-	public void writeTrajectoryCSV() {
-		Path path = PathBuilder.build(
-				new Waypoint(new Translation2d(0, 0), 0),
-				new Waypoint(new Translation2d(5, 100), 30),
-				new Waypoint(new Translation2d(-100, 80), 10),
-				new Waypoint(new Translation2d(-80, 110), 20),
-				new Waypoint(new Translation2d(-50, 200), 0)
-		);
-		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
-
-		try (PrintWriter writer = new PrintWriter(new FileWriter("trajectory.csv"))) {
-			writer.format("%s,%s,%s,%s,%s,%s%n", "time", "x", "y", "position", "velocity", "acceleration");
-			trajectory.calculateSegments(20 / Constants.MILLISECONDS);
-
-			double time = 0;
-			for (Trajectory.Segment segment : trajectory.getSegments()) {
-				writer.format("%f,%f,%f,%f,%f,%f%n", time, segment.translation.x(), segment.translation.y(),
-						segment.position, segment.velocity, segment.acceleration);
-				time += segment.dt;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
 	public void speedTest() {
 		Logger logger = new Logger("TrajectoryTest.speedTest");
 

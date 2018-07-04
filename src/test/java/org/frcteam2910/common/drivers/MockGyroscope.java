@@ -1,18 +1,20 @@
 package org.frcteam2910.common.drivers;
 
+import org.frcteam2910.common.math.Rotation2;
+
 public final class MockGyroscope extends Gyroscope {
-	private double unadjustedAngle;
+	private Rotation2 unadjustedAngle;
 	private double unadjustedRate;
 
 	@Override
 	public void calibrate() { }
 
 	@Override
-	public double getUnadjustedAngle() {
+	public Rotation2 getUnadjustedAngle() {
 		return unadjustedAngle;
 	}
 
-	public void setUnadjustedAngle(double unadjustedAngle) {
+	public void setUnadjustedAngle(Rotation2 unadjustedAngle) {
 		this.unadjustedAngle = unadjustedAngle;
 	}
 

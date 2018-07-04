@@ -103,7 +103,7 @@ public final class Rotation2 {
      * @return The angle in radians.
      */
     public double toRadians() {
-        return Math.atan2(sin, cos);
+        return MathUtils.boundRadians(Math.atan2(sin, cos));
     }
 
     /**
@@ -142,7 +142,8 @@ public final class Rotation2 {
     /**
      * Check whether this rotation is parallel to another rotation.
      * <p>
-     * This is different from {@link #equals} because it also takes into account rotations that are supplementary.
+     * This is different from {@link #equals} because it also takes into account rotations that are facing the opposite
+     * way.
      *
      * @param other The rotation to check if it is parallel with.
      * @return If the rotations are parallel.

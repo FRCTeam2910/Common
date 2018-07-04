@@ -13,6 +13,8 @@ public final class Vector2 {
 
 	public final double x, y;
 	public final double length;
+
+	@Deprecated
 	public final double angle;
 
 	/**

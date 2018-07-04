@@ -1,18 +1,18 @@
 package org.frcteam2910.common.drivers;
 
-import org.frcteam2910.common.math.MathUtils;
+import org.frcteam2910.common.math.Rotation2;
 
 public abstract class Gyroscope {
-	private double adjustmentAngle;
+	private Rotation2 adjustmentAngle = Rotation2.ZERO;
 	private boolean inverted;
 
 	public abstract void calibrate();
 
-	public final double getAdjustmentAngle() {
+	public final Rotation2 getAdjustmentAngle() {
 		return adjustmentAngle;
 	}
 
-	public void setAdjustmentAngle(double adjustmentAngle) {
+	public void setAdjustmentAngle(Rotation2 adjustmentAngle) {
 		this.adjustmentAngle = adjustmentAngle;
 	}
 
@@ -24,14 +24,14 @@ public abstract class Gyroscope {
 		this.inverted = inverted;
 	}
 
-	public abstract double getUnadjustedAngle();
+	public abstract Rotation2 getUnadjustedAngle();
 	public abstract double getUnadjustedRate();
 
-	public final double getAngle() {
-		double angle = MathUtils.boundDegrees(getUnadjustedAngle() - adjustmentAngle);
+	public final Rotation2 getAngle() {
+		Rotation2 angle = getUnadjustedAngle().rotateBy(adjustmentAngle.inverse());
 
 		if (inverted) {
-			return MathUtils.boundDegrees(-angle);
+			return angle.inverse();
 		}
 
 		return angle;

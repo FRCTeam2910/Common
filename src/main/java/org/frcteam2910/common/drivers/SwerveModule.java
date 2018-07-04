@@ -1,6 +1,7 @@
 package org.frcteam2910.common.drivers;
 
 import org.frcteam2910.common.math.MathUtils;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
 /**
@@ -8,17 +9,17 @@ import org.frcteam2910.common.math.Vector2;
  */
 public abstract class SwerveModule {
 	private final Vector2 modulePosition;
-	private double adjustmentAngle;
+	private Rotation2 adjustmentAngle;
 
-	private double previousAngle;
+	private Rotation2 previousAngle = Rotation2.ZERO;
 	private double previousDistance;
-	private Vector2 currentPosition = new Vector2();
+	private Vector2 currentPosition = Vector2.ZERO;
 	private String name = "Unknown";
 
 	private boolean inverted = false;
 
-	public SwerveModule(Vector2 modulePosition, double adjustmentAngle) {
-		this.modulePosition = new Vector2(modulePosition);
+	public SwerveModule(Vector2 modulePosition, Rotation2 adjustmentAngle) {
+		this.modulePosition = modulePosition;
 		this.adjustmentAngle = adjustmentAngle;
 	}
 
@@ -54,7 +55,7 @@ public abstract class SwerveModule {
 
 	public abstract void zeroDistance();
 
-	public final void setAdjustmentAngle(double adjustmentAngle) {
+	public final void setAdjustmentAngle(Rotation2 adjustmentAngle) {
 		this.adjustmentAngle = adjustmentAngle;
 	}
 
@@ -72,12 +73,8 @@ public abstract class SwerveModule {
 	 *
 	 * @return The current angle of the module.
 	 */
-	public final double getCurrentAngle() {
-		double angle = getCurrentUnadjustedAngle();
-		angle -= adjustmentAngle; // adjust angle
-		angle %= 360;
-
-		return angle;
+	public final Rotation2 getCurrentAngle() {
+		return getCurrentUnadjustedAngle().rotateBy(adjustmentAngle.inverse());
 	}
 
 	/**
@@ -85,8 +82,8 @@ public abstract class SwerveModule {
 	 *
 	 * @return The current, unadjusted angle of the module.
 	 */
-	public final double getCurrentUnadjustedAngle() {
-		return getAngleEncoderRotations() * (360.0 / 1.0);
+	public final Rotation2 getCurrentUnadjustedAngle() {
+		return Rotation2.fromRadians(getAngleEncoderRotations() * 2 * Math.PI);
 	}
 
 	/**
@@ -115,54 +112,49 @@ public abstract class SwerveModule {
 	 *
 	 * @param targetAngle The target angle of the module.
 	 */
-	public final void setTargetAngle(double targetAngle) {
-		targetAngle = MathUtils.boundDegrees(targetAngle + adjustmentAngle);
+	public final void setTargetAngle(Rotation2 targetAngle) {
+		Rotation2 currentAngle = getCurrentAngle();
 
-		double currentUnadjustedAngle = getCurrentUnadjustedAngle();
-		double currentAngle = MathUtils.boundDegrees(currentUnadjustedAngle);
-
-		double delta = currentAngle - targetAngle;
-
-		if (delta > 180) {
-			targetAngle += 360;
-		} else if (delta < -180) {
-			targetAngle -= 360;
-		}
-
-		delta = currentAngle - targetAngle;
-		if (delta > 90 || delta < -90) {
-			if (delta > 90) {
-				targetAngle += 180;
-			} else if (delta < -90) {
-				targetAngle -= 180;
+		Rotation2 delta = currentAngle.rotateBy(targetAngle.inverse());
+		double deltaDegrees = delta.toDegrees();
+		if (MathUtils.isInRange(90, 270, deltaDegrees)) {
+			if (MathUtils.isInRange(90, 180, deltaDegrees)) {
+				targetAngle = targetAngle.rotateBy(Rotation2.fromDegrees(180));
+			} else if (MathUtils.isInRange(180, 270, deltaDegrees)) {
+				targetAngle = targetAngle.rotateBy(Rotation2.fromDegrees(-180));
 			}
 
-			setDriveMotorInverted(false);
-		} else {
 			setDriveMotorInverted(true);
+		} else {
+			setDriveMotorInverted(false);
 		}
 
-		targetAngle += currentUnadjustedAngle - currentAngle;
-		setTargetAngleRotations(targetAngle * (1.0 / 360.0));
+		int moduleRotations;
+		double currentEncoderRotations = getAngleEncoderRotations();
+		if (currentEncoderRotations > 0) {
+			moduleRotations = (int) Math.floor(currentEncoderRotations);
+		} else {
+			moduleRotations = (int) Math.ceil(currentEncoderRotations);
+		}
+
+		setTargetAngleRotations((targetAngle.rotateBy(adjustmentAngle).toDegrees()) / 360.0 + moduleRotations);
 	}
 
-	public double getFieldCentricAngle(double robotHeading) {
-		return Math.toDegrees(Vector2.fromAngle(Math.toRadians(getCurrentAngle())).rotateBy(Math.toRadians(robotHeading)).angle);
+	public Rotation2 getFieldCentricAngle(Rotation2 robotHeading) {
+		return getCurrentAngle().rotateBy(robotHeading);
 	}
 
 	public synchronized final Vector2 getKinematicPosition() {
 	    return currentPosition;
     }
 
-	public synchronized final void updateKinematics(double heading) {
-		heading = MathUtils.boundDegrees(heading);
-
+	public synchronized final void updateKinematics(Rotation2 heading) {
 		double currentDistance = getCurrentDistance();
 		double deltaDistance = (currentDistance - previousDistance) * getWheelScrubFactor();
-		double currentAngle = getFieldCentricAngle(heading);
-		double averagedAngle = (currentAngle + previousAngle) / 2.0;
+		Rotation2 currentAngle = getFieldCentricAngle(heading);
+		Rotation2 averagedAngle = Rotation2.fromRadians((currentAngle.toRadians() + previousAngle.toRadians()) / 2.0);
 
-		Vector2 deltaPosition = Vector2.fromAngle(Math.toRadians(averagedAngle)).multiply(deltaDistance);
+		Vector2 deltaPosition = Vector2.fromAngle(averagedAngle).scale(deltaDistance);
 		if (inverted) {
 			deltaPosition = deltaPosition.inverse();
 		}
@@ -172,9 +164,7 @@ public abstract class SwerveModule {
 		previousAngle = currentAngle;
 	}
 
-	public synchronized void resetKinematics(double heading) {
-		heading = MathUtils.boundDegrees(heading);
-
+	public synchronized void resetKinematics(Rotation2 heading) {
 		currentPosition = Vector2.ZERO;
 		previousDistance = 0;
 		previousAngle = getFieldCentricAngle(heading);
