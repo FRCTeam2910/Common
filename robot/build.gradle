@@ -1,8 +1,14 @@
 plugins {
-	id 'jaci.openrio.gradle.GradleRIO'
+	id "edu.wpi.first.GradleRIO" version "2018.06.21"
 	id 'java'
+	id 'maven'
+	id 'eclipse'
+	id 'idea'
 }
 
+sourceCompatibility = '1.8'
+
+group = 'org.frcteam2910.common'
 version = '1.0.0'
 
 repositories {
@@ -13,6 +19,6 @@ dependencies {
     compile wpilib()
     compile navx()
     compile ctre()
-	
-	compile project(':common')
+
+	compile project(':')
 }
