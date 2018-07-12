@@ -1,9 +1,7 @@
 plugins {
 	id "edu.wpi.first.GradleRIO" version "2018.06.21"
 	id 'java'
-	id 'maven'
-	id 'eclipse'
-	id 'idea'
+	id 'maven-publish'
 }
 
 sourceCompatibility = '1.8'
@@ -21,4 +19,24 @@ dependencies {
     compile ctre()
 
 	compile project(':')
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier 'javadoc'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
 }
