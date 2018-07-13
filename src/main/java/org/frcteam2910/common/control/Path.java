@@ -1,7 +1,7 @@
 package org.frcteam2910.common.control;
 
-import com.team254.lib.util.math.Rotation2d;
-import com.team254.lib.util.math.Translation2d;
+import org.frcteam2910.common.math.Rotation2;
+import org.frcteam2910.common.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +43,14 @@ public class Path {
 		return segments.size() - 1;
 	}
 
-	public Translation2d getPositionAtDistance(double distance) {
+	public Vector2 getPositionAtDistance(double distance) {
 		int currentSegment = getSegmentAtDistance(distance);
 		double segmentDistance = distance - getDistanceToSegmentStart(currentSegment);
 
 		return segments.get(currentSegment).getPositionAtDistance(segmentDistance);
 	}
 
-	public Rotation2d getSlopeAtDistance(double distance) {
+	public Rotation2 getSlopeAtDistance(double distance) {
 		int currentSegment = getSegmentAtDistance(distance);
 		double segmentDistance = distance - getDistanceToSegmentStart(currentSegment);
 
@@ -65,102 +65,102 @@ public class Path {
 	}
 
 	public abstract static class Segment {
-		public abstract Translation2d getStart();
+		public abstract Vector2 getStart();
 
-		public abstract Translation2d getEnd();
+		public abstract Vector2 getEnd();
 
-		public Translation2d getPositionAtDistance(double distance) {
+		public Vector2 getPositionAtDistance(double distance) {
 			return getPositionAtPercentage(distance / getLength());
 		}
 
-		public abstract Translation2d getPositionAtPercentage(double percentage);
+		public abstract Vector2 getPositionAtPercentage(double percentage);
 
-		public Rotation2d getSlopeAtDistance(double distance) {
+		public Rotation2 getSlopeAtDistance(double distance) {
 			return getSlopeAtPercentage(distance / getLength());
 		}
 
-		public abstract Rotation2d getSlopeAtPercentage(double percentage);
+		public abstract Rotation2 getSlopeAtPercentage(double percentage);
 
 		public abstract double getLength();
 
 		public static class Line extends Segment {
-			private final Translation2d start, end;
-			private final Translation2d delta;
+			private final Vector2 start, end;
+			private final Vector2 delta;
 
-			public Line(Translation2d start, Translation2d end) {
+			public Line(Vector2 start, Vector2 end) {
 				this.start = start;
 				this.end = end;
-				this.delta = new Translation2d(start, end);
+				this.delta = end.subtract(start);
 			}
 
 			@Override
-			public Translation2d getStart() {
+			public Vector2 getStart() {
 				return start;
 			}
 
 			@Override
-			public Translation2d getEnd() {
+			public Vector2 getEnd() {
 				return end;
 			}
 
 			@Override
-			public Translation2d getPositionAtPercentage(double percentage) {
-				return start.translateBy(delta.scale(percentage));
+			public Vector2 getPositionAtPercentage(double percentage) {
+				return start.add(delta.scale(percentage));
 			}
 
 			@Override
-			public Rotation2d getSlopeAtPercentage(double percentage) {
-				return delta.direction();
+			public Rotation2 getSlopeAtPercentage(double percentage) {
+				return delta.getAngle();
 			}
 
 			@Override
 			public double getLength() {
-				return delta.norm();
+				return delta.length;
 			}
 		}
 
 		public static class Arc extends Segment {
-			private final Translation2d start, end, center;
-			private final Translation2d deltaStart, deltaEnd;
+			private final Vector2 start, end, center;
+			private final Vector2 deltaStart, deltaEnd;
 
-			public Arc(Translation2d start, Translation2d end, Translation2d center) {
+			public Arc(Vector2 start, Vector2 end, Vector2 center) {
 				this.start = start;
 				this.end = end;
 				this.center = center;
-				this.deltaStart = new Translation2d(center, start);
-				this.deltaEnd = new Translation2d(center, end);
+				this.deltaStart = start.subtract(center);
+				this.deltaEnd = end.subtract(center);
 			}
 
 			@Override
-			public Translation2d getStart() {
+			public Vector2 getStart() {
 				return start;
 			}
 
 			@Override
-			public Translation2d getEnd() {
+			public Vector2 getEnd() {
 				return end;
 			}
 
 			@Override
-			public Translation2d getPositionAtPercentage(double percentage) {
-				double deltaAngle = Translation2d.getAngle(deltaStart, deltaEnd).getRadians() *
-						((Translation2d.cross(deltaStart, deltaEnd) >= 0) ? 1 : -1) * percentage;
-				return center.translateBy(deltaStart.rotateBy(Rotation2d.fromRadians(deltaAngle)));
+			public Vector2 getPositionAtPercentage(double percentage) {
+				double deltaAngle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() *
+						((deltaStart.cross(deltaEnd) >= 0) ? 1 : -1) * percentage;
+				return center.add(deltaStart.rotateBy(Rotation2.fromRadians(deltaAngle)));
 			}
 
 			@Override
-			public Rotation2d getSlopeAtPercentage(double percentage) {
-				double angle = Translation2d.getAngle(deltaStart, deltaEnd).getRadians() * percentage;
-				return deltaStart.rotateBy(Rotation2d.fromRadians(angle)).direction().normal();
+			public Rotation2 getSlopeAtPercentage(double percentage) {
+				double angle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() * percentage;
+				return deltaStart.rotateBy(Rotation2.fromRadians(angle)).getAngle().normal();
 			}
 
 			@Override
 			public double getLength() {
-				return deltaStart.norm() * Translation2d.getAngle(deltaStart, deltaEnd).getRadians();
+				return deltaStart.length * Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians();
 			}
 
 			public double getRadius() {
-				return deltaStart.norm();
+				return deltaStart.length;
 			}
 		}
 	}
