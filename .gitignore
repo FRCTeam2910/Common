@@ -14,3 +14,6 @@ build/
 .project
 .settings/
 bin/
+
+# VS Code files
+.vscode/

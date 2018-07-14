@@ -1,9 +1,13 @@
 plugins {
-	id 'jaci.openrio.gradle.GradleRIO'
+	id "edu.wpi.first.GradleRIO" version "2018.06.21"
 	id 'java'
+	id 'maven-publish'
 }
 
-version = '1.0.0'
+sourceCompatibility = '1.8'
+
+group = 'org.frcteam2910.common'
+version = '0.1.0'
 
 repositories {
 	mavenCentral()
@@ -13,6 +17,26 @@ dependencies {
     compile wpilib()
     compile navx()
     compile ctre()
-	
-	compile project(':common')
+
+	compile project(':')
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier 'javadoc'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
 }
