@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * @author Jacob Bublitz
  * @since 1.0
  */
-
 public final class XboxController extends Controller {
 	private final Joystick joystick;
 
