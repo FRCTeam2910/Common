@@ -6,7 +6,7 @@ plugins {
 sourceCompatibility = '1.8'
 
 group = 'org.frcteam2910.common'
-version = '0.1.0'
+version = '0.2.0'
 
 repositories {
 	mavenCentral()
