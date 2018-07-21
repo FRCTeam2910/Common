@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import org.frcteam2910.common.robot.Utilities;
 
 public abstract class Axis {
-	public static final double ZERO_EPSILON = 0.025;
+	public static final double DEADBAND = 0.025;
 
 	private boolean inverted = false;
 	private double scale = 1.0;
@@ -28,13 +28,34 @@ public abstract class Axis {
 	public abstract double getRaw();
 
 	public double get() {
-		return Utilities.deadband(getRaw() * (inverted ? -1 : 1), ZERO_EPSILON);
+		return get(false, false);
 	}
 
 	public double get(boolean squared) {
-		double value = get();
-		if (squared)
+		return get(squared, false);
+	}
+
+	public double get(boolean squared, boolean ignoreScale) {
+		double value = getRaw();
+
+		// Invert if axis is inverted
+		if (inverted) {
+			value = -value;
+		}
+
+		// Deadband value
+		value = Utilities.deadband(value, DEADBAND);
+
+		// Square value
+		if (squared) {
 			value = Math.copySign(value * value, value);
+		}
+
+		// Scale value
+		if (!ignoreScale) {
+			value *= scale;
+		}
+
 		return value;
 	}
 
