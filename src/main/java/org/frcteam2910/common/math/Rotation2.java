@@ -37,7 +37,7 @@ public final class Rotation2 {
      * @param x         The x coordinate or cosine.
      * @param y         The y coordinate or sine.
      * @param normalize Whether or not to normalize the x and y coordinates. Should be set to true if it is uncertain
-     *                  if the point os on the unit circle.
+     *                  if the point is on the unit circle.
      */
     public Rotation2(double x, double y, boolean normalize) {
         if (normalize) {
@@ -143,7 +143,7 @@ public final class Rotation2 {
      * Check whether this rotation is parallel to another rotation.
      * <p>
      * This is different from {@link #equals} because it also takes into account rotations that are facing the opposite
-     * way.
+     * direction.
      *
      * @param other The rotation to check if it is parallel with.
      * @return If the rotations are parallel.
