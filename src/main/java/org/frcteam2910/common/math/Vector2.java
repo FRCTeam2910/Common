@@ -7,6 +7,8 @@ import static org.frcteam2910.common.math.MathUtils.epsilonEquals;
 
 /**
  * A vector with 2 elements
+ *
+ * @since 0.2
  */
 public final class Vector2 {
 	public static final Vector2 ZERO = new Vector2(0, 0);

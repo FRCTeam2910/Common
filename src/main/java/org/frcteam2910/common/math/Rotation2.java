@@ -8,7 +8,7 @@ import java.util.Objects;
  * mathmatical calculations as the sine and cosine of the angle are already calculated. One benefit of this is that
  * there is no need to convert between degrees and radians.
  *
- * @since 1.0
+ * @since 0.2
  */
 public final class Rotation2 {
     /**

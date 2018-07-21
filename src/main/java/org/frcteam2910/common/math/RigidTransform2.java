@@ -1,5 +1,8 @@
 package org.frcteam2910.common.math;
 
+/**
+ * @since 0.2
+ */
 public class RigidTransform2 {
     public Vector2 translation;
     public Rotation2 rotation;
