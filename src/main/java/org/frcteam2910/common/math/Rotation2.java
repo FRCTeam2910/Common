@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * A rotation is a representation of an angle by trigonometric functions. This is useful because it allows for easy
- * mathmatical calculations as the sine and cosine of the angle are already calculated. One benefit of this is that
+ * mathematical calculations as the sine and cosine of the angle are already calculated. One benefit of this is that
  * there is no need to convert between degrees and radians.
  *
  * @since 0.2
@@ -103,7 +103,13 @@ public final class Rotation2 {
      * @return The angle in radians.
      */
     public double toRadians() {
-        return MathUtils.boundRadians(Math.atan2(sin, cos));
+        double angle = Math.atan2(sin, cos);
+
+        if (angle < 0) {
+            angle += 2 * Math.PI;
+        }
+
+        return angle;
     }
 
     /**

@@ -58,20 +58,6 @@ public class MathUtils {
 		return Math.max(min, Math.min(value, max));
 	}
 
-	public static double boundDegrees(double angle) {
-		angle %= 360;
-		if (angle < 0)
-			angle += 360;
-		return angle;
-	}
-
-	public static double boundRadians(double angle) {
-		angle %= 2 * Math.PI;
-		if (angle < 0)
-			angle += 2 * Math.PI;
-		return angle;
-	}
-
 	/**
 	 * Returns if the value is in the range [lowerBound, upperBound].
 	 *
