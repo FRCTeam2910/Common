@@ -5,8 +5,9 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
- * <p>IGamepad implementation for XBox-like gamepads.</p>
- * <p>Currently known to work with:
+ * IGamepad implementation for XBox-like gamepads.
+ * <p>
+ * Currently known to work with:
  * <ul>
  * <li>Xbox 360 wired controller</li>
  * <li>Logitech F310</li>
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * @author Jacob Bublitz
  * @since 1.0
  */
-
 public final class XboxController extends Controller {
 	private final Joystick joystick;
 

@@ -2,12 +2,13 @@ package org.frcteam2910.common.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frcteam2910.common.drivers.SwerveModule;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.robot.Constants;
 
 public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
-    private Vector2 kinematicPosition = new Vector2();
-    private Vector2 kinematicVelocity = new Vector2();
+    private Vector2 kinematicPosition = Vector2.ZERO;
+    private Vector2 kinematicVelocity = Vector2.ZERO;
     private double lastKinematicTimestamp;
 
     @Override
@@ -17,15 +18,14 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
     public final void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented, boolean angleOnly) {
         if (fieldOriented) {
-            double gyroRadians = Math.toRadians(getGyroscope().getAngle());
-            translation = translation.rotateBy(gyroRadians);
+            translation = translation.rotateBy(getGyroscope().getAngle());
         }
 
         for (SwerveModule module : getSwerveModules()) {
-            Vector2 velocity = module.getModulePosition().multiply(rotation).add(translation);
+            Vector2 velocity = module.getModulePosition().scale(rotation).add(translation);
 
             if (velocity.length > Constants.DEADBAND_RANGE || angleOnly) {
-                module.setTargetAngle(Math.toDegrees(velocity.angle));
+                module.setTargetAngle(velocity.getAngle());
             }
 
             if (!angleOnly) {
@@ -51,18 +51,18 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
     @Override
     public synchronized void updateKinematics(double timestamp) {
-        double heading = getGyroscope().getAngle();
+        Rotation2 heading = getGyroscope().getAngle();
 
         SwerveModule[] swerveModules = getSwerveModules();
 
-        Vector2 averagePosition = new Vector2();
+        Vector2 averagePosition = Vector2.ZERO;
         for (SwerveModule module : swerveModules) {
             module.updateKinematics(heading);
             averagePosition = averagePosition.add(module.getKinematicPosition());
         }
-        averagePosition = averagePosition.multiply(1.0 / swerveModules.length);
+        averagePosition = averagePosition.scale(1.0 / swerveModules.length);
 
-        kinematicVelocity = averagePosition.subtract(kinematicPosition).multiply(1 / (timestamp - lastKinematicTimestamp));
+        kinematicVelocity = averagePosition.subtract(kinematicPosition).scale(1 / (timestamp - lastKinematicTimestamp));
         kinematicPosition = averagePosition;
         lastKinematicTimestamp = timestamp;
     }

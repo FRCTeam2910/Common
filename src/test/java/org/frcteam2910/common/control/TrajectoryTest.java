@@ -1,14 +1,10 @@
 package org.frcteam2910.common.control;
 
-import com.team254.lib.util.MovingAverage;
-import com.team254.lib.util.math.Translation2d;
 import org.frcteam2910.common.Constants;
 import org.frcteam2910.common.Logger;
+import org.frcteam2910.common.math.Vector2;
+import org.frcteam2910.common.util.MovingAverage;
 import org.junit.Test;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class TrajectoryTest {
 	public static final Trajectory.Constraints CONSTRAINTS = new Trajectory.Constraints();
@@ -23,41 +19,15 @@ public class TrajectoryTest {
 	}
 
 	@Test
-	public void writeTrajectoryCSV() {
-		Path path = PathBuilder.build(
-				new Waypoint(new Translation2d(0, 0), 0),
-				new Waypoint(new Translation2d(5, 100), 30),
-				new Waypoint(new Translation2d(-100, 80), 10),
-				new Waypoint(new Translation2d(-80, 110), 20),
-				new Waypoint(new Translation2d(-50, 200), 0)
-		);
-		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
-
-		try (PrintWriter writer = new PrintWriter(new FileWriter("trajectory.csv"))) {
-			writer.format("%s,%s,%s,%s,%s,%s%n", "time", "x", "y", "position", "velocity", "acceleration");
-			trajectory.calculateSegments(20 / Constants.MILLISECONDS);
-
-			double time = 0;
-			for (Trajectory.Segment segment : trajectory.getSegments()) {
-				writer.format("%f,%f,%f,%f,%f,%f%n", time, segment.translation.x(), segment.translation.y(),
-						segment.position, segment.velocity, segment.acceleration);
-				time += segment.dt;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
 	public void speedTest() {
 		Logger logger = new Logger("TrajectoryTest.speedTest");
 
 		Path path = PathBuilder.build(
-				new Waypoint(new Translation2d(0, 0), 0),
-				new Waypoint(new Translation2d(5, 100), 30),
-				new Waypoint(new Translation2d(-100, 80), 10),
-				new Waypoint(new Translation2d(-80, 110), 20),
-				new Waypoint(new Translation2d(-50, 200), 0)
+				new Waypoint(new Vector2(0, 0), 0),
+				new Waypoint(new Vector2(5, 100), 30),
+				new Waypoint(new Vector2(-100, 80), 10),
+				new Waypoint(new Vector2(-80, 110), 20),
+				new Waypoint(new Vector2(-50, 200), 0)
 		);
 		Trajectory loggedTrajectory = new Trajectory(path, CONSTRAINTS);
 
@@ -80,7 +50,7 @@ public class TrajectoryTest {
 			if (time < lowTime)
 				lowTime = time;
 
-			average.addNumber(time);
+			average.add(time);
 		}
 
 		logger.info("Generated %d trajectories", SPEED_RUNS);
@@ -88,6 +58,6 @@ public class TrajectoryTest {
 		logger.info("Segments calculated for every %.3f ms", SPEED_DT * Constants.MILLISECONDS);
 		logger.info("Longest generation time: %.3f ms", highTime);
 		logger.info("Shortest generation time: %.3f ms", lowTime);
-		logger.info("Average trajectory time: %.3f ms", average.getAverage());
+		logger.info("Average trajectory time: %.3f ms", average.get());
 	}
 }

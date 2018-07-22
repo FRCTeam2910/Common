@@ -119,7 +119,7 @@ public final class CheesyDriveCommand extends Command {
 		if (quickTurn) {
 			if (Math.abs(linearPower) < QUICK_STOP_DEADBAND) {
 				double alpha = QUICK_STOP_WEIGHT;
-				quickStopAccumulator = (1 - alpha) * quickStopAccumulator + alpha * MathUtils.limit(wheel, 1) * QUICK_STOP_SCALAR;
+				quickStopAccumulator = (1 - alpha) * quickStopAccumulator + alpha * MathUtils.clamp(wheel, -1, 1) * QUICK_STOP_SCALAR;
 			}
 			overPower = 1;
 			angularPower = wheel;

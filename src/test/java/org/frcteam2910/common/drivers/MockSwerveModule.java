@@ -1,6 +1,7 @@
 package org.frcteam2910.common.drivers;
 
 import org.frcteam2910.common.math.MathUtils;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
 import static org.junit.Assert.assertTrue;
@@ -13,7 +14,7 @@ public final class MockSwerveModule extends SwerveModule {
 	private double targetDrivePercentage;
 	private boolean driveInverted;
 
-	public MockSwerveModule(Vector2 modulePosition, double adjustmentAngle) {
+	public MockSwerveModule(Vector2 modulePosition, Rotation2 adjustmentAngle) {
 		super(modulePosition, adjustmentAngle);
 	}
 

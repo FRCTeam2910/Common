@@ -1,7 +1,7 @@
 package org.frcteam2910.common.control;
 
-import com.team254.lib.util.math.Rotation2d;
-import com.team254.lib.util.math.Translation2d;
+import org.frcteam2910.common.math.Rotation2;
+import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.motion.MotionProfile;
 import org.frcteam2910.common.motion.TrapezoidalMotionProfile;
 
@@ -62,8 +62,8 @@ public class Trajectory {
 
 	public Segment calculateSegment(double time, double dt) {
 		MotionProfile.State state = calculateState(time);
-		Translation2d pathPosition = path.getPositionAtDistance(state.position);
-		Rotation2d pathHeading = path.getSlopeAtDistance(state.position);
+		Vector2 pathPosition = path.getPositionAtDistance(state.position);
+		Rotation2 pathHeading = path.getSlopeAtDistance(state.position);
 
 		return new Segment(dt, pathPosition, pathHeading, state.position, state.velocity, state.acceleration);
 	}
@@ -111,11 +111,11 @@ public class Trajectory {
 
 	public static class Segment {
 		public final double dt;
-		public final Translation2d translation;
-		public final Rotation2d heading;
+		public final Vector2 translation;
+		public final Rotation2 heading;
 		public final double position, velocity, acceleration;
 
-		public Segment(double dt, Translation2d translation, Rotation2d heading, double position, double velocity,
+		public Segment(double dt, Vector2 translation, Rotation2 heading, double position, double velocity,
 		               double acceleration) {
 			this.dt = dt;
 			this.translation = translation;

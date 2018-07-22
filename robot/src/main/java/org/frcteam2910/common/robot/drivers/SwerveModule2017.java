@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.frcteam2910.common.Constants;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.drivers.SwerveModule;
 
@@ -21,7 +22,7 @@ public final class SwerveModule2017 extends SwerveModule {
 	private final TalonSRX angleMotor, driveMotor;
 
 	public SwerveModule2017(Vector2 modulePosition,
-	                        double adjustmentAngle,
+	                        Rotation2 adjustmentAngle,
 	                        int angleMotor,
 	                        int driveMotor) {
 		super(modulePosition, adjustmentAngle);

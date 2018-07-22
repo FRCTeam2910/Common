@@ -3,6 +3,7 @@ package org.frcteam2910.common.robot.drivers;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import org.frcteam2910.common.drivers.Gyroscope;
+import org.frcteam2910.common.math.Rotation2;
 
 public final class NavX extends Gyroscope {
     private final AHRS navX;
@@ -21,8 +22,8 @@ public final class NavX extends Gyroscope {
     }
 
     @Override
-    public double getUnadjustedAngle() {
-        return navX.getAngle();
+    public Rotation2 getUnadjustedAngle() {
+        return Rotation2.fromDegrees(navX.getAngle());
     }
 
     @Override

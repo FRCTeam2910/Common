@@ -50,7 +50,7 @@ public final class HolonomicDriveCommand extends Command {
 
 			@Override
 			public double pidGet() {
-				return drivetrain.getGyroscope().getAngle();
+				return drivetrain.getGyroscope().getAngle().toDegrees();
 			}
 
 			@Override
@@ -70,7 +70,7 @@ public final class HolonomicDriveCommand extends Command {
 	protected void initialize() {
 		waitingForRotationTimer = false;
 
-		angleController.setSetpoint(drivetrain.getGyroscope().getAngle());
+		angleController.setSetpoint(drivetrain.getGyroscope().getAngle().toDegrees());
 		angleController.enable();
 	}
 
@@ -91,7 +91,7 @@ public final class HolonomicDriveCommand extends Command {
 						rotation *= -1;
 					}
 				} else {
-					angleController.setSetpoint(drivetrain.getGyroscope().getAngle());
+					angleController.setSetpoint(drivetrain.getGyroscope().getAngle().toDegrees());
 				}
 			} else {
 				LOGGER.debug("Starting end wait");
@@ -101,7 +101,7 @@ public final class HolonomicDriveCommand extends Command {
 			}
 		} else {
 			waitingForRotationTimer = false;
-			angleController.setSetpoint(drivetrain.getGyroscope().getAngle());
+			angleController.setSetpoint(drivetrain.getGyroscope().getAngle().toDegrees());
 		}
 
 		drivetrain.holonomicDrive(new Vector2(forward, strafe), rotation, fieldOriented);

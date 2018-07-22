@@ -1,8 +1,7 @@
 package org.frcteam2910.common.control;
 
-import com.team254.lib.util.math.RigidTransform2d;
-import com.team254.lib.util.math.Rotation2d;
-import com.team254.lib.util.math.Translation2d;
+import org.frcteam2910.common.math.RigidTransform2;
+import org.frcteam2910.common.math.Vector2;
 
 public class PathBuilder {
 	private static final double EPSILON = 1e-9;
@@ -27,31 +26,30 @@ public class PathBuilder {
 	private static class Line {
 		private final Waypoint a;
 		private final Waypoint b;
-		private final Translation2d start;
-		private final Translation2d end;
-		private final Translation2d slope;
+		private final Vector2 start;
+		private final Vector2 end;
+		private final Vector2 delta;
 
 		public Line(Waypoint a, Waypoint b) {
 			this.a = a;
 			this.b = b;
-			slope = new Translation2d(a.position, b.position);
-			start = a.position.translateBy(slope.scale(a.radius / slope.norm()));
-			end = b.position.translateBy(slope.scale(-b.radius / slope.norm()));
+			delta = b.position.subtract(a.position);
+			start = a.position.add(delta.scale(a.radius / delta.length));
+			end = b.position.add(delta.scale(-b.radius / delta.length));
 		}
 
 		private void addToPath(Path p) {
-			double pathLength = new Translation2d(end, start).norm();
+			double pathLength = delta.length;
 			if (pathLength > EPSILON) {
-					p.addSegment(new Path.Segment.Line(start, end));
+				p.addSegment(new Path.Segment.Line(start, end));
 			}
-
 		}
 	}
 
 	private static class Arc {
 		private final Line ab;
 		private final Line bc;
-		private final Translation2d center;
+		private final Vector2 center;
 		private final double radius;
 
 		public Arc(Waypoint a, Waypoint b, Waypoint c) {
@@ -62,7 +60,7 @@ public class PathBuilder {
 			this.ab = ab;
 			this.bc = bc;
 			this.center = intersect(ab, bc);
-			this.radius = new Translation2d(center, ab.end).norm();
+			this.radius = ab.end.subtract(center).length;
 		}
 
 		private void addToPath(Path p) {
@@ -72,9 +70,9 @@ public class PathBuilder {
 			}
 		}
 
-		private static Translation2d intersect(Line l1, Line l2) {
-			final RigidTransform2d lineA = new RigidTransform2d(l1.end, new Rotation2d(l1.slope, true).normal());
-			final RigidTransform2d lineB = new RigidTransform2d(l2.start, new Rotation2d(l2.slope, true).normal());
+		private static Vector2 intersect(Line l1, Line l2) {
+			final RigidTransform2 lineA = new RigidTransform2(l1.end, l1.delta.getAngle().normal());
+			final RigidTransform2 lineB = new RigidTransform2(l2.start, l2.delta.getAngle().normal());
 			return lineA.intersection(lineB);
 		}
 	}
