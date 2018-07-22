@@ -60,9 +60,9 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
             module.updateKinematics(heading);
             averagePosition = averagePosition.add(module.getKinematicPosition());
         }
-        averagePosition = averagePosition.multiply(1.0 / swerveModules.length);
+        averagePosition = averagePosition.scale(1.0 / swerveModules.length);
 
-        kinematicVelocity = averagePosition.subtract(kinematicPosition).multiply(1 / (timestamp - lastKinematicTimestamp));
+        kinematicVelocity = averagePosition.subtract(kinematicPosition).scale(1 / (timestamp - lastKinematicTimestamp));
         kinematicPosition = averagePosition;
         lastKinematicTimestamp = timestamp;
     }

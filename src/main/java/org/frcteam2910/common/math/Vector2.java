@@ -16,9 +16,6 @@ public final class Vector2 {
 	public final double x, y;
 	public final double length;
 
-	@Deprecated
-	public final double angle;
-
 	/**
 	 * Create a vector at (0, 0).
 	 *
@@ -33,8 +30,6 @@ public final class Vector2 {
 		this.y = y;
 
 		this.length = Math.hypot(x, y);
-
-		this.angle = Math.atan2(y, x);
 	}
 
 	/**
@@ -48,7 +43,6 @@ public final class Vector2 {
 		this.x = other.x;
 		this.y = other.y;
 		this.length = other.length;
-		this.angle = other.angle;
 	}
 
 	/**
@@ -103,19 +97,12 @@ public final class Vector2 {
 		return new Vector2(this.x - x, this.y - y);
 	}
 
-	public Vector2 scale(double scalar) {
-		return multiply(scalar, scalar);
-	}
-
 	/**
 	 * Multiply each component of the vector by a scalar value.
 	 * @param scalar The scalar to multiply each component by.
-	 * @return The vector multiplied by the scalar.
-	 *
-	 * @deprecated Use {@link #scale(double)} instead.
+	 * @return The vector scaled by the scalar.
 	 */
-	@Deprecated
-	public Vector2 multiply(double scalar) {
+	public Vector2 scale(double scalar) {
 		return multiply(scalar, scalar);
 	}
 
@@ -141,21 +128,6 @@ public final class Vector2 {
 
 	public double cross(Vector2 other) {
 		return x * other.y - y * other.x;
-	}
-
-	/**
-	 * Rotate this vector by the specified angle.
-	 * @param radians The angle the vector should be rotated by in radians.
-	 * @return The rotated vector.
-	 *
-	 * @deprecated Use {@link #rotateBy(Rotation2)} instead.
-	 */
-	@Deprecated
-	public Vector2 rotateBy(double radians) {
-		double cos = Math.cos(radians);
-		double sin = Math.sin(radians);
-
-		return new Vector2(x * cos - y * sin, x * sin + y * cos);
 	}
 
 	/**
