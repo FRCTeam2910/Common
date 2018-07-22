@@ -80,7 +80,7 @@ public final class Vector2 {
 			return Rotation2.ZERO;
 		}
 
-		return Rotation2.fromRadians(Math.acos(MathUtils.limit(cos, -1.0, 1.0)));
+		return Rotation2.fromRadians(Math.acos(MathUtils.clamp(cos, -1.0, 1.0)));
 	}
 
 	public Rotation2 getAngle() {

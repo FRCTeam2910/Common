@@ -3,9 +3,7 @@ package org.frcteam2910.common.math;
 import org.junit.Test;
 
 import static org.frcteam2910.common.math.MathUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class MathUtilsTest {
 	@Test
@@ -40,10 +38,15 @@ public class MathUtilsTest {
 	}
 
 	@Test
-	public void limitTest() {
-		assertEquals(5.0, limit(5.0, 10.0), EPSILON);
-		assertEquals(1.0, limit(5.0, 1.0), EPSILON);
-		assertEquals(-2.5, limit(-3.0, -2.5, 5.0), EPSILON);
-		assertEquals(1.0, limit(1.0, -2.5, 5.0), EPSILON);
+	public void clampTest() {
+		assertEquals(5.0, clamp(5.0, -10.0, 10.0), EPSILON);
+		assertEquals(1.0, clamp(5.0, -1.0, 1.0), EPSILON);
+		assertEquals(-2.5, clamp(-3.0, -2.5, 5.0), EPSILON);
+		assertEquals(1.0, clamp(1.0, -2.5, 5.0), EPSILON);
+
+		try {
+			clamp(5.0, 24.0, -2.0);
+			fail("Illegal arguments are not verified.");
+		} catch (IllegalArgumentException ignored) {}
 	}
 }
