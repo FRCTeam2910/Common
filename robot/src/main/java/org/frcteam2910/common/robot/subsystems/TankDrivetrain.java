@@ -29,12 +29,12 @@ public abstract class TankDrivetrain extends Drivetrain {
 
     @Override
     public Vector2 getKinematicPosition() {
-        return new Vector2(); // TODO: Tank drive kinematics
+        return Vector2.ZERO; // TODO: Tank drive kinematics
     }
 
     @Override
     public Vector2 getKinematicVelocity() {
-        return new Vector2(); // TODO: Tank drive kinematics
+        return Vector2.ZERO; // TODO: Tank drive kinematics
     }
 
     @Override
