@@ -1,6 +1,8 @@
 package org.frcteam2910.common.math;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  * Miscellaneous math functions
@@ -8,37 +10,14 @@ import static java.lang.Math.abs;
  * @since 0.1
  */
 public class MathUtils {
+	/**
+	 * Default epsilon for {@link #epsilonEquals(double, double)}
+	 *
+	 * @since 0.1
+	 */
 	public static final double EPSILON = 1e-9;
 
-	/**
-	 * Check if two numbers are equal to each other using the default epsilon.
-	 *
-	 * @param a The first number.
-	 * @param b The second number.
-	 *
-	 * @return If the two numbers are equal.
-	 *
-	 * @since 0.1
-	 */
-	public static boolean epsilonEquals(double a, double b) {
-		return epsilonEquals(a, b, EPSILON);
-	}
-
-	/**
-	 * Check if two numbers are equal to each other.
-	 *
-	 * @param a The first number
-	 * @param b The second number
-	 * @param epsilon The epsilon the comparison will use. Think of this as the allowable difference between the two
-	 *                numbers
-	 *
-	 * @return If the numbers are equal.
-	 *
-	 * @since 0.1
-	 */
-	public static boolean epsilonEquals(double a, double b, double epsilon) {
-		return abs(a - b) < epsilon;
-	}
+	private MathUtils() {}
 
 	/**
 	 * Clamps a value between a minimum and a maximum value.
@@ -55,7 +34,37 @@ public class MathUtils {
 			throw new IllegalArgumentException("min must not be greater than max");
 		}
 
-		return Math.max(min, Math.min(value, max));
+		return max(min, min(value, max));
+	}
+
+	/**
+	 * Checks if two numbers are equal to each other using the default epsilon.
+	 *
+	 * @param a The first number.
+	 * @param b The second number.
+	 *
+	 * @return If the two numbers are equal.
+	 *
+	 * @since 0.1
+	 */
+	public static boolean epsilonEquals(double a, double b) {
+		return epsilonEquals(a, b, EPSILON);
+	}
+
+	/**
+	 * Checks if two numbers are equal to each other.
+	 *
+	 * @param a The first number
+	 * @param b The second number
+	 * @param epsilon The epsilon the comparison will use. Think of this as the allowable difference between the two
+	 *                numbers.
+	 *
+	 * @return If the numbers are equal.
+	 *
+	 * @since 0.1
+	 */
+	public static boolean epsilonEquals(double a, double b, double epsilon) {
+		return abs(a - b) < epsilon;
 	}
 
 	/**
