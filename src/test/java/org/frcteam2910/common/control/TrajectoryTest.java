@@ -2,9 +2,16 @@ package org.frcteam2910.common.control;
 
 import org.frcteam2910.common.Constants;
 import org.frcteam2910.common.Logger;
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
+import org.frcteam2910.common.math.spline.CubicHermiteSpline;
 import org.frcteam2910.common.util.MovingAverage;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 public class TrajectoryTest {
 	public static final Trajectory.Constraints CONSTRAINTS = new Trajectory.Constraints();
@@ -12,23 +19,23 @@ public class TrajectoryTest {
 	public static final int SPEED_RUNS = 10;
 	public static final double SPEED_DT = 20 / Constants.MILLISECONDS;
 
+	private static final Waypoint[] WAYPOINTS = {
+			new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90)),
+			new Waypoint(new Vector2(50, 50), Rotation2.fromDegrees(90))
+	};
+
 	static {
 		CONSTRAINTS.maxVelocity = 12;
 		CONSTRAINTS.maxAcceleration = 5.5;
-		CONSTRAINTS.arcVelocityScalar = 1. / 30.;
+		CONSTRAINTS.arcVelocityScalar = 1.0 / 30.0;
 	}
 
 	@Test
+	@Ignore("Iterating through the path to find segments takes forever. Test takes > 10 seconds")
 	public void speedTest() {
 		Logger logger = new Logger("TrajectoryTest.speedTest");
 
-		Path path = PathBuilder.build(
-				new Waypoint(new Vector2(0, 0), 0),
-				new Waypoint(new Vector2(5, 100), 30),
-				new Waypoint(new Vector2(-100, 80), 10),
-				new Waypoint(new Vector2(-80, 110), 20),
-				new Waypoint(new Vector2(-50, 200), 0)
-		);
+		Path path = new SplinePathGenerator().generate(WAYPOINTS);
 		Trajectory loggedTrajectory = new Trajectory(path, CONSTRAINTS);
 
 		MovingAverage average = new MovingAverage(SPEED_RUNS);

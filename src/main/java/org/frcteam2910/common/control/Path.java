@@ -1,5 +1,6 @@
 package org.frcteam2910.common.control;
 
+import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
@@ -129,6 +130,21 @@ public class Path {
 				this.center = center;
 				this.deltaStart = start.subtract(center);
 				this.deltaEnd = end.subtract(center);
+			}
+
+
+			public static Arc fromPoints(Vector2 a, Vector2 b, Vector2 c) {
+				Line chordAB = new Line(a, b);
+				Line chordBC = new Line(b, c);
+
+				RigidTransform2 perpChordAB = new RigidTransform2(chordAB.getPositionAtPercentage(0.5), chordAB.getSlopeAtPercentage(0.5).normal());
+				RigidTransform2 perpChordBC = new RigidTransform2(chordBC.getPositionAtPercentage(0.5), chordBC.getSlopeAtPercentage(0.5).normal());
+
+				Vector2 center = perpChordAB.intersection(perpChordBC);
+
+				// TODO: Check if the arc goes the long way around the circle.
+
+				return new Arc(a, c, center);
 			}
 
 			@Override
