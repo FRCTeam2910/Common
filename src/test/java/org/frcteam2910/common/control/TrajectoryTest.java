@@ -4,14 +4,9 @@ import org.frcteam2910.common.Constants;
 import org.frcteam2910.common.Logger;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
-import org.frcteam2910.common.math.spline.CubicHermiteSpline;
 import org.frcteam2910.common.util.MovingAverage;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 
 public class TrajectoryTest {
 	public static final Trajectory.Constraints CONSTRAINTS = new Trajectory.Constraints();

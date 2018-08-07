@@ -4,7 +4,7 @@ import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
-import org.frcteam2910.common.math.spline.CubicHermiteSpline;
+import org.frcteam2910.common.math.spline.HermiteSpline;
 import org.frcteam2910.common.math.spline.Spline;
 
 import java.util.function.BiFunction;
@@ -26,7 +26,7 @@ public final class SplinePathGenerator implements PathGenerator {
 
     @Override
     public Path generate(Waypoint... waypoints) {
-        return generate(CubicHermiteSpline::new, waypoints);
+        return generate(HermiteSpline::cubic, waypoints);
     }
 
     public Path generate(BiFunction<RigidTransform2, RigidTransform2, Spline> splineFunction, Waypoint... waypoints) {
