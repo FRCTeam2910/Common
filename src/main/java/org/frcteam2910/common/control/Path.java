@@ -9,9 +9,14 @@ import java.util.List;
 
 public class Path {
 	private final List<Segment> segments = new ArrayList<>();
+	private final List<Double> distancesFromStart = new ArrayList<>();
+
+	private double length = 0.0;
 
 	public void addSegment(Segment segment) {
 		segments.add(segment);
+		distancesFromStart.add(length);
+		length += segment.getLength();
 	}
 
 	public List<Segment> getSegments() {
@@ -19,17 +24,11 @@ public class Path {
 	}
 
 	private double getDistanceToSegmentStart(int segment) {
-		double distance = 0;
-		for (int i = 0; i < segment; i++)
-			distance += segments.get(i).getLength();
-		return distance;
+		return distancesFromStart.get(segment);
 	}
 
 	private double getDistanceToSegmentEnd(int segment) {
-		double distance = 0;
-		for (int i = 0; i <= segment; i++)
-			distance += segments.get(i).getLength();
-		return distance;
+		return distancesFromStart.get(segment) + segments.get(segment).getLength();
 	}
 
 	private int getSegmentAtDistance(double distance) {
@@ -59,9 +58,6 @@ public class Path {
 	}
 
 	public double getLength() {
-		double length = 0;
-		for (int i = 0; i < segments.size(); i++)
-			length += segments.get(i).getLength();
 		return length;
 	}
 

@@ -2,11 +2,17 @@ package org.frcteam2910.common.control;
 
 import org.frcteam2910.common.Constants;
 import org.frcteam2910.common.Logger;
+import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.util.MovingAverage;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertThat;
 
 public class TrajectoryTest {
 	public static final Trajectory.Constraints CONSTRAINTS = new Trajectory.Constraints();
@@ -26,12 +32,34 @@ public class TrajectoryTest {
 	}
 
 	@Test
-	@Ignore("Iterating through the path to find segments takes forever. Test takes > 10 seconds")
+	public void velocityContinuityTest() {
+		Path path = new SplinePathGenerator().generate(WAYPOINTS);
+		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
+		trajectory.calculateSegments(SPEED_DT);
+
+		final double maxAllowableAbsDeltaVelocity = CONSTRAINTS.maxAcceleration * SPEED_DT * (1 + MathUtils.EPSILON);
+
+		Trajectory.Segment previousSegment = null;
+		for (Trajectory.Segment segment : trajectory.getSegments()) {
+			if (previousSegment == null) {
+				previousSegment = segment;
+				continue;
+			}
+
+			double absDeltaVelocity = Math.abs(previousSegment.velocity - segment.velocity);
+
+			assertThat("Actual acceleration exceeds max acceleration", absDeltaVelocity, lessThanOrEqualTo(maxAllowableAbsDeltaVelocity));
+
+			previousSegment = segment;
+		}
+	}
+
+	@Test
 	public void speedTest() {
 		Logger logger = new Logger("TrajectoryTest.speedTest");
 
-		Path path = new SplinePathGenerator().generate(WAYPOINTS);
-		Trajectory loggedTrajectory = new Trajectory(path, CONSTRAINTS);
+		Path loggedPath = new SplinePathGenerator().generate(WAYPOINTS);
+		Trajectory loggedTrajectory = new Trajectory(loggedPath, CONSTRAINTS);
 
 		MovingAverage average = new MovingAverage(SPEED_RUNS);
 
@@ -40,6 +68,7 @@ public class TrajectoryTest {
 		for (int run = 1; run <= SPEED_RUNS; run++) {
 			long start = System.nanoTime();
 
+			Path path = new SplinePathGenerator().generate(WAYPOINTS);
 			Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
 			trajectory.calculateSegments(SPEED_DT);
 
