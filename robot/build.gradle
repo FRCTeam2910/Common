@@ -1,5 +1,6 @@
 plugins {
 	id "edu.wpi.first.GradleRIO" version "2018.06.21"
+    id 'eclipse'
 	id 'java'
 	id 'maven-publish'
 }

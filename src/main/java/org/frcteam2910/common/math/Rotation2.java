@@ -158,6 +158,28 @@ public final class Rotation2 {
         return MathUtils.epsilonEquals(Vector2.fromAngle(this).cross(Vector2.fromAngle(other)), 0.0);
     }
 
+    public Rotation2 interpolate(Rotation2 other, double t) {
+        if (t <= 0.0) {
+            return this;
+        } else if (t >= 1.0) {
+            return other;
+        }
+
+        double from = toRadians();
+        double to = other.toRadians();
+
+        double diff = Math.abs(from - to);
+        if (diff > Math.PI) {
+            if (from < to) {
+                from += 2 * Math.PI;
+            } else {
+                to += 2 * Math.PI;
+            }
+        }
+
+        return Rotation2.fromRadians(from + ((to - from) * t));
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -51,21 +51,22 @@ public class Trajectory {
 		return constraints.maxVelocity;
 	}
 
-	private MotionProfile.State calculateState(double time) {
+	public Segment calculateSegment(double time) {
 		int profileIndex = 0;
-		while (profileIndex < profiles.length - 1 && time > profiles[profileIndex].getDuration()) {
-			time -= profiles[profileIndex++].getDuration();
+		double profileTime = time;
+		while (profileIndex < profiles.length - 1 && profileTime > profiles[profileIndex].getDuration()) {
+			profileTime -= profiles[profileIndex++].getDuration();
 		}
 
-		return profiles[profileIndex].calculate(time);
-	}
+		MotionProfile profile = profiles[profileIndex];
+		Path.Segment segment = path.getSegments().get(profileIndex);
 
-	public Segment calculateSegment(double time, double dt) {
-		MotionProfile.State state = calculateState(time);
+		MotionProfile.State state = profiles[profileIndex].calculate(profileTime);
 		Vector2 pathPosition = path.getPositionAtDistance(state.position);
 		Rotation2 pathHeading = path.getSlopeAtDistance(state.position);
+		Rotation2 pathRotation = segment.getRotationAtPercentage(profileTime / profile.getDuration());
 
-		return new Segment(dt, pathPosition, pathHeading, state.position, state.velocity, state.acceleration);
+		return new Segment(time, pathPosition, pathHeading, pathRotation, state.position, state.velocity, state.acceleration);
 	}
 
 	public void calculateSegments(double dt) {
@@ -73,7 +74,7 @@ public class Trajectory {
 		segments = new Segment[segmentCount];
 
 		for (int i = 0; i < segmentCount; i++) {
-			segments[i] = calculateSegment(i * dt, dt);
+			segments[i] = calculateSegment(i * dt);
 		}
 	}
 
@@ -110,16 +111,18 @@ public class Trajectory {
 	}
 
 	public static class Segment {
-		public final double dt;
+		public final double time;
 		public final Vector2 translation;
 		public final Rotation2 heading;
+		public final Rotation2 rotation;
 		public final double position, velocity, acceleration;
 
-		public Segment(double dt, Vector2 translation, Rotation2 heading, double position, double velocity,
-		               double acceleration) {
-			this.dt = dt;
+		public Segment(double time, Vector2 translation, Rotation2 heading, Rotation2 rotation, double position,
+					   double velocity, double acceleration) {
+			this.time = time;
 			this.translation = translation;
 			this.heading = heading;
+			this.rotation = rotation;
 			this.position = position;
 			this.velocity = velocity;
 			this.acceleration = acceleration;

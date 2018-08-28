@@ -50,9 +50,13 @@ public final class SplinePathGenerator implements PathGenerator {
 
                 Path.Segment seg;
 
+                Rotation2 startRotation = start.rotation.interpolate(end.rotation, segStart);
+
                 int fitTry = 0;
                 while (true) {
                     fitTry++;
+
+                    Rotation2 endRotation = start.rotation.interpolate(end.rotation, segEnd);
 
                     double segDelta = segEnd - segStart;
 
@@ -65,9 +69,9 @@ public final class SplinePathGenerator implements PathGenerator {
                     if (Vector2.getAngleBetween(segStartPos, segMidPos).equals(Rotation2.ZERO) &&
                             Vector2.getAngleBetween(segMidPos, segEndPos).equals(Rotation2.ZERO)) {
                         // The points form a line
-                        seg = new Path.Segment.Line(segStartPos, segEndPos);
+                        seg = new Path.Segment.Line(new RigidTransform2(segStartPos, startRotation), new RigidTransform2(segEndPos, endRotation));
                     } else {
-                        seg = Path.Segment.Arc.fromPoints(segStartPos, segMidPos, segEndPos);
+                        seg = Path.Segment.Arc.fromPoints(segStartPos, segMidPos, segEndPos, startRotation, endRotation);
                     }
 
                     // If we are at the max tries, start the next arc

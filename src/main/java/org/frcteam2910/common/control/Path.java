@@ -54,7 +54,7 @@ public class Path {
 		int currentSegment = getSegmentAtDistance(distance);
 		double segmentDistance = distance - getDistanceToSegmentStart(currentSegment);
 
-		return segments.get(currentSegment).getSlopeAtDistance(segmentDistance);
+		return segments.get(currentSegment).getHeadingAtDistance(segmentDistance);
 	}
 
 	public double getLength() {
@@ -62,9 +62,21 @@ public class Path {
 	}
 
 	public abstract static class Segment {
-		public abstract Vector2 getStart();
+		private final RigidTransform2 start;
+		private final RigidTransform2 end;
 
-		public abstract Vector2 getEnd();
+		public Segment(RigidTransform2 start, RigidTransform2 end) {
+			this.start = start;
+			this.end = end;
+		}
+
+		public final RigidTransform2 getStart() {
+			return start;
+		}
+
+		public final RigidTransform2 getEnd() {
+			return end;
+		}
 
 		public Vector2 getPositionAtDistance(double distance) {
 			return getPositionAtPercentage(distance / getLength());
@@ -72,11 +84,19 @@ public class Path {
 
 		public abstract Vector2 getPositionAtPercentage(double percentage);
 
-		public Rotation2 getSlopeAtDistance(double distance) {
-			return getSlopeAtPercentage(distance / getLength());
+		public Rotation2 getHeadingAtDistance(double distance) {
+			return getHeadingAtPercentage(distance / getLength());
 		}
 
-		public abstract Rotation2 getSlopeAtPercentage(double percentage);
+		public abstract Rotation2 getHeadingAtPercentage(double percentage);
+
+		public Rotation2 getRotationAtDistance(double distance) {
+			return getHeadingAtPercentage(distance / getLength());
+		}
+
+		public Rotation2 getRotationAtPercentage(double percentage) {
+			return start.rotation.interpolate(end.rotation, percentage);
+		}
 
 		public abstract double getLength();
 
@@ -84,20 +104,11 @@ public class Path {
 			private final Vector2 start, end;
 			private final Vector2 delta;
 
-			public Line(Vector2 start, Vector2 end) {
-				this.start = start;
-				this.end = end;
-				this.delta = end.subtract(start);
-			}
-
-			@Override
-			public Vector2 getStart() {
-				return start;
-			}
-
-			@Override
-			public Vector2 getEnd() {
-				return end;
+			public Line(RigidTransform2 start, RigidTransform2 end) {
+				super(start, end);
+				this.start = start.translation;
+				this.end = end.translation;
+				this.delta = end.translation.subtract(start.translation);
 			}
 
 			@Override
@@ -106,7 +117,7 @@ public class Path {
 			}
 
 			@Override
-			public Rotation2 getSlopeAtPercentage(double percentage) {
+			public Rotation2 getHeadingAtPercentage(double percentage) {
 				return delta.getAngle();
 			}
 
@@ -120,37 +131,27 @@ public class Path {
 			private final Vector2 start, end, center;
 			private final Vector2 deltaStart, deltaEnd;
 
-			public Arc(Vector2 start, Vector2 end, Vector2 center) {
-				this.start = start;
-				this.end = end;
+			public Arc(RigidTransform2 start, RigidTransform2 end, Vector2 center) {
+				super(start, end);
+				this.start = start.translation;
+				this.end = end.translation;
 				this.center = center;
-				this.deltaStart = start.subtract(center);
-				this.deltaEnd = end.subtract(center);
+				this.deltaStart = start.translation.subtract(center);
+				this.deltaEnd = end.translation.subtract(center);
 			}
 
+			public static Arc fromPoints(Vector2 a, Vector2 b, Vector2 c, Rotation2 startRotation, Rotation2 endRotation) {
+				Line chordAB = new Line(new RigidTransform2(a, Rotation2.ZERO), new RigidTransform2(b, Rotation2.ZERO));
+				Line chordBC = new Line(new RigidTransform2(b, Rotation2.ZERO), new RigidTransform2(c, Rotation2.ZERO));
 
-			public static Arc fromPoints(Vector2 a, Vector2 b, Vector2 c) {
-				Line chordAB = new Line(a, b);
-				Line chordBC = new Line(b, c);
-
-				RigidTransform2 perpChordAB = new RigidTransform2(chordAB.getPositionAtPercentage(0.5), chordAB.getSlopeAtPercentage(0.5).normal());
-				RigidTransform2 perpChordBC = new RigidTransform2(chordBC.getPositionAtPercentage(0.5), chordBC.getSlopeAtPercentage(0.5).normal());
+				RigidTransform2 perpChordAB = new RigidTransform2(chordAB.getPositionAtPercentage(0.5), chordAB.getHeadingAtPercentage(0.5).normal());
+				RigidTransform2 perpChordBC = new RigidTransform2(chordBC.getPositionAtPercentage(0.5), chordBC.getHeadingAtPercentage(0.5).normal());
 
 				Vector2 center = perpChordAB.intersection(perpChordBC);
 
 				// TODO: Check if the arc goes the long way around the circle.
 
-				return new Arc(a, c, center);
-			}
-
-			@Override
-			public Vector2 getStart() {
-				return start;
-			}
-
-			@Override
-			public Vector2 getEnd() {
-				return end;
+				return new Arc(new RigidTransform2(a, startRotation), new RigidTransform2(c, endRotation), center);
 			}
 
 			@Override
@@ -161,7 +162,7 @@ public class Path {
 			}
 
 			@Override
-			public Rotation2 getSlopeAtPercentage(double percentage) {
+			public Rotation2 getHeadingAtPercentage(double percentage) {
 				double angle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() * percentage;
 				return deltaStart.rotateBy(Rotation2.fromRadians(angle)).getAngle().normal();
 			}

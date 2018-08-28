@@ -63,6 +63,13 @@ public class Rotation2Tests {
     }
 
     @Test
+    public void interpolate() {
+        assertEquals(Rotation2.fromDegrees(45), Rotation2.fromDegrees(0).interpolate(Rotation2.fromDegrees(90), 0.5));
+        assertEquals(Rotation2.fromDegrees(0), Rotation2.fromDegrees(-45).interpolate(Rotation2.fromDegrees(45), 0.5));
+        assertEquals(Rotation2.ZERO, Rotation2.ZERO.interpolate(Rotation2.ZERO, 0.25));
+    }
+
+    @Test
     public void equals() {
         assertEquals(Rotation2.fromRadians(0), Rotation2.fromDegrees(0));
         assertEquals(Rotation2.fromDegrees(90), Rotation2.fromRadians(Math.PI / 2));
