@@ -1,5 +1,6 @@
 package org.frcteam2910.common.control;
 
+import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
@@ -8,9 +9,14 @@ import java.util.List;
 
 public class Path {
 	private final List<Segment> segments = new ArrayList<>();
+	private final List<Double> distancesFromStart = new ArrayList<>();
+
+	private double length = 0.0;
 
 	public void addSegment(Segment segment) {
 		segments.add(segment);
+		distancesFromStart.add(length);
+		length += segment.getLength();
 	}
 
 	public List<Segment> getSegments() {
@@ -18,17 +24,11 @@ public class Path {
 	}
 
 	private double getDistanceToSegmentStart(int segment) {
-		double distance = 0;
-		for (int i = 0; i < segment; i++)
-			distance += segments.get(i).getLength();
-		return distance;
+		return distancesFromStart.get(segment);
 	}
 
 	private double getDistanceToSegmentEnd(int segment) {
-		double distance = 0;
-		for (int i = 0; i <= segment; i++)
-			distance += segments.get(i).getLength();
-		return distance;
+		return distancesFromStart.get(segment) + segments.get(segment).getLength();
 	}
 
 	private int getSegmentAtDistance(double distance) {
@@ -58,9 +58,6 @@ public class Path {
 	}
 
 	public double getLength() {
-		double length = 0;
-		for (int i = 0; i < segments.size(); i++)
-			length += segments.get(i).getLength();
 		return length;
 	}
 
@@ -129,6 +126,21 @@ public class Path {
 				this.center = center;
 				this.deltaStart = start.subtract(center);
 				this.deltaEnd = end.subtract(center);
+			}
+
+
+			public static Arc fromPoints(Vector2 a, Vector2 b, Vector2 c) {
+				Line chordAB = new Line(a, b);
+				Line chordBC = new Line(b, c);
+
+				RigidTransform2 perpChordAB = new RigidTransform2(chordAB.getPositionAtPercentage(0.5), chordAB.getSlopeAtPercentage(0.5).normal());
+				RigidTransform2 perpChordBC = new RigidTransform2(chordBC.getPositionAtPercentage(0.5), chordBC.getSlopeAtPercentage(0.5).normal());
+
+				Vector2 center = perpChordAB.intersection(perpChordBC);
+
+				// TODO: Check if the arc goes the long way around the circle.
+
+				return new Arc(a, c, center);
 			}
 
 			@Override
