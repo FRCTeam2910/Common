@@ -91,7 +91,7 @@ public class Path {
 		public abstract Rotation2 getHeadingAtPercentage(double percentage);
 
 		public Rotation2 getRotationAtDistance(double distance) {
-			return getHeadingAtPercentage(distance / getLength());
+			return getRotationAtPercentage(distance / getLength());
 		}
 
 		public Rotation2 getRotationAtPercentage(double percentage) {
