@@ -1,5 +1,7 @@
 package org.frcteam2910.common.math;
 
+import org.frcteam2910.common.util.Interpolable;
+
 import java.text.DecimalFormat;
 import java.util.Objects;
 
@@ -10,7 +12,7 @@ import java.util.Objects;
  *
  * @since 0.2
  */
-public final class Rotation2 {
+public final class Rotation2 implements Interpolable<Rotation2> {
     /**
      * A rotation which represents an angle of 0 degrees.
      */
@@ -158,6 +160,9 @@ public final class Rotation2 {
         return MathUtils.epsilonEquals(Vector2.fromAngle(this).cross(Vector2.fromAngle(other)), 0.0);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Rotation2 interpolate(Rotation2 other, double t) {
         if (t <= 0.0) {
             return this;
