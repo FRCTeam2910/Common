@@ -33,7 +33,14 @@ public final class SplinePathGenerator implements PathGenerator {
      */
     public static final int DEFAULT_FIT_TRIES = 25;
 
+    /**
+     * The allowable positional error for an arc to be considered good
+     */
     private double fitCheckEpsilon = DEFAULT_FIT_CHECK_EPSILON;
+
+    /**
+     * The maximum amount of times an arc is fit to a segment of a spline before being "good enough"
+     */
     private int fitTries = DEFAULT_FIT_TRIES;
 
     /**
