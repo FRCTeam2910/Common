@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class Rotation2Tests {
+public class Rotation2Test {
     @Test
     public void fromDegrees() {
         assertEquals(Rotation2.fromDegrees(90), new Rotation2(0, 1, false));
