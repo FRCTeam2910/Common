@@ -63,7 +63,7 @@ public final class SplinePathGenerator implements PathGenerator {
      * <p>
      * When the maximum amount of tries is reached, the fitter takes the segment as "good enough"
      *
-     * @param fitTries the maximum amount of tries the fitter preforms for the segment
+     * @param fitTries the maximum amount of tries the fitter performs for the segment
      *
      * @see #DEFAULT_FIT_TRIES
      */
@@ -88,7 +88,7 @@ public final class SplinePathGenerator implements PathGenerator {
     /**
      * Generates a path using the specified spline-fitting algorithm.
      *
-     * @param splineFunction a function that creates splines based on two two positions and headings
+     * @param splineFunction a function that creates splines based on two positions and headings
      * @param waypoints      the waypoints to generate the path from
      * @return               the path generated from the waypoints
      */
