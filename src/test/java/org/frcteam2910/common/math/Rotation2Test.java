@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class Rotation2Tests {
+public class Rotation2Test {
     @Test
     public void fromDegrees() {
         assertEquals(Rotation2.fromDegrees(90), new Rotation2(0, 1, false));
@@ -60,6 +60,13 @@ public class Rotation2Tests {
         assertTrue(Rotation2.fromRadians(Math.PI).isParallel(Rotation2.fromDegrees(180)));
         assertTrue(Rotation2.fromDegrees(45).isParallel(Rotation2.fromDegrees(225)));
         assertTrue(Rotation2.fromRadians(6 * Math.PI / 11).isParallel(Rotation2.fromRadians(17 * Math.PI / 11)));
+    }
+
+    @Test
+    public void interpolate() {
+        assertEquals(Rotation2.fromDegrees(45), Rotation2.fromDegrees(0).interpolate(Rotation2.fromDegrees(90), 0.5));
+        assertEquals(Rotation2.fromDegrees(0), Rotation2.fromDegrees(-45).interpolate(Rotation2.fromDegrees(45), 0.5));
+        assertEquals(Rotation2.ZERO, Rotation2.ZERO.interpolate(Rotation2.ZERO, 0.25));
     }
 
     @Test

@@ -93,7 +93,7 @@ public final class SplinePathGenerator implements PathGenerator {
      * @return               the path generated from the waypoints
      */
     public Path generate(BiFunction<RigidTransform2, RigidTransform2, Spline> splineFunction, Waypoint... waypoints) {
-        Path path = new Path();
+        Path path = new Path(waypoints[0].rotation);
 
         for (int i = 1; i < waypoints.length; i++) {
             Waypoint start = waypoints[i - 1];
@@ -109,9 +109,9 @@ public final class SplinePathGenerator implements PathGenerator {
                 double segEnd = 1.0;
 
                 double lastGoodEnd = segEnd;
-                Path.Segment lastGoodSeg = null;
+                PathSegment lastGoodSeg = null;
 
-                Path.Segment seg;
+                PathSegment seg;
 
                 int fitTry = 0;
                 while (true) {
@@ -128,9 +128,9 @@ public final class SplinePathGenerator implements PathGenerator {
                     if (Vector2.getAngleBetween(segStartPos, segMidPos).equals(Rotation2.ZERO) &&
                             Vector2.getAngleBetween(segMidPos, segEndPos).equals(Rotation2.ZERO)) {
                         // The points form a line
-                        seg = new Path.Segment.Line(segStartPos, segEndPos);
+                        seg = new PathLineSegment(segStartPos, segEndPos);
                     } else {
-                        seg = Path.Segment.Arc.fromPoints(segStartPos, segMidPos, segEndPos);
+                        seg = PathArcSegment.fromPoints(segStartPos, segMidPos, segEndPos);
                     }
 
                     // If we are at the max tries, start the next arc
@@ -168,7 +168,11 @@ public final class SplinePathGenerator implements PathGenerator {
                 }
 
                 // Arc fits, move start and fit another arc
-                path.addSegment(seg);
+                if (MathUtils.epsilonEquals(1.0, segEnd)) {
+                    path.addSegment(seg, end.rotation);
+                } else {
+                    path.addSegment(seg);
+                }
                 segStart = segEnd;
             }
         }

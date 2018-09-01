@@ -6,11 +6,13 @@ import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.util.MovingAverage;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.greaterThan;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
@@ -21,8 +23,8 @@ public class TrajectoryTest {
 	public static final double SPEED_DT = 20 / Constants.MILLISECONDS;
 
 	private static final Waypoint[] WAYPOINTS = {
-			new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90)),
-			new Waypoint(new Vector2(50, 50), Rotation2.fromDegrees(90))
+			new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),
+			new Waypoint(new Vector2(0, 50), Rotation2.fromDegrees(90), Rotation2.fromDegrees(0))
 	};
 
 	static {
@@ -32,6 +34,7 @@ public class TrajectoryTest {
 	}
 
 	@Test
+	@Ignore
 	public void velocityContinuityTest() {
 		Path path = new SplinePathGenerator().generate(WAYPOINTS);
 		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
@@ -90,5 +93,24 @@ public class TrajectoryTest {
 		logger.info("Longest generation time: %.3f ms", highTime);
 		logger.info("Shortest generation time: %.3f ms", lowTime);
 		logger.info("Average trajectory time: %.3f ms", average.get());
+	}
+
+	@Test
+	@Ignore
+	public void writeCsv() {
+		Path path = new SplinePathGenerator().generate(WAYPOINTS);
+		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
+		trajectory.calculateSegments(SPEED_DT);
+
+		try (PrintStream out = new PrintStream(new FileOutputStream("trajectory.csv"))) {
+			out.printf("time,x,y,heading,rotation,position,velocity,acceleration%n");
+			for (Trajectory.Segment segment : trajectory.getSegments()) {
+				out.printf("%f,%f,%f,%f,%f,%f,%f,%f%n", segment.time, segment.translation.x, segment.translation.y,
+						segment.heading.toDegrees(), segment.rotation.toDegrees(), segment.position,
+						segment.velocity, segment.acceleration);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
