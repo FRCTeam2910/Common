@@ -34,7 +34,6 @@ public class TrajectoryTest {
 	}
 
 	@Test
-	@Ignore
 	public void velocityContinuityTest() {
 		Path path = new SplinePathGenerator().generate(WAYPOINTS);
 		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
@@ -103,11 +102,11 @@ public class TrajectoryTest {
 		trajectory.calculateSegments(SPEED_DT);
 
 		try (PrintStream out = new PrintStream(new FileOutputStream("trajectory.csv"))) {
-			out.printf("time,x,y,heading,rotation,position,velocity,acceleration%n");
+			out.printf("segment,time,x,y,heading,rotation,position,velocity,acceleration,maxVelocity%n");
 			for (Trajectory.Segment segment : trajectory.getSegments()) {
-				out.printf("%f,%f,%f,%f,%f,%f,%f,%f%n", segment.time, segment.translation.x, segment.translation.y,
-						segment.heading.toDegrees(), segment.rotation.toDegrees(), segment.position,
-						segment.velocity, segment.acceleration);
+				out.printf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f%n", segment.pathSegmentIndex, segment.time, segment.translation.x,
+						segment.translation.y, segment.heading.toDegrees(), segment.rotation.toDegrees(), segment.position,
+						segment.velocity, segment.acceleration, segment.maxVelocity);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
