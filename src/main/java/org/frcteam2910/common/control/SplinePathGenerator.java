@@ -9,26 +9,89 @@ import org.frcteam2910.common.math.spline.Spline;
 
 import java.util.function.BiFunction;
 
+/**
+ * An implementation of a path generator that generates paths using splines.
+ * <p>
+ * The generator respects the following waypoint constraints:
+ * <ul>
+ *     <li>position</li>
+ *     <li>heading</li>
+ *     <li>rotation</li>
+ * </ul>
+ * <p>
+ * To convert the generated splines into a series of arcs that can be followed in a path, the generator uses a
+ * binary-search to fit arcs to each generated spline.
+ */
 public final class SplinePathGenerator implements PathGenerator {
+    /**
+     * The default maximum allowable positional error for an arc to be deemed good.
+     */
     public static final double DEFAULT_FIT_CHECK_EPSILON = 1e-3;
+
+    /**
+     * The default amount of times the generator tries to fit an arc to a segment of each generated spline.
+     */
     public static final int DEFAULT_FIT_TRIES = 25;
 
+    /**
+     * The allowable positional error for an arc to be considered good
+     */
     private double fitCheckEpsilon = DEFAULT_FIT_CHECK_EPSILON;
+
+    /**
+     * The maximum amount of times an arc is fit to a segment of a spline before being "good enough"
+     */
     private int fitTries = DEFAULT_FIT_TRIES;
 
+    /**
+     * Sets the allowable position error when checking if an arc fits on a spline. If the error is greater, the segment
+     * is marked as bad and a smaller one is generated.
+     * <p>
+     * Increasing this value will result in faster path generation with the result of lowering generated path accuracy
+     * when compared to just following each generated spline. The end position of the path is unaffected.
+     *
+     * @param fitCheckEpsilon the maximum positional error
+     *
+     * @see #DEFAULT_FIT_CHECK_EPSILON
+     */
     public void setFitCheckEpsilon(double fitCheckEpsilon) {
         this.fitCheckEpsilon = fitCheckEpsilon;
     }
 
+    /**
+     * Sets the maximum amount of times the arc fitter attempts to fit a segment.
+     * <p>
+     * When the maximum amount of tries is reached, the fitter takes the segment as "good enough"
+     *
+     * @param fitTries the maximum amount of tries the fitter performs for the segment
+     *
+     * @see #DEFAULT_FIT_TRIES
+     */
     public void setFitTries(int fitTries) {
         this.fitTries = fitTries;
     }
 
+    /**
+     * Generates a path using cubic splines.
+     *
+     * @param waypoints the waypoints to generate the path from
+     * @return          the path generated from the waypoints
+     *
+     * @see #generate(BiFunction, Waypoint...)
+     * @see HermiteSpline#cubic(RigidTransform2, RigidTransform2)
+     */
     @Override
     public Path generate(Waypoint... waypoints) {
         return generate(HermiteSpline::cubic, waypoints);
     }
 
+    /**
+     * Generates a path using the specified spline-fitting algorithm.
+     *
+     * @param splineFunction a function that creates splines based on two positions and headings
+     * @param waypoints      the waypoints to generate the path from
+     * @return               the path generated from the waypoints
+     */
     public Path generate(BiFunction<RigidTransform2, RigidTransform2, Spline> splineFunction, Waypoint... waypoints) {
         Path path = new Path();
 
