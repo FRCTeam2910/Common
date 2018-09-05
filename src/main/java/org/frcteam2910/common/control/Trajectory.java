@@ -48,12 +48,12 @@ public class Trajectory {
 			double accelTime = deltaVelocity / constraints.maxAcceleration;
 
 			// How far do we move while accelerating to the max velocity?
-			double accelDist = constraints.maxAcceleration * accelTime * accelTime + startVelocity * accelTime;
+			double accelDist = 0.5 * constraints.maxAcceleration * accelTime * accelTime + startVelocity * accelTime;
 
 			if (accelDist > pathSegment.getLength()) {
 			    // We can't reach the segment's max velocity.
                 // What is the max velocity we can achieve?
-                double[] roots = MathUtils.quadratic(constraints.maxAcceleration, startVelocity, -pathSegment.getLength());
+                double[] roots = MathUtils.quadratic(0.5 * constraints.maxAcceleration, startVelocity, -pathSegment.getLength());
 
                 double maxAllowableAccelTime = Math.max(roots[0], roots[1]);
 
@@ -84,12 +84,12 @@ public class Trajectory {
             double decelTime = Math.abs(deltaVelocity) / constraints.maxAcceleration;
 
             // How far do we move while decelerating to the end velocity?
-            double decelDist = constraints.maxAcceleration * decelTime * decelTime + endVelocity * decelTime;
+            double decelDist = 0.5 * constraints.maxAcceleration * decelTime * decelTime + endVelocity * decelTime;
 
             if (decelDist > pathSegment.getLength()) {
                 // We can't decelerate fast enough.
                 // What is the max velocity we can decelerate from?
-                double[] roots = MathUtils.quadratic(constraints.maxAcceleration, endVelocity, -pathSegment.getLength());
+                double[] roots = MathUtils.quadratic(0.5 * constraints.maxAcceleration, endVelocity, -pathSegment.getLength());
 
                 double maxAllowableDecelTime = Math.max(roots[0], roots[1]);
 
