@@ -81,4 +81,25 @@ public class MathUtils {
 	public static boolean isInRange(double lowerBound, double upperBound, double value) {
 		return lowerBound <= value && value <= upperBound;
 	}
+
+	/**
+	 * Solves the equation <code>0 = ax<sup>2</sup> + bx + c</code> for x and returns the real results.
+	 *
+	 * @param a the a coefficient
+	 * @param b the b coefficient
+	 * @param c the c coefficient
+	 * @return  the real roots of the equation
+	 */
+	public static double[] quadratic(double a, double b, double c) {
+		double sqrt = Math.sqrt(b * b - 4 * a * c);
+		if (Double.isNaN(sqrt)) {
+		    // No roots
+		    return new double[0];
+        }
+
+        return new double[] {
+                (-b + sqrt) / (2 * a),
+                (-b - sqrt) / (2 * a)
+        };
+	}
 }
