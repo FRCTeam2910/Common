@@ -43,6 +43,10 @@ public final class PathArcSegment extends PathSegment {
         return deltaStart.rotateBy(Rotation2.fromRadians(angle)).getAngle().normal();
     }
 
+    public Vector2 getCenter() {
+        return center;
+    }
+
     @Override
     public double getLength() {
         return deltaStart.length * Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians();

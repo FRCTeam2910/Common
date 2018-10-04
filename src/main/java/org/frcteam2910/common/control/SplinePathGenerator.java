@@ -147,8 +147,13 @@ public final class SplinePathGenerator implements PathGenerator {
                     Vector2 approxLastQtrPos = seg.getPositionAtPercentage(0.75);
                     Vector2 actualLastQtrPos = spline.getPoint(segLastQtr);
 
-                    if (approxFirstQtrPos.subtract(actualFirstQtrPos).length > fitCheckEpsilon ||
-                            approxLastQtrPos.subtract(actualLastQtrPos).length > fitCheckEpsilon) {
+                    Vector2 deltaFirstQtrPos = approxFirstQtrPos.subtract(actualFirstQtrPos);
+                    Vector2 deltaLastQtrPos = approxLastQtrPos.subtract(actualLastQtrPos);
+
+                    if (deltaFirstQtrPos.length > fitCheckEpsilon ||
+                            Double.isNaN(deltaFirstQtrPos.length) ||
+                            deltaLastQtrPos.length > fitCheckEpsilon ||
+                            Double.isNaN(deltaLastQtrPos.length)) {
                         // Half delta and try again
                         segEnd -= segDelta / 2.0;
                         if (lastGoodSeg != null) {
