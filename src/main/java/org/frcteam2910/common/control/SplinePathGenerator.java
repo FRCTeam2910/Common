@@ -125,8 +125,10 @@ public final class SplinePathGenerator implements PathGenerator {
                     Vector2 segEndPos = spline.getPoint(segEnd);
                     Vector2 segMidPos = spline.getPoint(segMid);
 
-                    if (Vector2.getAngleBetween(segStartPos, segMidPos).equals(Rotation2.ZERO) &&
-                            Vector2.getAngleBetween(segMidPos, segEndPos).equals(Rotation2.ZERO)) {
+                    Vector2 deltaEnd = segEndPos.subtract(segStartPos);
+                    Vector2 deltaMid = segMidPos.subtract(segStartPos);
+
+                    if (Vector2.getAngleBetween(deltaMid, deltaEnd).equals(Rotation2.ZERO)) {
                         // The points form a line
                         seg = new PathLineSegment(segStartPos, segEndPos);
                     } else {
