@@ -138,6 +138,11 @@ public final class SplinePathGenerator implements PathGenerator {
                         break;
                     }
 
+                    if (seg == null) {
+                        segEnd -= segDelta / 2.0;
+                        continue;
+                    }
+
                     double segFirstQtr = segStart + segDelta / 4.0;
                     double segLastQtr = segStart + 3.0 * segDelta / 4.0;
 
@@ -151,9 +156,7 @@ public final class SplinePathGenerator implements PathGenerator {
                     Vector2 deltaLastQtrPos = approxLastQtrPos.subtract(actualLastQtrPos);
 
                     if (deltaFirstQtrPos.length > fitCheckEpsilon ||
-                            Double.isNaN(deltaFirstQtrPos.length) ||
-                            deltaLastQtrPos.length > fitCheckEpsilon ||
-                            Double.isNaN(deltaLastQtrPos.length)) {
+                            deltaLastQtrPos.length > fitCheckEpsilon) {
                         // Half delta and try again
                         segEnd -= segDelta / 2.0;
                         if (lastGoodSeg != null) {

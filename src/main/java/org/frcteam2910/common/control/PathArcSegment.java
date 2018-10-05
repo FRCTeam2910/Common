@@ -16,6 +16,15 @@ public final class PathArcSegment extends PathSegment {
         this.deltaEnd = end.subtract(center);
     }
 
+    /**
+     * Constructs an arc from 3 points along an arc.
+     *
+     * @param a the point where the arc begins
+     * @param b a point along the arc
+     * @param c the point where the arc ends
+     *
+     * @return an arc going through the given points or null if an arc cannot be constructed out of the points
+     */
     public static PathArcSegment fromPoints(Vector2 a, Vector2 b, Vector2 c) {
         PathLineSegment chordAB = new PathLineSegment(a, b);
         PathLineSegment chordBC = new PathLineSegment(b, c);
@@ -24,6 +33,10 @@ public final class PathArcSegment extends PathSegment {
         RigidTransform2 perpChordBC = new RigidTransform2(chordBC.getPositionAtPercentage(0.5), chordBC.getHeadingAtPercentage(0.5).normal());
 
         Vector2 center = perpChordAB.intersection(perpChordBC);
+
+        if (Double.isNaN(center.x) || Double.isNaN(center.y)) {
+            return null;
+        }
 
         // TODO: Check if the arc goes the long way around the circle.
 
