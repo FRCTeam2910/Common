@@ -34,7 +34,7 @@ public final class PathArcSegment extends PathSegment {
 
         Vector2 center = perpChordAB.intersection(perpChordBC);
 
-        if (Double.isNaN(center.x) || Double.isNaN(center.y)) {
+        if (!Double.isFinite(center.x) || !Double.isFinite(center.y)) {
             return null;
         }
 
