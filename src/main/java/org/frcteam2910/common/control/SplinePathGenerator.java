@@ -125,8 +125,10 @@ public final class SplinePathGenerator implements PathGenerator {
                     Vector2 segEndPos = spline.getPoint(segEnd);
                     Vector2 segMidPos = spline.getPoint(segMid);
 
-                    if (Vector2.getAngleBetween(segStartPos, segMidPos).equals(Rotation2.ZERO) &&
-                            Vector2.getAngleBetween(segMidPos, segEndPos).equals(Rotation2.ZERO)) {
+                    Vector2 deltaEnd = segEndPos.subtract(segStartPos);
+                    Vector2 deltaMid = segMidPos.subtract(segStartPos);
+
+                    if (Vector2.getAngleBetween(deltaMid, deltaEnd).equals(Rotation2.ZERO)) {
                         // The points form a line
                         seg = new PathLineSegment(segStartPos, segEndPos);
                     } else {
@@ -138,6 +140,11 @@ public final class SplinePathGenerator implements PathGenerator {
                         break;
                     }
 
+                    if (seg == null) {
+                        segEnd -= segDelta / 2.0;
+                        continue;
+                    }
+
                     double segFirstQtr = segStart + segDelta / 4.0;
                     double segLastQtr = segStart + 3.0 * segDelta / 4.0;
 
@@ -147,8 +154,11 @@ public final class SplinePathGenerator implements PathGenerator {
                     Vector2 approxLastQtrPos = seg.getPositionAtPercentage(0.75);
                     Vector2 actualLastQtrPos = spline.getPoint(segLastQtr);
 
-                    if (approxFirstQtrPos.subtract(actualFirstQtrPos).length > fitCheckEpsilon ||
-                            approxLastQtrPos.subtract(actualLastQtrPos).length > fitCheckEpsilon) {
+                    Vector2 deltaFirstQtrPos = approxFirstQtrPos.subtract(actualFirstQtrPos);
+                    Vector2 deltaLastQtrPos = approxLastQtrPos.subtract(actualLastQtrPos);
+
+                    if (deltaFirstQtrPos.length > fitCheckEpsilon ||
+                            deltaLastQtrPos.length > fitCheckEpsilon) {
                         // Half delta and try again
                         segEnd -= segDelta / 2.0;
                         if (lastGoodSeg != null) {
