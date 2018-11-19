@@ -175,6 +175,11 @@ public class Trajectory {
 		 */
 		public double maxAcceleration;
 
+		/**
+		 * The maximum centripetal acceleration that is allowed to be exerted on the robot. This is responsible for
+		 * slowing the robot down when it approaches a curve in the path. If the robot is not following curves
+		 * correctly, try decreasing this value.
+		 */
 		public double maxCentripetalAcceleration;
 	}
 
