@@ -30,7 +30,7 @@ public class TrajectoryTest {
 	static {
 		CONSTRAINTS.maxVelocity = 12;
 		CONSTRAINTS.maxAcceleration = 5.5;
-		CONSTRAINTS.arcVelocityScalar = 1.0 / 30.0;
+		CONSTRAINTS.maxCentripetalAcceleration = 1.0;
 	}
 
 	@Test

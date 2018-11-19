@@ -27,10 +27,8 @@ public class Trajectory {
 		for (int i = 0; i < maxSegmentVelocities.length; i++) {
 			PathSegment pathSegment = path.getSegments().get(i);
 
-			double maxVelocity = constraints.maxVelocity;
-            if (pathSegment instanceof PathArcSegment) {
-			    maxVelocity = Math.min(constraints.maxVelocity, constraints.maxVelocity * ((PathArcSegment) pathSegment).getRadius() * constraints.arcVelocityScalar);
-            }
+			double maxVelocity = Math.min(constraints.maxVelocity,
+					calculateMaxSegmentVelocity(pathSegment, constraints));
 
 			double startVelocity = 0.0;
 			if (i != 0) {
@@ -125,6 +123,10 @@ public class Trajectory {
 		}
 	}
 
+	private static double calculateMaxSegmentVelocity(PathSegment segment, Constraints constraints) {
+		return Math.sqrt(constraints.maxCentripetalAcceleration / segment.getCurvature());
+	}
+
 	public Segment calculateSegment(double time) {
 		int profileIndex = 0;
 		double profileTime = time;
@@ -173,14 +175,7 @@ public class Trajectory {
 		 */
 		public double maxAcceleration;
 
-		/**
-		 * This factor is multiplied by the radius of an arc and the max velocity to determine the velocity the arc
-		 * should be driven at.
-		 *
-		 * Pretty much decrease the number if arcs are not being followed correctly and increase it if it is too slow
-		 * when following arcs.
-		 */
-		public double arcVelocityScalar;
+		public double maxCentripetalAcceleration;
 	}
 
 	public static class Segment {
