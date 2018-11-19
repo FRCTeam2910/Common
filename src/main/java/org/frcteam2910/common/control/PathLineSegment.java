@@ -21,6 +21,11 @@ public final class PathLineSegment extends PathSegment {
     }
 
     @Override
+    public double getCurvature() {
+        return 0;
+    }
+
+    @Override
     public Vector2 getPositionAtPercentage(double percentage) {
         return getStart().add(delta.scale(percentage));
     }

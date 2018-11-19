@@ -14,6 +14,13 @@ public abstract class PathSegment {
 
     public abstract PathSegment[] subdivide();
 
+    /**
+     * Gets the curvature of the segment.
+     *
+     * @return the curvature of the segment
+     */
+    public abstract double getCurvature();
+
     public Vector2 getStart() {
         return start;
     }
