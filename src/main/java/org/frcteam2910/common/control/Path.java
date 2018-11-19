@@ -73,6 +73,20 @@ public final class Path {
 	    return rotationAtDistance.getInterpolated(new InterpolatingDouble(distance));
     }
 
+    public void subdivide(int iterations) {
+		while (iterations-- > 0) {
+			for (int i = 0; i < segments.size(); i++) {
+				PathSegment seg = segments.get(i);
+
+				PathSegment[] segs = seg.subdivide();
+
+				segments.set(i, segs[0]);
+				segments.add(++i, segs[1]);
+				distancesFromStart.add(i, distancesFromStart.get(i - 1) + segs[0].getLength());
+			}
+		}
+	}
+
 	public double getLength() {
 		return length;
 	}

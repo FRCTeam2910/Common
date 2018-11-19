@@ -44,6 +44,15 @@ public final class PathArcSegment extends PathSegment {
     }
 
     @Override
+    public PathSegment[] subdivide() {
+        Vector2 mid = getPositionAtPercentage(0.5);
+        return new PathSegment[] {
+                new PathArcSegment(getStart(), mid, center),
+                new PathArcSegment(mid, getEnd(), center)
+        };
+    }
+
+    @Override
     public Vector2 getPositionAtPercentage(double percentage) {
         double deltaAngle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() *
                 ((deltaStart.cross(deltaEnd) >= 0) ? 1 : -1) * percentage;

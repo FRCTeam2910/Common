@@ -12,6 +12,15 @@ public final class PathLineSegment extends PathSegment {
     }
 
     @Override
+    public PathSegment[] subdivide() {
+        Vector2 mid = getPositionAtPercentage(0.5);
+        return new PathSegment[] {
+                new PathLineSegment(getStart(), mid),
+                new PathLineSegment(mid, getEnd())
+        };
+    }
+
+    @Override
     public Vector2 getPositionAtPercentage(double percentage) {
         return getStart().add(delta.scale(percentage));
     }

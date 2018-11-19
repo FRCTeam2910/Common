@@ -20,11 +20,11 @@ public class TrajectoryTest {
 	public static final Trajectory.Constraints CONSTRAINTS = new Trajectory.Constraints();
 
 	public static final int SPEED_RUNS = 10;
-	public static final double SPEED_DT = 20 / Constants.MILLISECONDS;
+	public static final double SPEED_DT = 5 / Constants.MILLISECONDS;
 
 	private static final Waypoint[] WAYPOINTS = {
 			new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),
-			new Waypoint(new Vector2(0, 50), Rotation2.fromDegrees(90), Rotation2.fromDegrees(0))
+			new Waypoint(new Vector2(50, 50), Rotation2.fromDegrees(90), Rotation2.fromDegrees(0))
 	};
 
 	static {
@@ -98,15 +98,16 @@ public class TrajectoryTest {
 	@Ignore
 	public void writeCsv() {
 		Path path = new SplinePathGenerator().generate(WAYPOINTS);
+		path.subdivide(5);
 		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
 		trajectory.calculateSegments(SPEED_DT);
 
 		try (PrintStream out = new PrintStream(new FileOutputStream("trajectory.csv"))) {
-			out.printf("segment,time,x,y,heading,rotation,position,velocity,acceleration,maxVelocity%n");
+			out.printf("segment,time,x,y,heading,rotation,position,velocity,acceleration,maxVelocity,f%n");
 			for (Trajectory.Segment segment : trajectory.getSegments()) {
-				out.printf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f%n", segment.pathSegmentIndex, segment.time, segment.translation.x,
+				out.printf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f%n", segment.pathSegmentIndex, segment.time, segment.translation.x,
 						segment.translation.y, segment.heading.toDegrees(), segment.rotation.toDegrees(), segment.position,
-						segment.velocity, segment.acceleration, segment.maxVelocity);
+						segment.velocity, segment.acceleration, segment.maxVelocity, (1.0 / CONSTRAINTS.maxVelocity) * segment.velocity + (1.0 / CONSTRAINTS.maxAcceleration) * segment.acceleration);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
