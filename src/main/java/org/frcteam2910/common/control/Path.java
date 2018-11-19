@@ -6,6 +6,7 @@ import org.frcteam2910.common.util.InterpolatingDouble;
 import org.frcteam2910.common.util.InterpolatingTreeMap;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class Path {
@@ -73,7 +74,13 @@ public final class Path {
 	    return rotationAtDistance.getInterpolated(new InterpolatingDouble(distance));
     }
 
-    public void subdivide(int iterations) {
+	/**
+	 * Subdivides the path by splitting each segment in half. This can be used to increase the resolution of a
+	 * trajectory by allowing it to operate on more segments.
+	 *
+	 * @param iterations how many times to subdivide each segment
+	 */
+	public void subdivide(int iterations) {
 		while (iterations-- > 0) {
 			for (int i = 0; i < segments.size(); i++) {
 				PathSegment seg = segments.get(i);
