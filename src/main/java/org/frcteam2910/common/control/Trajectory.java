@@ -28,9 +28,9 @@ public class Trajectory {
 			PathSegment pathSegment = path.getSegments().get(i);
 
 			double maxVelocity = constraints.maxVelocity;
-            if (pathSegment instanceof PathArcSegment) {
-			    maxVelocity = Math.min(constraints.maxVelocity, constraints.maxVelocity * ((PathArcSegment) pathSegment).getRadius() * constraints.arcVelocityScalar);
-            }
+			// Max velocity due to max centripetal acceleration
+			maxVelocity = Math.min(maxVelocity,
+                    Math.sqrt(constraints.maxCentripetalAcceleration / pathSegment.getCurvature()));
 
 			double startVelocity = 0.0;
 			if (i != 0) {
@@ -174,13 +174,13 @@ public class Trajectory {
 		public double maxAcceleration;
 
 		/**
-		 * This factor is multiplied by the radius of an arc and the max velocity to determine the velocity the arc
-		 * should be driven at.
-		 *
-		 * Pretty much decrease the number if arcs are not being followed correctly and increase it if it is too slow
+         * The maximum centripetal acceleration of the robot. This is responsible for slowing the robot down as it
+         * approaches a curve in the path.
+         *
+		 * Pretty much decrease this if arcs are not being followed correctly and increase it if it is too slow
 		 * when following arcs.
 		 */
-		public double arcVelocityScalar;
+		public double maxCentripetalAcceleration;
 	}
 
 	public static class Segment {

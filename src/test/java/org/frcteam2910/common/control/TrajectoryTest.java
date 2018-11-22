@@ -24,13 +24,13 @@ public class TrajectoryTest {
 
 	private static final Waypoint[] WAYPOINTS = {
 			new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),
-			new Waypoint(new Vector2(0, 50), Rotation2.fromDegrees(90), Rotation2.fromDegrees(0))
+			new Waypoint(new Vector2(50, 50), Rotation2.fromDegrees(90), Rotation2.fromDegrees(0))
 	};
 
 	static {
 		CONSTRAINTS.maxVelocity = 12;
 		CONSTRAINTS.maxAcceleration = 5.5;
-		CONSTRAINTS.arcVelocityScalar = 1.0 / 30.0;
+		CONSTRAINTS.maxCentripetalAcceleration = 0.5;
 	}
 
 	@Test

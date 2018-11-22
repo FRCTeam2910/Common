@@ -12,6 +12,13 @@ public abstract class PathSegment {
         this.end = end;
     }
 
+    /**
+     * Gets the curvature of the segment. Curvature can be thought of the rate of change of the heading.
+     *
+     * @return the segment's curvature
+     */
+    public abstract double getCurvature();
+
     public Vector2 getStart() {
         return start;
     }
