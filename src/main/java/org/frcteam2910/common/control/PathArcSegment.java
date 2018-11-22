@@ -4,6 +4,8 @@ import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
+import java.util.Objects;
+
 public final class PathArcSegment extends PathSegment {
     private final Vector2 center;
     private final Vector2 deltaStart;
@@ -22,7 +24,6 @@ public final class PathArcSegment extends PathSegment {
      * @param a the point where the arc begins
      * @param b a point along the arc
      * @param c the point where the arc ends
-     *
      * @return an arc going through the given points or null if an arc cannot be constructed out of the points
      */
     public static PathArcSegment fromPoints(Vector2 a, Vector2 b, Vector2 c) {
@@ -44,9 +45,9 @@ public final class PathArcSegment extends PathSegment {
     }
 
     @Override
-    public PathSegment[] subdivide() {
+    public PathArcSegment[] subdivide() {
         Vector2 mid = getPositionAtPercentage(0.5);
-        return new PathSegment[] {
+        return new PathArcSegment[]{
                 new PathArcSegment(getStart(), mid, center),
                 new PathArcSegment(mid, getEnd(), center)
         };
@@ -76,5 +77,25 @@ public final class PathArcSegment extends PathSegment {
 
     public double getRadius() {
         return deltaStart.length;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof PathArcSegment) {
+            PathArcSegment other = (PathArcSegment) o;
+            return deltaStart.equals(other.deltaStart) && deltaEnd.equals(other.deltaEnd) && center.equals(other.center);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(center, deltaStart, deltaEnd);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{start: %s, end: %s, center: %s}", getStart(), getEnd(), center);
     }
 }
