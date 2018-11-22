@@ -24,6 +24,7 @@ public final class PathArcSegment extends PathSegment {
      * @param a the point where the arc begins
      * @param b a point along the arc
      * @param c the point where the arc ends
+     *
      * @return an arc going through the given points or null if an arc cannot be constructed out of the points
      */
     public static PathArcSegment fromPoints(Vector2 a, Vector2 b, Vector2 c) {
