@@ -19,6 +19,8 @@ public abstract class PathSegment {
      */
     public abstract double getCurvature();
 
+    public abstract PathSegment[] subdivide();
+
     public Vector2 getStart() {
         return start;
     }
