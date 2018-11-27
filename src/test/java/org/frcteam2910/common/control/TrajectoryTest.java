@@ -98,6 +98,7 @@ public class TrajectoryTest {
 	@Ignore
 	public void writeCsv() {
 		Path path = new SplinePathGenerator().generate(WAYPOINTS);
+		path.subdivide(5);
 		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
 		trajectory.calculateSegments(SPEED_DT);
 

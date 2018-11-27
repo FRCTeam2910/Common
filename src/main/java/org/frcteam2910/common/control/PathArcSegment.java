@@ -4,6 +4,8 @@ import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
+import java.util.Objects;
+
 public final class PathArcSegment extends PathSegment {
     private final Vector2 center;
     private final Vector2 deltaStart;
@@ -44,6 +46,15 @@ public final class PathArcSegment extends PathSegment {
     }
 
     @Override
+    public PathArcSegment[] subdivide() {
+        Vector2 mid = getPositionAtPercentage(0.5);
+        return new PathArcSegment[]{
+                new PathArcSegment(getStart(), mid, center),
+                new PathArcSegment(mid, getEnd(), center)
+        };
+    }
+
+    @Override
     public Vector2 getPositionAtPercentage(double percentage) {
         double deltaAngle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() *
                 ((deltaStart.cross(deltaEnd) >= 0) ? 1 : -1) * percentage;
@@ -67,5 +78,25 @@ public final class PathArcSegment extends PathSegment {
 
     public double getRadius() {
         return deltaStart.length;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof PathArcSegment) {
+            PathArcSegment other = (PathArcSegment) o;
+            return deltaStart.equals(other.deltaStart) && deltaEnd.equals(other.deltaEnd) && center.equals(other.center);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(center, deltaStart, deltaEnd);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{start: %s, end: %s, center: %s}", getStart(), getEnd(), center);
     }
 }

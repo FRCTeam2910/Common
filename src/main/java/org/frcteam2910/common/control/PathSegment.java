@@ -12,6 +12,8 @@ public abstract class PathSegment {
         this.end = end;
     }
 
+    public abstract PathSegment[] subdivide();
+
     public Vector2 getStart() {
         return start;
     }
