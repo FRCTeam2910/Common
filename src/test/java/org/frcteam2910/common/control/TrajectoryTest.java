@@ -7,7 +7,9 @@ import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.util.MovingAverage;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ErrorCollector;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,9 +30,24 @@ public class TrajectoryTest {
 	};
 
 	static {
-		CONSTRAINTS.maxVelocity = 12;
-		CONSTRAINTS.maxAcceleration = 5.5;
+		CONSTRAINTS.kV = 0.81;
+		CONSTRAINTS.kA = 0.21;
+		CONSTRAINTS.kS = 1.26;
+		CONSTRAINTS.maxAcceleration = 10.0;
+		CONSTRAINTS.targetFeedforward = 12.0;
 		CONSTRAINTS.maxCentripetalAcceleration = 1.0;
+	}
+
+	@Test
+	public void feedforwardTest() {
+		Path path = new SplinePathGenerator().generate(WAYPOINTS);
+		Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
+		trajectory.calculateSegments(SPEED_DT);
+
+		for (Trajectory.Segment segment : trajectory.getSegments()) {
+			assertThat(String.format("Actual feedforward exceeds max feedforward at %.3f seconds", segment.time),
+					segment.feedforward, lessThanOrEqualTo(CONSTRAINTS.targetFeedforward));
+		}
 	}
 
 	@Test
@@ -107,7 +124,7 @@ public class TrajectoryTest {
 			for (Trajectory.Segment segment : trajectory.getSegments()) {
 				out.printf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f%n", segment.pathSegmentIndex, segment.time, segment.translation.x,
 						segment.translation.y, segment.heading.toDegrees(), segment.rotation.toDegrees(), segment.position,
-						segment.velocity, segment.acceleration, segment.maxVelocity, (1.0 / CONSTRAINTS.maxVelocity) * segment.velocity + (1.0 / CONSTRAINTS.maxAcceleration) * segment.acceleration);
+						segment.velocity, segment.acceleration, segment.maxVelocity, segment.feedforward);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
