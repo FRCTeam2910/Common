@@ -3,10 +3,10 @@ package org.frcteam2910.common.control;
 import org.frcteam2910.common.math.MathUtils;
 
 /**
- * Motion constraints for the robot.
- *
- * See the drivetrain characterization paper for information on how to determine these values
- * <a href="https://www.chiefdelphi.com/media/papers/3402">here</a>.
+ * Constrain both the velocity and acceleration based on the feedforward equation <code>F = kV * V + kA * A + kS</code>.
+ * <p>
+ * See the <a href="https://www.chiefdelphi.com/media/papers/3402">drivetrain characterization paper</a> for information
+ * on how to determine these values.
  */
 public class FeedforwardConstraint implements ITrajectoryConstraint {
     private final double targetFeedforward;
