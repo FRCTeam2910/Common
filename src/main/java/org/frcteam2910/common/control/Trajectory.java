@@ -12,7 +12,6 @@ import org.frcteam2910.common.motion.TrapezoidalMotionProfile;
  */
 public class Trajectory {
 	private final Path path;
-	private final Constraints constraints;
 	private final MotionProfile[] profiles;
 	private Segment[] segments;
 	private double duration = 0.0;
@@ -20,9 +19,8 @@ public class Trajectory {
 	private double[] maxSegmentVelocities;
 	private double[] maxSegmentAccelerations;
 
-	public Trajectory(Path path, Constraints constraints) {
+	public Trajectory(Path path, ITrajectoryConstraint... constraints) {
 		this.path = path;
-		this.constraints = constraints;
 
 		maxSegmentVelocities = new double[path.getSegments().size()];
 		maxSegmentAccelerations = new double[path.getSegments().size()];
@@ -31,81 +29,90 @@ public class Trajectory {
 		for (int i = 0; i < maxSegmentVelocities.length; i++) {
 			PathSegment pathSegment = path.getSegments().get(i);
 
-			double maxAcceleration = Math.min(constraints.targetFeedforward / constraints.kA,
-					constraints.maxAcceleration);
-			double maxVelocity = (constraints.targetFeedforward - constraints.kS - constraints.kA * maxAcceleration) / constraints.kV;
-			maxVelocity = Math.min(maxVelocity, calculateMaxSegmentVelocity(pathSegment, constraints));
-
 			double startVelocity = 0.0;
-			if (i != 0) {
+			if (i > 0) {
 				startVelocity = maxSegmentVelocities[i - 1];
 			}
 
-			// How much do we have to change our velocity by?
+			double maxVelocity = Double.POSITIVE_INFINITY;
+			for (ITrajectoryConstraint constraint : constraints) {
+				maxVelocity = Math.min(maxVelocity, constraint.getMaxVelocity(pathSegment));
+			}
+			if (maxVelocity < 0.0 || !Double.isFinite(maxVelocity)) {
+				throw new RuntimeException("Illegal max velocity");
+			}
+
+			double maxAcceleration = Double.POSITIVE_INFINITY;
+			for (ITrajectoryConstraint constraint : constraints) {
+				maxAcceleration = Math.min(maxAcceleration, constraint.getMaxAcceleration(pathSegment, startVelocity));
+			}
+			if (maxAcceleration < 0.0 || !Double.isFinite(maxAcceleration)) {
+				throw new RuntimeException("Illegal max acceleration");
+			}
+
+			// Now check if we can reach our max velocity
 			double deltaVelocity = maxVelocity - startVelocity;
-            if (deltaVelocity < 0) {
-                maxSegmentVelocities[i] = maxVelocity;
-	            maxSegmentAccelerations[i] = maxAcceleration;
-	            continue;
-            }
+			if (deltaVelocity > 0.0) {
+				double accelTime = deltaVelocity / maxAcceleration;
 
-			// How long does it take to increase the velocity by deltaVelocity?
-			double accelTime = deltaVelocity / maxAcceleration;
+				double accelDist = 0.5 * maxAcceleration * accelTime * accelTime + startVelocity * accelTime;
 
-			// How far do we move while accelerating to the max velocity?
-			double accelDist = 0.5 * maxAcceleration * accelTime * accelTime + startVelocity * accelTime;
+				if (accelDist > pathSegment.getLength()) {
+					double[] roots = MathUtils.quadratic(0.5 * maxAcceleration, startVelocity, -pathSegment.getLength());
 
-			if (accelDist > pathSegment.getLength()) {
-			    // We can't reach the segment's max velocity.
-                // What is the max velocity we can achieve?
-                double[] roots = MathUtils.quadratic(0.5 * maxAcceleration, startVelocity, -pathSegment.getLength());
+					double maxAllowableAccelTime = Math.max(roots[0], roots[1]);
 
-                double maxAllowableAccelTime = Math.max(roots[0], roots[1]);
-
-                maxVelocity = startVelocity + maxAcceleration * maxAllowableAccelTime;
-            }
+					maxVelocity = startVelocity + maxAcceleration * maxAllowableAccelTime;
+				}
+			}
 
             maxSegmentVelocities[i] = maxVelocity;
 			maxSegmentAccelerations[i] = maxAcceleration;
 		}
 
-        // Now iterate backwards, finding the max velocities when we decelerate
-        for (int i = maxSegmentVelocities.length - 1; i >= 0; i--) {
-            PathSegment pathSegment = path.getSegments().get(i);
+		for (int i = maxSegmentVelocities.length - 1; i >= 0; i--) {
+			PathSegment pathSegment = path.getSegments().get(i);
 
-            double maxVelocity = maxSegmentVelocities[i];
-            double maxAcceleration = maxSegmentAccelerations[i];
+			double endVelocity = 0.0;
+			if (i < maxSegmentVelocities.length - 1) {
+				endVelocity = maxSegmentVelocities[i + 1];
+			}
 
-            double endVelocity = 0.0;
-            if (i != maxSegmentVelocities.length - 1) {
-                endVelocity = maxSegmentVelocities[i + 1];
-            }
+			double maxVelocity = Double.POSITIVE_INFINITY;
+			for (ITrajectoryConstraint constraint : constraints) {
+				maxVelocity = Math.min(maxVelocity, constraint.getMaxVelocity(pathSegment));
+			}
+			if (maxVelocity < 0.0 || !Double.isFinite(maxVelocity)) {
+				throw new RuntimeException("Illegal max velocity");
+			}
 
-            // How much do we have to change our velocity by?
-            double deltaVelocity = endVelocity - maxVelocity;
-            if (deltaVelocity > 0) {
-                continue;
-            }
+			double maxAcceleration = Double.POSITIVE_INFINITY;
+			for (ITrajectoryConstraint constraint : constraints) {
+				maxAcceleration = Math.min(maxAcceleration, constraint.getMaxAcceleration(pathSegment, endVelocity));
+			}
+			if (maxAcceleration < 0.0 || !Double.isFinite(maxAcceleration)) {
+				throw new RuntimeException("Illegal max acceleration");
+			}
 
-            // How long does it take to decrease the velocity by deltaVelocity?
-            double decelTime = -deltaVelocity / maxAcceleration;
+			// Now check if we can reach our max velocity
+			double deltaVelocity = maxVelocity - endVelocity;
+			if (deltaVelocity > 0.0) {
+				double accelTime = deltaVelocity / maxAcceleration;
 
-            // How far do we move while decelerating to the end velocity?
-            double decelDist = 0.5 * maxAcceleration * decelTime * decelTime + endVelocity * decelTime;
+				double accelDist = 0.5 * maxAcceleration * accelTime * accelTime + endVelocity * accelTime;
 
-            if (decelDist > pathSegment.getLength()) {
-                // We can't decelerate fast enough.
-                // What is the max velocity we can decelerate from?
-                double[] roots = MathUtils.quadratic(0.5 * maxAcceleration, endVelocity, -pathSegment.getLength());
+				if (accelDist > pathSegment.getLength()) {
+					double[] roots = MathUtils.quadratic(0.5 * maxAcceleration, endVelocity, -pathSegment.getLength());
 
-                double maxAllowableDecelTime = Math.max(roots[0], roots[1]);
+					double maxAllowableAccelTime = Math.max(roots[0], roots[1]);
 
-                maxVelocity = endVelocity + maxAcceleration * maxAllowableDecelTime;
-            }
+					maxVelocity = endVelocity + maxAcceleration * maxAllowableAccelTime;
+				}
+			}
 
-            maxSegmentVelocities[i] = maxVelocity;
-            maxSegmentAccelerations[i] = maxAcceleration;
-        }
+			maxSegmentVelocities[i] = Math.min(maxSegmentVelocities[i], maxVelocity);
+			maxSegmentAccelerations[i] = Math.max(maxSegmentAccelerations[i], maxAcceleration);
+		}
 
 		this.profiles = new MotionProfile[path.getSegments().size()];
 		MotionProfile.Goal lastPosition = new MotionProfile.Goal(0, 0);
@@ -113,7 +120,7 @@ public class Trajectory {
 			PathSegment pathSegment = path.getSegments().get(i);
 
 			// Create the motion constraints for this segment
-			MotionProfile.Constraints segmentConstraints = new MotionProfile.Constraints(maxSegmentVelocities[i], maxSegmentAccelerations[i]);
+			MotionProfile.Constraints segmentConstraints = new MotionProfile.Constraints(maxSegmentVelocities[i], Math.max(maxSegmentAccelerations[i], MathUtils.EPSILON));
 
 			// Look ahead to see the end velocity for the segment
 			double endVelocity = 0;
@@ -124,17 +131,11 @@ public class Trajectory {
 			MotionProfile.Goal endPosition = new MotionProfile.Goal(lastPosition.position + pathSegment.getLength(), endVelocity);
 			profiles[i] = new TrapezoidalMotionProfile(lastPosition, endPosition, segmentConstraints);
 
+			duration += profiles[i].getDuration();
+
 			// The profile may not have been able to finish accelerating. We need to manually find the ending velocity
 			lastPosition = new MotionProfile.Goal(profiles[i].calculate(profiles[i].getDuration()));
 		}
-
-		for (MotionProfile profile : profiles) {
-			duration += profile.getDuration();
-		}
-	}
-
-	private static double calculateMaxSegmentVelocity(PathSegment segment, Constraints constraints) {
-		return Math.sqrt(constraints.maxCentripetalAcceleration / segment.getCurvature());
 	}
 
 	public Segment calculateSegment(double time) {
@@ -153,12 +154,8 @@ public class Trajectory {
 //		Rotation2 pathRotation = segment.getRotationAtPercentage(profileTime / profile.getDuration());
 		Rotation2 pathRotation = path.getRotationAtDistance(path.getLength() * (time / getDuration()));
 
-		double feedforward = constraints.kV * state.velocity + constraints.kA * state.acceleration
-				+ Math.copySign(constraints.kS, state.velocity);
-
 		return new Segment(profileIndex, time, pathPosition, pathHeading, pathRotation, state.position, state.velocity,
-                state.acceleration, maxSegmentVelocities[profileIndex], maxSegmentAccelerations[profileIndex],
-				feedforward);
+                state.acceleration, maxSegmentVelocities[profileIndex], maxSegmentAccelerations[profileIndex]);
 	}
 
 	public void calculateSegments(double dt) {
@@ -178,40 +175,6 @@ public class Trajectory {
 		return duration;
 	}
 
-	/**
-	 * Motion constraints for the robot.
-	 *
-	 * See the drivetrain characterization paper for information on how to determine these values
-	 * <a href="https://www.chiefdelphi.com/media/papers/3402">here</a>.
-	 */
-	public static class Constraints {
-		public double kV;
-
-		public double kA;
-
-		/**
-		 * The amount of voltage needed to overcome static friction.
-		 */
-		public double kS;
-
-		/**
-		 * The maximum acceleration of the robot
-		 */
-		public double maxAcceleration;
-
-		/**
-		 * The target feedforward value. Feedforward is calculated using the following equation: F = Kv * V + Ka * A + copysign(V, Ks)
-		 */
-		public double targetFeedforward;
-
-		/**
-		 * The maximum centripetal acceleration that is allowed to be exerted on the robot. This is responsible for
-		 * slowing the robot down when it approaches a curve in the path. If the robot is not following curves
-		 * correctly, try decreasing this value.
-		 */
-		public double maxCentripetalAcceleration;
-	}
-
 	public static class Segment {
 	    public final int pathSegmentIndex;
 		public final double time;
@@ -221,11 +184,10 @@ public class Trajectory {
 		public final double position, velocity, acceleration;
 		public final double maxVelocity;
 		public final double maxAcceleration;
-		public final double feedforward;
 
 		private Segment(int pathSegmentIndex, double time, Vector2 translation, Rotation2 heading, Rotation2 rotation,
                         double position, double velocity, double acceleration, double maxVelocity,
-                        double maxAcceleration, double feedforward) {
+                        double maxAcceleration) {
 		    this.pathSegmentIndex = pathSegmentIndex;
 			this.time = time;
 			this.translation = translation;
@@ -236,7 +198,6 @@ public class Trajectory {
 			this.acceleration = acceleration;
 			this.maxVelocity = maxVelocity;
 			this.maxAcceleration = maxAcceleration;
-			this.feedforward = feedforward;
 		}
 	}
 }
