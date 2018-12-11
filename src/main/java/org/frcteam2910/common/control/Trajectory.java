@@ -97,16 +97,16 @@ public class Trajectory {
 			// Now check if we can reach our max velocity
 			double deltaVelocity = maxVelocity - endVelocity;
 			if (deltaVelocity > 0.0) {
-				double accelTime = deltaVelocity / maxAcceleration;
+				double decelTime = deltaVelocity / maxAcceleration;
 
-				double accelDist = 0.5 * maxAcceleration * accelTime * accelTime + endVelocity * accelTime;
+				double decelDist = 0.5 * maxAcceleration * decelTime * decelTime + endVelocity * decelTime;
 
-				if (accelDist > pathSegment.getLength()) {
+				if (decelDist > pathSegment.getLength()) {
 					double[] roots = MathUtils.quadratic(0.5 * maxAcceleration, endVelocity, -pathSegment.getLength());
 
-					double maxAllowableAccelTime = Math.max(roots[0], roots[1]);
+					double maxAllowableDecelTime = Math.max(roots[0], roots[1]);
 
-					maxVelocity = endVelocity + maxAcceleration * maxAllowableAccelTime;
+					maxVelocity = endVelocity + maxAcceleration * maxAllowableDecelTime;
 				}
 			}
 
