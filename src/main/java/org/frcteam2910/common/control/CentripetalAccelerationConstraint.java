@@ -34,6 +34,12 @@ public final class CentripetalAccelerationConstraint implements ITrajectoryConst
         //
         // Curvature and max acceleration is always positive and we only expect a positive result so plus-minus is not
         // needed.
+
+        // Special case when following a line, centripetal acceleration is 0 so don't constrain velocity
+        if (segment.getCurvature() == 0.0) {
+            return Double.POSITIVE_INFINITY;
+        }
+
         return Math.sqrt(Math.abs(maxCentripetalAcceleration / segment.getCurvature()));
     }
 

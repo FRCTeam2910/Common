@@ -16,6 +16,21 @@ public class FeedforwardConstraint implements ITrajectoryConstraint {
     private final double kS;
 
     public FeedforwardConstraint(double targetFeedforward, double kV, double kA, double kS) {
+        if (targetFeedforward < 0.0) {
+            throw new IllegalArgumentException("Target feedforward must be positive");
+        }
+        if (kV < 0.0) {
+            throw new IllegalArgumentException("kV must be positive");
+        }
+        if (kA < 0.0) {
+            throw new IllegalArgumentException("kA must be positive");
+        }
+        if (kS < 0.0) {
+            throw new IllegalArgumentException("kS must be positive");
+        }
+
+
+
         this.targetFeedforward = targetFeedforward;
         this.kV = kV;
         this.kA = kA;
