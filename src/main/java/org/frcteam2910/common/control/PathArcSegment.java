@@ -46,6 +46,11 @@ public final class PathArcSegment extends PathSegment {
     }
 
     @Override
+    public double getCurvature() {
+        return 1 / deltaStart.length; // Curvature for an arc is defined as 1/r
+    }
+
+    @Override
     public PathArcSegment[] subdivide() {
         Vector2 mid = getPositionAtPercentage(0.5);
         return new PathArcSegment[]{

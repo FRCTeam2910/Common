@@ -14,9 +14,14 @@ public final class PathLineSegment extends PathSegment {
     }
 
     @Override
+    public double getCurvature() {
+        return 0; // Lines are straight so they do not have a curvature
+    }
+
+    @Override
     public PathLineSegment[] subdivide() {
         Vector2 mid = getPositionAtPercentage(0.5);
-        return new PathLineSegment[] {
+        return new PathLineSegment[]{
                 new PathLineSegment(getStart(), mid),
                 new PathLineSegment(mid, getEnd())
         };
