@@ -85,11 +85,6 @@ public final class MockSwerveModule extends SwerveModule {
 		this.targetDrivePercentage = percentage;
 	}
 
-	@Override
-	public double getWheelScrubFactor() {
-		return 1;
-	}
-
 	public void accumulateRates(double deltaTime) {
 		driveDistance += driveRate * deltaTime;
 	}
