@@ -52,6 +52,8 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     @Override
     public synchronized void updateKinematics(double timestamp) {
         Rotation2 heading = getGyroscope().getAngle();
+        double dt = timestamp - lastKinematicTimestamp;
+        lastKinematicTimestamp = timestamp;
 
         SwerveModule[] swerveModules = getSwerveModules();
 
@@ -64,7 +66,10 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
         kinematicVelocity = averagePosition.subtract(kinematicPosition).scale(1 / (timestamp - lastKinematicTimestamp));
         kinematicPosition = averagePosition;
-        lastKinematicTimestamp = timestamp;
+
+        for (SwerveModule module : swerveModules) {
+            module.update(dt);
+        }
     }
 
     public synchronized void resetKinematics(double timestamp) {

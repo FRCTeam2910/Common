@@ -157,4 +157,6 @@ public abstract class SwerveModule {
 		currentPosition = Vector2.ZERO;
 		previousDistance = 0;
 	}
+
+	public void update(double dt) {}
 }
