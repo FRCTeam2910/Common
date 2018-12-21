@@ -12,7 +12,7 @@ import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.robot.input.Axis;
 import org.frcteam2910.common.robot.subsystems.HolonomicDrivetrain;
-import org.frcteam2910.common.util.PIDConstants;
+import org.frcteam2910.common.control.PidConstants;
 
 public final class HolonomicDriveCommand extends Command {
 	private static final double ROTATION_END_TIMEOUT = 0.5;
@@ -32,18 +32,18 @@ public final class HolonomicDriveCommand extends Command {
 
 	public HolonomicDriveCommand(HolonomicDrivetrain drivetrain, Axis forwardAxis, Axis strafeAxis, Axis rotationAxis,
 			Button fieldOrientedOverrideButton) {
-		this(drivetrain, forwardAxis, strafeAxis, rotationAxis, fieldOrientedOverrideButton, new PIDConstants(0, 0, 0));
+		this(drivetrain, forwardAxis, strafeAxis, rotationAxis, fieldOrientedOverrideButton, new PidConstants(0, 0, 0));
 	}
 
 	public HolonomicDriveCommand(HolonomicDrivetrain drivetrain, Axis forwardAxis, Axis strafeAxis, Axis rotationAxis,
-			Button fieldOrientedOverrideButton, PIDConstants constants) {
+			Button fieldOrientedOverrideButton, PidConstants constants) {
 		this.drivetrain = drivetrain;
 		this.forwardAxis = forwardAxis;
 		this.strafeAxis = strafeAxis;
 		this.rotationAxis = rotationAxis;
 		this.fieldOrientedOverrideButton = fieldOrientedOverrideButton;
 
-		angleController = new PIDController(constants.p, constants.i, constants.d, constants.f, new PIDSource() {
+		angleController = new PIDController(constants.p, constants.i, constants.d, new PIDSource() {
 			@Override
 			public void setPIDSourceType(PIDSourceType pidSource) {
 			}
