@@ -1,3 +1,10 @@
+/*
+ * The following block allows us to be used as a submodule. If we are the root
+ * project we want to specify a version of GradleRIO to use, however, when we
+ * are not the root project (i.e. a submodule in a robot) let the parent
+ * project specify what version of GradleRIO to use by not adding GradleRIO to
+ * the plugin classpath.
+ */
 buildscript {
     repositories {
         maven {
@@ -30,6 +37,7 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
 }
 
+// Only add a wrapper block if we are the root project
 if (rootProject == project) {
     wrapper {
         distributionType = Wrapper.DistributionType.ALL

@@ -17,5 +17,6 @@ dependencies {
     compile navx()
     compile ctre()
 
+    // Depend on the common library
     compile project.parent
 }
