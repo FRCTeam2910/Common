@@ -11,7 +11,7 @@ import org.frcteam2910.common.robot.Constants;
  * A driver for the 2017 swerve module hardware but using onboard pid.
  */
 public class OnboardPid2017SwerveModule extends OnboardPidSwerveModule {
-    private static final PidConstants ANGLE_PID_CONSTANTS = new PidConstants(5.0, 0.0, 0.0);
+    private static final PidConstants ANGLE_PID_CONSTANTS = new PidConstants(0.5, 0.0, 0.0);
     private static final double DRIVE_TICKS_PER_INCH = 36.65;
 
     public OnboardPid2017SwerveModule(Vector2 positionOffset, double angleOffset,
