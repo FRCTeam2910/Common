@@ -1,5 +1,3 @@
 rootProject.name = 'common'
 
 include 'robot'
-
-enableFeaturePreview('STABLE_PUBLISHING')
