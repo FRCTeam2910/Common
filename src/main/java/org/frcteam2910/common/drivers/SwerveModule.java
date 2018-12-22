@@ -1,6 +1,5 @@
 package org.frcteam2910.common.drivers;
 
-import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
@@ -11,12 +10,9 @@ public abstract class SwerveModule {
 	private final Vector2 modulePosition;
 	private Rotation2 adjustmentAngle;
 
-	private Rotation2 previousAngle = Rotation2.ZERO;
 	private double previousDistance;
 	private Vector2 currentPosition = Vector2.ZERO;
 	private String name = "Unknown";
-
-	private boolean inverted = false;
 
 	public SwerveModule(Vector2 modulePosition, Rotation2 adjustmentAngle) {
 		this.modulePosition = modulePosition;
@@ -50,8 +46,6 @@ public abstract class SwerveModule {
      * @param percentage The percentage the module should drive at.
      */
     public abstract void setTargetDrivePercentage(double percentage);
-
-    public abstract double getWheelScrubFactor();
 
 	public abstract void zeroDistance();
 
@@ -99,29 +93,36 @@ public abstract class SwerveModule {
 	 */
 	public abstract double getCurrentRate();
 
-	public final void setInverted(boolean inverted) {
-		this.inverted = inverted;
-	}
-
-	public final boolean isInverted() {
-		return inverted;
-	}
-
 	/**
 	 * Set the angle the module should be at in degrees.
 	 *
-	 * @param targetAngle The target angle of the module.
+	 * @param rotation The target angle of the module.
 	 */
-	public final void setTargetAngle(Rotation2 targetAngle) {
-		Rotation2 currentAngle = getCurrentAngle();
+	public final void setTargetAngle(Rotation2 rotation) {
+		double targetAngle = rotation.toDegrees() + adjustmentAngle.toDegrees() % 360;
+		if (targetAngle < 0.0) {
+			targetAngle += 360.0;
+		}
 
-		Rotation2 delta = currentAngle.rotateBy(targetAngle.inverse());
-		double deltaDegrees = delta.toDegrees();
-		if (MathUtils.isInRange(90, 270, deltaDegrees)) {
-			if (MathUtils.isInRange(90, 180, deltaDegrees)) {
-				targetAngle = targetAngle.rotateBy(Rotation2.fromDegrees(180));
-			} else if (MathUtils.isInRange(180, 270, deltaDegrees)) {
-				targetAngle = targetAngle.rotateBy(Rotation2.fromDegrees(-180));
+		double currentUnadjustedAngle = getAngleEncoderRotations() * 360.0;
+		double currentAngle = currentUnadjustedAngle % 360;
+		if (currentAngle < 0.0) {
+			currentAngle += 360.0;
+		}
+
+		double delta = currentAngle - targetAngle;
+		if (delta > 180.0) {
+			targetAngle += 360.0;
+		} else if (delta < -180.0) {
+			targetAngle -= 360.0;
+		}
+
+		delta = currentAngle - targetAngle;
+		if (delta > 90.0 || delta < -90.0) {
+			if (delta > 90) {
+				targetAngle += 180.0;
+			} else if (delta < -90) {
+				targetAngle -= 180.0;
 			}
 
 			setDriveMotorInverted(true);
@@ -129,15 +130,8 @@ public abstract class SwerveModule {
 			setDriveMotorInverted(false);
 		}
 
-		int moduleRotations;
-		double currentEncoderRotations = getAngleEncoderRotations();
-		if (currentEncoderRotations > 0) {
-			moduleRotations = (int) Math.floor(currentEncoderRotations);
-		} else {
-			moduleRotations = (int) Math.ceil(currentEncoderRotations);
-		}
-
-		setTargetAngleRotations((targetAngle.rotateBy(adjustmentAngle).toDegrees()) / 360.0 + moduleRotations);
+		targetAngle += currentUnadjustedAngle - currentAngle;
+		setTargetAngleRotations(targetAngle * (1.0 / 360.0));
 	}
 
 	public Rotation2 getFieldCentricAngle(Rotation2 robotHeading) {
@@ -150,23 +144,19 @@ public abstract class SwerveModule {
 
 	public synchronized final void updateKinematics(Rotation2 heading) {
 		double currentDistance = getCurrentDistance();
-		double deltaDistance = (currentDistance - previousDistance) * getWheelScrubFactor();
+		double deltaDistance = (currentDistance - previousDistance);
 		Rotation2 currentAngle = getFieldCentricAngle(heading);
-		Rotation2 averagedAngle = Rotation2.fromRadians((currentAngle.toRadians() + previousAngle.toRadians()) / 2.0);
 
-		Vector2 deltaPosition = Vector2.fromAngle(averagedAngle).scale(deltaDistance);
-		if (inverted) {
-			deltaPosition = deltaPosition.inverse();
-		}
+		Vector2 deltaPosition = Vector2.fromAngle(currentAngle).scale(deltaDistance);
 
 		currentPosition = currentPosition.add(deltaPosition);
 		previousDistance = currentDistance;
-		previousAngle = currentAngle;
 	}
 
 	public synchronized void resetKinematics(Rotation2 heading) {
 		currentPosition = Vector2.ZERO;
 		previousDistance = 0;
-		previousAngle = getFieldCentricAngle(heading);
 	}
+
+	public void update(double dt) {}
 }

@@ -15,8 +15,6 @@ import static org.frcteam2910.common.robot.Constants.CAN_TIMEOUT_MS;
  * Driver for the 2017 revision of the 2910 swerve module
  */
 public final class SwerveModule2017 extends SwerveModule {
-	private static final double SCRUB_FACTOR = 1.0; // TODO: Figure out actual scrub factor (Take from 1323?)
-
 	private static final double TICKS_PER_INCH = 36.65; // TODO: Find actual number
 
 	private final TalonSRX angleMotor, driveMotor;
@@ -85,16 +83,7 @@ public final class SwerveModule2017 extends SwerveModule {
 
 	@Override
 	public void setTargetDrivePercentage(double percentage) {
-		if (isInverted()) {
-			percentage = -percentage;
-		}
-
 		driveMotor.set(ControlMode.PercentOutput, percentage);
-	}
-
-	@Override
-	public double getWheelScrubFactor() {
-		return SCRUB_FACTOR;
 	}
 
 	@Override
