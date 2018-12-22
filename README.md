@@ -36,12 +36,20 @@ include ':jester'
 A dependency on the robot library can be created by adding the following to
 your `build.gradle` file:
 ```gradle
+plugins {
+    ...
+    id 'edu.wpi.first.GradleRIO' version '<GRADLERIO_VERSION>'
+    ...
+}
+...
 dependencies {
     ...
     compile project(':jester:robot')
     ...
 }
 ```
+Replace `<GRADLERIO_VERSION>` with the version of GradleRIO you want to use.
+
 > NOTE: The common library does not need to be an explicit dependency because
 > it is a dependency of the robot library.
 
