@@ -1,5 +1,5 @@
 plugins {
-    id 'edu.wpi.first.GradleRIO' version '2019.0.0-alpha-3'
+    id 'edu.wpi.first.GradleRIO'
     id 'eclipse'
     id 'java'
     id 'maven-publish'
@@ -19,7 +19,7 @@ dependencies {
     compile navx()
     compile ctre()
 
-    compile project(':')
+    compile project.parent
 }
 
 task sourcesJar(type: Jar) {
