@@ -3,19 +3,39 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = '1.8'
+sourceCompatibility = JavaVersion.VERSION_11
 
 group = 'org.frcteam2910.common'
 version = '0.2.0'
 
 repositories {
     mavenCentral()
+
+    // CTRE maven repository for Phoenix library (Talon SRX drivers, Victor SPX, etc.)
+    maven {
+        url = 'http://devsite.ctr-electronics.com/maven/release/'
+    }
+
+    // KauaiLabs maven repository for NavX drivers
+    maven {
+        url = 'https://www.kauailabs.com/maven2/'
+    }
 }
 
 dependencies {
-    compile wpilib()
-    compile navx()
-    compile ctre()
+    compile wpi.deps.wpilib()
+
+    // Phoenix library
+    // To update use the value of javaDependencies[0].version from this json file
+    // http://devsite.ctr-electronics.com/maven/release/com/ctre/phoenix/Phoenix-latest.json
+    compile group: 'com.ctre.phoenix', name: 'api-java', version: '5.12.0'
+    compile group: 'com.ctre.phoenix', name: 'wpiapi-java', version: '5.12.0'
+    nativeZip group: 'com.ctre.phoenix', name: 'cci', version: '5.12.0', classifier: 'linuxathena'
+
+    // NavX drivers
+    // To update use the value of javaDependencies[0].version from this json file
+    // https://www.kauailabs.com/dist/frc/2019/navx_frc.json
+    compile group: 'com.kauailabs.navx.frc', name: 'navx-java', version: '3.1.340'
 
     // Depend on the common library
     compile project.parent
