@@ -41,6 +41,6 @@ dependencies {
 if (rootProject == project) {
     wrapper {
         distributionType = Wrapper.DistributionType.ALL
-        gradleVersion = '5.0'
+        gradleVersion = '5.1'
     }
 }
