@@ -29,12 +29,15 @@ repositories {
 }
 
 ext {
+    opencvVersion = '3.4.4-4'
     navxVersion = '3.1.340'
     phoenixVersion = '5.12.0'
 }
 
 dependencies {
     compile wpi.deps.wpilib()
+    runtime group: 'edu.wpi.first.thirdparty.frc2019.opencv', name: 'opencv-jni', version: opencvVersion, classifier: 'linuxathena'
+
 
     // Phoenix library
     // To update use the value of javaDependencies[0].version from this json file
