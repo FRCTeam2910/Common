@@ -3,7 +3,7 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = '1.8'
+sourceCompatibility = JavaVersion.VERSION_11
 
 group = 'org.frcteam2910.common'
 version = '0.2.0'
@@ -13,10 +13,10 @@ repositories {
 }
 
 dependencies {
-    compile wpilib()
-    compile navx()
-    compile ctre()
-
+    compile wpi.deps.wpilib()
+    compile wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     // Depend on the common library
     compile project.parent
 }
