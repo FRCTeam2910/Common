@@ -7,20 +7,41 @@ import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.Vector2;
 
 public final class Limelight {
-	private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+	private final NetworkTable table;
 
-	private final NetworkTableEntry tv = table.getEntry("tv");
-	private final NetworkTableEntry tx = table.getEntry("tx");
-	private final NetworkTableEntry ty = table.getEntry("ty");
-	private final NetworkTableEntry ta = table.getEntry("ta");
-	private final NetworkTableEntry ts = table.getEntry("ts");
-	private final NetworkTableEntry tl = table.getEntry("tl");
+	private final NetworkTableEntry tv;
+	private final NetworkTableEntry tx;
+	private final NetworkTableEntry ty;
+	private final NetworkTableEntry ta;
+	private final NetworkTableEntry ts;
+	private final NetworkTableEntry tl;
 
-	private final NetworkTableEntry ledMode = table.getEntry("ledMode");
-	private final NetworkTableEntry camMode = table.getEntry("camMode");
-	private final NetworkTableEntry pipeline = table.getEntry("pipeline");
-	private final NetworkTableEntry stream = table.getEntry("stream");
-	private final NetworkTableEntry snapshot = table.getEntry("snapshot");
+	private final NetworkTableEntry ledMode;
+	private final NetworkTableEntry camMode;
+	private final NetworkTableEntry pipeline;
+	private final NetworkTableEntry stream;
+	private final NetworkTableEntry snapshot;
+
+	public Limelight() {
+	    this("limelight");
+    }
+
+    public Limelight(String name) {
+	    table = NetworkTableInstance.getDefault().getTable(name);
+
+	    tv = table.getEntry("tv");
+	    tx = table.getEntry("tx");
+	    ty = table.getEntry("ty");
+	    ta = table.getEntry("ta");
+	    ts = table.getEntry("ts");
+	    tl = table.getEntry("tl");
+
+	    ledMode = table.getEntry("ledMode");
+	    camMode = table.getEntry("camMode");
+	    pipeline = table.getEntry("pipeline");
+	    stream = table.getEntry("stream");
+	    snapshot = table.getEntry("snapshot");
+	}
 
 	public boolean hasTarget() {
 		return MathUtils.epsilonEquals(tv.getDouble(0), 1);
@@ -31,7 +52,7 @@ public final class Limelight {
 	}
 
 	public Vector2 getTargetPosition() {
-		return new Vector2(tx.getDouble(0), ty.getDouble(0));
+		return new Vector2(Math.toRadians(tx.getDouble(0)), Math.toRadians(ty.getDouble(0)));
 	}
 
 	public double getTargetSkew() {
@@ -40,7 +61,7 @@ public final class Limelight {
 
 	public void setCamMode(CamMode mode) {
 		switch (mode) {
-			case VISON:
+			case VISION:
 				camMode.setNumber(0);
 				break;
 			case DRIVER:
@@ -50,7 +71,7 @@ public final class Limelight {
 
 	public void setLedMode(LedMode mode) {
 		switch (mode) {
-			case ON:
+			case DEFAULT:
 				ledMode.setNumber(0);
 				break;
 			case OFF:
@@ -58,14 +79,19 @@ public final class Limelight {
 				break;
 			case BLINK:
 				ledMode.setNumber(2);
+				break;
+			case ON:
+				ledMode.setNumber(3);
+				break;
 		}
 	}
 
 	public void setSnapshotsEnabled(boolean enabled) {
-		if (enabled)
-			snapshot.setNumber(1);
-		else
-			snapshot.setNumber(0);
+		if (enabled) {
+            snapshot.setNumber(1);
+        } else {
+            snapshot.setNumber(0);
+        }
 	}
 
 	public void setPipeline(int pipeline) {
@@ -87,12 +113,15 @@ public final class Limelight {
 	}
 
 	public enum CamMode {
-		VISON,
+		VISION,
 		DRIVER
 	}
 
 	public enum LedMode {
-		ON, OFF, BLINK
+		DEFAULT,
+		ON,
+		OFF,
+		BLINK
 	}
 
 	public enum StreamMode {
