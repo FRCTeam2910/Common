@@ -70,8 +70,14 @@ public class PidController {
         this.integralRange = integralRange;
     }
 
+    /**
+     * Sets the output range for the controller. Outputs will be clamped between these two values.
+     *
+     * @param min the minimum allowable output value
+     * @param max the maximum allowable output value
+     */
     public void setOutputRange(double min, double max) {
-        if (max > min) {
+        if (max < min) {
             throw new IllegalArgumentException("Minimum output cannot be greater than maximum output");
         }
 
