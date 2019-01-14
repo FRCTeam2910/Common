@@ -1,5 +1,7 @@
 package org.frcteam2910.common.control;
 
+import org.frcteam2910.common.math.MathUtils;
+
 public class PidController {
     private PidConstants constants;
 
@@ -7,6 +9,8 @@ public class PidController {
 
     private boolean continuous = true;
     private double inputRange = Double.POSITIVE_INFINITY;
+    private double minOutput = Double.NEGATIVE_INFINITY;
+    private double maxOutput = Double.POSITIVE_INFINITY;
 
     private double lastError = Double.NaN;
     private double integralAccum = 0.0;
@@ -41,7 +45,8 @@ public class PidController {
         }
         lastError = error;
 
-        return constants.p * error + constants.i * integral + constants.d * derivative;
+        return MathUtils.clamp(constants.p * error + constants.i * integral + constants.d * derivative,
+                minOutput, maxOutput);
     }
 
     public void reset() {
@@ -63,5 +68,14 @@ public class PidController {
 
     public void setIntegralRange(double integralRange) {
         this.integralRange = integralRange;
+    }
+
+    public void setOutputRange(double min, double max) {
+        if (max > min) {
+            throw new IllegalArgumentException("Minimum output cannot be greater than maximum output");
+        }
+
+        minOutput = min;
+        maxOutput = max;
     }
 }
