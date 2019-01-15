@@ -17,6 +17,9 @@ public class PidControllerTest {
 
         pidController.setOutputRange(-1.0, 1.0);
         assertEquals(1.0, pidController.calculate(0.0, TEST_DT), MathUtils.EPSILON);
+        assertEquals(0.5, pidController.calculate(4.5, TEST_DT), MathUtils.EPSILON);
+        assertEquals(-1.0, pidController.calculate(10.0, TEST_DT), MathUtils.EPSILON);
+        assertEquals(-0.5, pidController.calculate(5.5, TEST_DT), MathUtils.EPSILON);
     }
 
     @Test(expected = IllegalArgumentException.class)
