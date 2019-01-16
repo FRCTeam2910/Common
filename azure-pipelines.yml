@@ -20,7 +20,7 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: false
     testResultsFiles: '**/TEST-*.xml'
-
-    # build is currently broken in this version of gradlerio
-    # We're also using --no-daemon in order to speed up build times.
+    
+    # We're using --no-daemon in order to speed up build times.
     tasks: 'build --no-daemon'
+    
