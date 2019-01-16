@@ -14,7 +14,7 @@ buildscript {
 
     dependencies {
         if (rootProject == project) {
-            classpath 'edu.wpi.first:GradleRIO:2019.1.1'
+            classpath 'edu.wpi.first:GradleRIO:2019.2.1'
         }
     }
 }
