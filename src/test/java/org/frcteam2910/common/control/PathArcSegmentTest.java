@@ -1,5 +1,6 @@
 package org.frcteam2910.common.control;
 
+import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 import org.junit.Test;
 
@@ -31,5 +32,18 @@ public class PathArcSegmentTest {
                 assertEquals(expected[i][j], actual[j]);
             }
         }
+    }
+
+    @Test
+    public void getHeadingTest() {
+        PathArcSegment segment = new PathArcSegment(new Vector2(1.0, 0.0), new Vector2(0.0, 1.0), Vector2.ZERO);
+        assertEquals(Rotation2.fromDegrees(90.0), segment.getHeadingAtPercentage(0.0));
+        assertEquals(Rotation2.fromDegrees(135.0), segment.getHeadingAtPercentage(0.5));
+        assertEquals(Rotation2.fromDegrees(180.0), segment.getHeadingAtPercentage(1.0));
+
+        segment = new PathArcSegment(new Vector2(0.0, 1.0), new Vector2(1.0, 0.0), Vector2.ZERO);
+        assertEquals(Rotation2.fromDegrees(0.0), segment.getHeadingAtPercentage(0.0));
+        assertEquals(Rotation2.fromDegrees(-45.0), segment.getHeadingAtPercentage(0.5));
+        assertEquals(Rotation2.fromDegrees(-90.0), segment.getHeadingAtPercentage(1.0));
     }
 }

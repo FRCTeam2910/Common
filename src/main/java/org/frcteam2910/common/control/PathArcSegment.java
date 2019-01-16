@@ -10,12 +10,15 @@ public final class PathArcSegment extends PathSegment {
     private final Vector2 center;
     private final Vector2 deltaStart;
     private final Vector2 deltaEnd;
+    private final boolean clockwise;
 
     public PathArcSegment(Vector2 start, Vector2 end, Vector2 center) {
         super(start, end);
         this.center = center;
         this.deltaStart = start.subtract(center);
         this.deltaEnd = end.subtract(center);
+
+        clockwise = deltaStart.cross(deltaEnd) <= 0.0;
     }
 
     /**
@@ -62,14 +65,16 @@ public final class PathArcSegment extends PathSegment {
     @Override
     public Vector2 getPositionAtPercentage(double percentage) {
         double deltaAngle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() *
-                ((deltaStart.cross(deltaEnd) >= 0) ? 1 : -1) * percentage;
+                (clockwise ? -1.0 : 1.0) * percentage;
         return center.add(deltaStart.rotateBy(Rotation2.fromRadians(deltaAngle)));
     }
 
     @Override
     public Rotation2 getHeadingAtPercentage(double percentage) {
-        double angle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() * percentage;
-        return deltaStart.rotateBy(Rotation2.fromRadians(angle)).getAngle().normal();
+        double angle = Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians() *
+                (clockwise ? -1.0 : 1.0) * percentage +
+                (clockwise ? -0.5 * Math.PI : 0.5 * Math.PI); // Add or subtract 90 degrees to the angle based on the direction of travel
+        return deltaStart.rotateBy(Rotation2.fromRadians(angle)).getAngle();
     }
 
     public Vector2 getCenter() {
