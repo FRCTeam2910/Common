@@ -169,24 +169,25 @@ public abstract class SwerveModule {
 
         final double currentAngle = getCurrentAngle();
 
-        double delta = currentAngle - targetAngle;
-        if (delta > Math.PI) {
-            targetAngle += 2.0 * Math.PI;
+        // Change the target angle so the delta is in the range [-pi, pi) instead of [0, 2pi)
+        double delta = targetAngle - currentAngle;
+        if (delta >= Math.PI) {
+            targetAngle -= 2.0 * Math.PI;
         } else if (delta < -Math.PI) {
             targetAngle += 2.0 * Math.PI;
         }
 
-        delta = currentAngle - targetAngle;
+        // Deltas that are greater than 90 deg or less than -90 deg can be inverted so the total movement of the module
+        // is less than 90 deg by inverting the wheel direction
+        delta = targetAngle - currentAngle;
         if (delta > Math.PI / 2.0 || delta < -Math.PI / 2.0) {
-            if (delta > Math.PI / 2.0) {
-                targetAngle += Math.PI;
-            } else if (delta < -Math.PI / 2.0) {
-                targetAngle -= Math.PI;
-            }
+            // Only need to add pi here because the target angle will be put back into the range [0, 2pi)
+            targetAngle += Math.PI;
 
             targetDriveOutput *= -1.0;
         }
 
+        // Put target angle back into the range [0, 2pi)
         targetAngle %= 2.0 * Math.PI;
         if (targetAngle < 0.0) {
             targetAngle += 2.0 * Math.PI;

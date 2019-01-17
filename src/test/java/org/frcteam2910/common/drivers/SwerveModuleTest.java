@@ -42,6 +42,24 @@ public class SwerveModuleTest {
         module.updateState(UPDATE_DT);
         assertEquals(Math.PI, module.getTargetAngle(), MathUtils.EPSILON);
         assertEquals(1.0, module.getDriveOutput(), MathUtils.EPSILON);
+
+        module.writeAngle(Math.toRadians(5.0));
+        module.setTargetVelocity(Vector2.fromAngle(Rotation2.fromDegrees(-5.0)));
+        module.updateSensors();
+        module.updateState(UPDATE_DT);
+        assertEquals(Math.toRadians(360.0 - 5.0), module.getTargetAngle(), MathUtils.EPSILON);
+
+        module.writeAngle(Math.toRadians(360.0 - 5.0));
+        module.setTargetVelocity(Vector2.fromAngle(Rotation2.fromDegrees(5.0)));
+        module.updateSensors();
+        module.updateState(UPDATE_DT);
+        assertEquals(Math.toRadians(5.0), module.getTargetAngle(), MathUtils.EPSILON);
+
+        module.writeAngle(Math.toRadians(175.0));
+        module.setTargetVelocity(Vector2.fromAngle(Rotation2.fromDegrees(185.0)));
+        module.updateSensors();
+        module.updateState(UPDATE_DT);
+        assertEquals(Math.toRadians(185.0), module.getTargetAngle(), MathUtils.EPSILON);
     }
 
     @Test

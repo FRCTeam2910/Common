@@ -17,7 +17,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
         }
 
         for (SwerveModule module : getSwerveModules()) {
-            Vector2 velocity = module.getModulePosition().scale(rotation).add(translation);
+            Vector2 velocity = module.getModulePosition().normal().scale(rotation).add(translation);
 
             module.setTargetVelocity(velocity);
         }
@@ -77,7 +77,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     public void outputToSmartDashboard() {
         super.outputToSmartDashboard();
         for (SwerveModule module : getSwerveModules()) {
-            SmartDashboard.putNumber(String.format("%s module angle", module.getName()), module.getCurrentAngle());
+            SmartDashboard.putNumber(String.format("%s module angle", module.getName()), Math.toDegrees(module.getCurrentAngle()));
             SmartDashboard.putNumber(String.format("%s module drive distance", module.getName()), module.getCurrentDistance());
             SmartDashboard.putString(String.format("%s module position", module.getName()), module.getCurrentPosition().toString());
         }
