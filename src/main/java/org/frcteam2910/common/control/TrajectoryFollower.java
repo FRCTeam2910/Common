@@ -38,6 +38,13 @@ public abstract class TrajectoryFollower<DriveSignalType> {
                                                             double time, double dt);
 
     /**
+     * Gets if the follower is done following the path.
+     *
+     * @return true if the path is done
+     */
+    protected abstract boolean isFinished();
+
+    /**
      * Resets the follower's internal state. This is called when a new trajectory is started.
      */
     protected abstract void reset();
@@ -95,13 +102,18 @@ public abstract class TrajectoryFollower<DriveSignalType> {
             if (Double.isNaN(startTime)) {
                 startTime = time;
                 reset();
+            } else if (isFinished()) {
+                currentTrajectory = null;
+                return Optional.empty();
             }
 
             trajectory = currentTrajectory;
             timeSinceStart = time - startTime;
         }
 
-        return Optional.of(calculateDriveSignal(currentPose, velocity, rotationalVelocity, trajectory, timeSinceStart,
-                dt));
+        DriveSignalType signal = calculateDriveSignal(currentPose, velocity, rotationalVelocity, trajectory,
+                timeSinceStart, dt);
+
+        return Optional.of(signal);
     }
 }

@@ -12,6 +12,8 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
     private final double translationKa;
     private final double translationKs;
 
+    private boolean finished = false;
+
     public HolonomicMotionProfiledTrajectoryFollower(PidConstants translationConstants, PidConstants rotationConstants,
                                                      double translationKv, double translationKa, double translationKs) {
         forwardController = new PidController(translationConstants);
@@ -27,6 +29,11 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
     protected DriveSignal calculateDriveSignal(RigidTransform2 currentPose, Vector2 velocity,
                                                double rotationalVelocity, Trajectory trajectory, double time,
                                                double dt) {
+        if (time > trajectory.getDuration()) {
+            finished = true;
+            return new DriveSignal(Vector2.ZERO, 0.0);
+        }
+
         Trajectory.Segment currentSegment = trajectory.calculateSegment(time);
 
         Vector2 segmentVelocity = Vector2.fromAngle(currentSegment.heading).scale(currentSegment.velocity);
@@ -57,10 +64,17 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
     }
 
     @Override
+    protected boolean isFinished() {
+        return finished;
+    }
+
+    @Override
     protected void reset() {
         forwardController.reset();
         strafeController.reset();
         rotationController.reset();
+
+        finished = false;
     }
 
     public static class DriveSignal {
