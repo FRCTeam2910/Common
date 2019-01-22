@@ -11,26 +11,15 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     private Vector2 kinematicVelocity = Vector2.ZERO;
     private double lastKinematicTimestamp;
 
-    @Override
     public final void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented) {
-        holonomicDrive(translation, rotation, fieldOriented, false);
-    }
-
-    public final void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented, boolean angleOnly) {
         if (fieldOriented) {
             translation = translation.rotateBy(getGyroscope().getAngle());
         }
 
         for (SwerveModule module : getSwerveModules()) {
-            Vector2 velocity = module.getModulePosition().scale(rotation).add(translation);
+            Vector2 velocity = module.getModulePosition().normal().scale(rotation).add(translation);
 
-            if (velocity.length > Constants.DEADBAND_RANGE || angleOnly) {
-                module.setTargetAngle(velocity.getAngle());
-            }
-
-            if (!angleOnly) {
-                module.setTargetDrivePercentage(velocity.length);
-            }
+            module.setTargetVelocity(velocity);
         }
     }
 
@@ -42,16 +31,8 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     }
 
     @Override
-    public void zeroSensors() {
-        super.zeroSensors();
-        for (SwerveModule module : getSwerveModules()) {
-            module.zeroDistance();
-        }
-    }
-
-    @Override
     public synchronized void updateKinematics(double timestamp) {
-        Rotation2 heading = getGyroscope().getAngle();
+        double robotRotation = getGyroscope().getAngle().toRadians();
         double dt = timestamp - lastKinematicTimestamp;
         lastKinematicTimestamp = timestamp;
 
@@ -59,8 +40,9 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
         Vector2 averagePosition = Vector2.ZERO;
         for (SwerveModule module : swerveModules) {
-            module.updateKinematics(heading);
-            averagePosition = averagePosition.add(module.getKinematicPosition());
+            module.updateSensors();
+            module.updateKinematics(robotRotation);
+            averagePosition = averagePosition.add(module.getCurrentPosition());
         }
         averagePosition = averagePosition.scale(1.0 / swerveModules.length);
 
@@ -68,13 +50,13 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
         kinematicPosition = averagePosition;
 
         for (SwerveModule module : swerveModules) {
-            module.update(dt);
+            module.updateState(dt);
         }
     }
 
     public synchronized void resetKinematics(double timestamp) {
         for (SwerveModule module : getSwerveModules()) {
-            module.resetKinematics(getGyroscope().getAngle());
+            module.resetKinematics(module.getModulePosition());
         }
         kinematicVelocity = Vector2.ZERO;
         kinematicPosition = Vector2.ZERO;
@@ -95,9 +77,9 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     public void outputToSmartDashboard() {
         super.outputToSmartDashboard();
         for (SwerveModule module : getSwerveModules()) {
-            SmartDashboard.putNumber(String.format("%s module output %%", module.getName()), module.getCurrentDrivePercentage());
+            SmartDashboard.putNumber(String.format("%s module angle", module.getName()), Math.toDegrees(module.getCurrentAngle()));
             SmartDashboard.putNumber(String.format("%s module drive distance", module.getName()), module.getCurrentDistance());
-            SmartDashboard.putString(String.format("%s module position", module.getName()), module.getKinematicPosition().toString());
+            SmartDashboard.putString(String.format("%s module position", module.getName()), module.getCurrentPosition().toString());
         }
     }
 }

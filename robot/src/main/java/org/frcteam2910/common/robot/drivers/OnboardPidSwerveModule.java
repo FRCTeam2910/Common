@@ -17,6 +17,8 @@ public class OnboardPidSwerveModule extends SwerveModule {
      */
     public static final double DEFAULT_HARDWARE_UPDATE_RATE = 200.0;
 
+    private final double angleOffset;
+
     private final SpeedController angleMotor;
     private final SpeedController driveMotor;
 
@@ -50,7 +52,8 @@ public class OnboardPidSwerveModule extends SwerveModule {
                                   SpeedController angleMotor, SpeedController driveMotor,
                                   DoubleSupplier angleEncoder, DoubleSupplier driveEncoder,
                                   PidConstants anglePidConstants) {
-        super(positionOffset, Rotation2.fromRadians(angleOffset).inverse());
+        super(positionOffset);
+        this.angleOffset = angleOffset;
 
         this.angleMotor = angleMotor;
         this.driveMotor = driveMotor;
@@ -97,53 +100,40 @@ public class OnboardPidSwerveModule extends SwerveModule {
     }
 
     @Override
-    protected double getAngleEncoderRotations() {
-        return angleReading;
+    protected double readAngle() {
+        double angle = angleReading + angleOffset % 2.0 * Math.PI;
+        if (angle < 0.0) {
+            angle += 2.0 * Math.PI;
+        }
+
+        return angle;
     }
 
     @Override
-    protected void setTargetAngleRotations(double rotations) {
+    protected void setTargetAngle(double angle) {
         synchronized (angleController) {
-            angleController.setSetpoint(rotations * 2.0 * Math.PI);
+            angleController.setSetpoint(angle);
         }
     }
 
     @Override
-    protected void setDriveMotorInverted(boolean inverted) {
-        driveInverted = inverted;
+    public void setDriveOutput(double output) {
+        driveOutput = output;
     }
 
     @Override
-    public double getCurrentDrivePercentage() {
-        return driveOutput;
-    }
-
-    @Override
-    public void setTargetDrivePercentage(double percentage) {
-        driveOutput = percentage;
-    }
-
-    @Override
-    public void zeroDistance() {
-        // TODO: Implement
-    }
-
-    @Override
-    public double getCurrentDistance() {
+    public double readDistance() {
         return driveReading;
     }
 
     @Override
-    public double getCurrentRate() {
-        return 0; // TODO: Implement
-    }
+    public void updateState(double dt) {
+        super.updateState(dt);
 
-    @Override
-    public void update(double dt) {
-        double currentRotation = getAngleEncoderRotations();
+        double currentAngle = getCurrentAngle();
 
         synchronized (angleController) {
-            angleOutput = angleController.calculate(currentRotation * 2.0 * Math.PI, dt);
+            angleOutput = angleController.calculate(currentAngle, dt);
         }
     }
 
