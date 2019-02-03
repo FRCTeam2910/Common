@@ -35,11 +35,11 @@ public final class Path {
 		return segments;
 	}
 
-	private double getDistanceToSegmentStart(int segment) {
+	public double getDistanceToSegmentStart(int segment) {
 		return distancesFromStart.get(segment);
 	}
 
-	private double getDistanceToSegmentEnd(int segment) {
+	public double getDistanceToSegmentEnd(int segment) {
 		return distancesFromStart.get(segment) + segments.get(segment).getLength();
 	}
 

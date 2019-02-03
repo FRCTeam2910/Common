@@ -173,7 +173,9 @@ public final class SplinePathGenerator implements PathGenerator {
                         lastGoodSeg = seg;
                         lastGoodEnd = segEnd;
 
-                        segEnd += segDelta / 2.0;
+                        // The end of the segment cannot be over 1. If it is, the results that the spline will calculate
+                        // are undefined and could result in a lot of useless values at the end of the path.
+                        segEnd = MathUtils.clamp(segEnd + segDelta / 2.0, 0.0, 1.0);
                     }
                 }
 

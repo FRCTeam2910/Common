@@ -232,8 +232,11 @@ public final class Vector2 {
 			return false;
 		}
 
-		Vector2 other = (Vector2) obj;
-		return epsilonEquals(x, other.x) && epsilonEquals(y, other.y);
+		return equals((Vector2) obj, MathUtils.EPSILON);
+	}
+
+	public boolean equals(Vector2 other, double maxError) {
+		return MathUtils.epsilonEquals(x, other.x, maxError) && MathUtils.epsilonEquals(y, other.y, maxError);
 	}
 
     /**

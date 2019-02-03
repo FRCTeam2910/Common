@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class TrajectoryTest {
 	public static final int SPEED_RUNS = 10;
@@ -24,10 +24,16 @@ public class TrajectoryTest {
 	private static final double KA = 0.1;
 	private static final double KS = 0.0;
 
-	private static final double MAX_ACCELERATION = 5.0 * 3.0;
+	private static final double MAX_ACCELERATION = 5.0;
+	private static final double ALLOWABLE_ACCELERATION_ERROR = 0.01;
 
 	private static final double MAX_FEEDFORWARD = 12.0;
 	private static final double ALLOWABLE_FEEDFORWARD_ERROR = 0.5;
+
+	private static final double ALLOWABLE_DISTANCE_ERROR = 0.001;
+	private static final double ALLOWABLE_HEADING_ERROR = Math.toRadians(0.01);
+    private static final double ALLOWABLE_POSITION_ERROR = 0.001;
+    private static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(0.01);
 
 	private static final Waypoint[] WAYPOINTS = {
 			new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),
@@ -71,11 +77,14 @@ public class TrajectoryTest {
 		for (int i = 0; i < PATHS.length; i++) {
 			Path path = PATHS[i];
 			Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
-			trajectory.calculateSegments(DT);
 
-			for (Trajectory.Segment segment : trajectory.getSegments()) {
-				assertThat(String.format("Actual feedforward exceeds max feedforward on path %d at %.3f seconds", i, segment.time),
-						calculateFeedforward(segment), lessThanOrEqualTo(MAX_FEEDFORWARD + ALLOWABLE_FEEDFORWARD_ERROR));
+			for (int j = 0; j < Math.ceil(trajectory.getDuration() / DT); j++) {
+				Trajectory.Segment segment = trajectory.calculateSegment(j * DT);
+
+				double absFeedforward = Math.abs(calculateFeedforward(segment));
+
+				assertThat("Actual feedforward exceeds max feedforward", absFeedforward,
+						lessThanOrEqualTo(MAX_FEEDFORWARD + ALLOWABLE_FEEDFORWARD_ERROR));
 			}
 		}
 	}
@@ -84,25 +93,73 @@ public class TrajectoryTest {
 	public void velocityContinuityTest() {
 		for (Path path : PATHS) {
 			Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
-			trajectory.calculateSegments(DT);
-
-			final double maxAllowableAbsDeltaVelocity = MAX_ACCELERATION * DT * (1 + MathUtils.EPSILON);
 
 			Trajectory.Segment previousSegment = null;
-			for (Trajectory.Segment segment : trajectory.getSegments()) {
+			for (int i = 0; i < Math.ceil(trajectory.getDuration() / DT); i++) {
+				Trajectory.Segment segment = trajectory.calculateSegment(i * DT);
 				if (previousSegment == null) {
 					previousSegment = segment;
 					continue;
 				}
 
-				double absDeltaVelocity = Math.abs(previousSegment.velocity - segment.velocity);
+				double absAcceleration = Math.abs(previousSegment.velocity - segment.velocity) / DT;
 
-				assertThat("Actual acceleration exceeds max acceleration", absDeltaVelocity, lessThanOrEqualTo(maxAllowableAbsDeltaVelocity));
+				assertThat("Actual acceleration exceeds max acceleration", absAcceleration,
+						lessThanOrEqualTo(MAX_ACCELERATION + ALLOWABLE_ACCELERATION_ERROR));
 
 				previousSegment = segment;
 			}
 		}
 	}
+
+	@Test
+	public void verifyStartAndEndTest() {
+	    Path path = new Path(Rotation2.ZERO);
+	    path.addSegment(new PathLineSegment(Vector2.ZERO, new Vector2(12.0, 0.0)), Rotation2.ZERO);
+	    path.subdivide(10);
+	    Trajectory trajectory = new Trajectory(path,
+                new ITrajectoryConstraint() {
+                    @Override
+                    public double getMaxVelocity(PathSegment segment) {
+                        return 2.0;
+                    }
+
+                    @Override
+                    public double getMaxAcceleration(PathSegment segment, double velocity) {
+                        return 1.0;
+                    }
+                });
+
+	    Trajectory.Segment segment = trajectory.calculateSegment(0.0);
+
+        assertEquals("Starting distance does not match the desired distance",
+                0.0, segment.position, ALLOWABLE_DISTANCE_ERROR);
+        assertTrue(String.format("Starting heading (%s) does not match the desired heading (%s)",
+                segment.heading, Rotation2.ZERO),
+                segment.heading.equals(Rotation2.ZERO, ALLOWABLE_HEADING_ERROR));
+        assertEquals("Starting X position does not match the desired X position",
+                0.0, segment.translation.x, ALLOWABLE_POSITION_ERROR);
+        assertEquals("Starting Y position does not match the desired Y position",
+                0.0, segment.translation.y, ALLOWABLE_POSITION_ERROR);
+        assertTrue(String.format("Starting rotation (%s) does not match the desired rotation (%s)",
+                segment.rotation, Rotation2.ZERO),
+                segment.rotation.equals(Rotation2.ZERO, ALLOWABLE_ROTATION_ERROR));
+
+	    segment = trajectory.calculateSegment(trajectory.getDuration());
+
+        assertEquals("Ending distance does not match the desired distance",
+                12.0, segment.position, ALLOWABLE_DISTANCE_ERROR);
+        assertTrue(String.format("Ending heading (%s) does not match the desired heading (%s)",
+                segment.heading, Rotation2.ZERO),
+                segment.heading.equals(Rotation2.ZERO, ALLOWABLE_HEADING_ERROR));
+        assertEquals("Ending X position does not match the desired X Position",
+                12.0, segment.translation.x, ALLOWABLE_POSITION_ERROR);
+        assertEquals("Ending Y position does not match the desired Y position",
+                0.0, segment.translation.y, ALLOWABLE_POSITION_ERROR);
+        assertTrue(String.format("Ending rotation (%s) does not match the desired rotation (%s)",
+                segment.rotation, Rotation2.ZERO),
+                segment.rotation.equals(Rotation2.ZERO, ALLOWABLE_ROTATION_ERROR));
+    }
 
 	@Test
 	public void speedTest() {

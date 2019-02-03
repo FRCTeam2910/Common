@@ -199,6 +199,11 @@ public final class Rotation2 implements Interpolable<Rotation2> {
         return MathUtils.epsilonEquals(cos, other.cos) && MathUtils.epsilonEquals(sin, other.sin);
     }
 
+    public boolean equals(Rotation2 other, double maxError) {
+        return MathUtils.epsilonEquals(cos, other.cos, Math.abs(Math.cos(maxError))) &&
+                MathUtils.epsilonEquals(sin, other.sin, Math.abs(Math.sin(maxError)));
+    }
+
     /**
      * {@inheritDoc}
      */
