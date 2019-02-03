@@ -240,8 +240,9 @@ public final class Vector2 implements Interpolable<Vector2>, Serializable {
 		return equals((Vector2) obj, MathUtils.EPSILON);
 	}
 
-	public boolean equals(Vector2 other, double maxError) {
-		return MathUtils.epsilonEquals(x, other.x, maxError) && MathUtils.epsilonEquals(y, other.y, maxError);
+	public boolean equals(Vector2 other, double allowableError) {
+		return MathUtils.epsilonEquals(x, other.x, allowableError) &&
+				MathUtils.epsilonEquals(y, other.y, allowableError);
 	}
 
     /**
