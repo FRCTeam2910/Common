@@ -3,20 +3,21 @@ package org.frcteam2910.common.drivers;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
 public abstract class SwerveModule {
     private final Vector2 modulePosition;
 
-    private AtomicLong currentAngle = new AtomicLong();
-    private AtomicLong currentDistance = new AtomicLong();
+    private final Object sensorMutex = new Object();
+    private double currentAngle = 0.0;
+    private double currentDistance = 0.0;
 
-    private AtomicReference<Vector2> targetVelocity = new AtomicReference<>(Vector2.ZERO);
+    private final Object stateMutex = new Object();
+    private double targetSpeed = 0.0;
+    private double targetAngle = 0.0;
 
-    private AtomicReference<Vector2> currentPosition = new AtomicReference<>(Vector2.ZERO);
-
+    private final Object kinematicsMutex = new Object();
+    private Vector2 currentPosition = Vector2.ZERO;
     private double previousDistance;
+
     private String name = "Unknown";
 
     public SwerveModule(Vector2 modulePosition) {
@@ -86,7 +87,9 @@ public abstract class SwerveModule {
      * @return The current angle of the module.
      */
     public final double getCurrentAngle() {
-        return Double.longBitsToDouble(currentAngle.get());
+        synchronized (sensorMutex) {
+            return currentAngle;
+        }
     }
 
     /**
@@ -95,7 +98,21 @@ public abstract class SwerveModule {
      * @return the distance driven
      */
     public final double getCurrentDistance() {
-        return Double.longBitsToDouble(currentDistance.get());
+        synchronized (sensorMutex) {
+            return currentDistance;
+        }
+    }
+
+    public Vector2 getTargetVelocity() {
+        double targetAngle;
+        double targetSpeed;
+
+        synchronized (stateMutex) {
+            targetAngle = this.targetAngle;
+            targetSpeed = this.targetSpeed;
+        }
+
+        return Vector2.fromAngle(Rotation2.fromRadians(targetAngle)).scale(targetSpeed);
     }
 
     /**
@@ -104,7 +121,28 @@ public abstract class SwerveModule {
      * @param velocity the target velocity
      */
     public final void setTargetVelocity(Vector2 velocity) {
-        targetVelocity.set(velocity);
+        synchronized (stateMutex) {
+            targetSpeed = velocity.length;
+            targetAngle = velocity.getAngle().toRadians();
+        }
+    }
+
+    public final void setTargetVelocity(double speed, double angle) {
+        if (speed < 0.0) {
+            speed *= -1.0;
+
+            angle += Math.PI;
+        }
+
+        angle %= 2.0 * Math.PI;
+        if (angle < 0.0) {
+            angle += 2.0 * Math.PI;
+        }
+
+        synchronized (stateMutex) {
+            targetSpeed = speed;
+            targetAngle = angle;
+        }
     }
 
     /**
@@ -113,7 +151,9 @@ public abstract class SwerveModule {
      * @return the current position
      */
     public final Vector2 getCurrentPosition() {
-        return currentPosition.get();
+        synchronized (kinematicsMutex) {
+            return currentPosition;
+        }
     }
 
     /**
@@ -129,15 +169,19 @@ public abstract class SwerveModule {
      * @param position the position to reset to
      */
     public void resetKinematics(Vector2 position) {
-        currentPosition.set(position);
+        synchronized (kinematicsMutex) {
+            currentPosition = position;
+        }
     }
 
     /**
      * Updates the sensor readings that the module uses.
      */
     public void updateSensors() {
-        currentAngle.set(Double.doubleToRawLongBits(readAngle()));
-        currentDistance.set(Double.doubleToRawLongBits(readDistance()));
+        synchronized (sensorMutex) {
+            currentAngle = readAngle();
+            currentDistance = readDistance();
+        }
     }
 
     /**
@@ -152,8 +196,10 @@ public abstract class SwerveModule {
 
         Vector2 deltaPosition = Vector2.fromAngle(Rotation2.fromRadians(currentAngle)).scale(deltaDistance);
 
-        currentPosition.updateAndGet(current -> current.add(deltaPosition));
-        previousDistance = currentDistance;
+        synchronized (kinematicsMutex) {
+            currentPosition = currentPosition.add(deltaPosition);
+            previousDistance = currentDistance;
+        }
     }
 
     /**
@@ -162,10 +208,13 @@ public abstract class SwerveModule {
      * @param dt update loop delta time
      */
     public void updateState(double dt) {
-        Vector2 targetVelocity = this.targetVelocity.get();
+        double targetAngle;
+        double targetSpeed;
 
-        double targetAngle = targetVelocity.getAngle().toRadians();
-        double targetDriveOutput = targetVelocity.length;
+        synchronized (stateMutex) {
+            targetAngle = this.targetAngle;
+            targetSpeed = this.targetSpeed;
+        }
 
         final double currentAngle = getCurrentAngle();
 
@@ -184,7 +233,7 @@ public abstract class SwerveModule {
             // Only need to add pi here because the target angle will be put back into the range [0, 2pi)
             targetAngle += Math.PI;
 
-            targetDriveOutput *= -1.0;
+            targetSpeed *= -1.0;
         }
 
         // Put target angle back into the range [0, 2pi)
@@ -194,6 +243,6 @@ public abstract class SwerveModule {
         }
 
         setTargetAngle(targetAngle);
-        setDriveOutput(targetDriveOutput);
+        setDriveOutput(targetSpeed);
     }
 }
