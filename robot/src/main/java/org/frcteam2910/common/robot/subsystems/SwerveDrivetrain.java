@@ -2,9 +2,9 @@ package org.frcteam2910.common.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frcteam2910.common.drivers.SwerveModule;
+import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
-import org.frcteam2910.common.robot.Constants;
 
 public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     private Vector2 kinematicPosition = Vector2.ZERO;
@@ -38,18 +38,25 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
         SwerveModule[] swerveModules = getSwerveModules();
 
-        Vector2 averagePosition = Vector2.ZERO;
+        Vector2 averageCenter = Vector2.ZERO;
         for (SwerveModule module : swerveModules) {
             module.updateSensors();
             module.updateKinematics(robotRotation);
-            averagePosition = averagePosition.add(module.getCurrentPosition());
-        }
-        averagePosition = averagePosition.scale(1.0 / swerveModules.length);
 
-        kinematicVelocity = averagePosition.subtract(kinematicPosition).scale(1 / (timestamp - lastKinematicTimestamp));
-        kinematicPosition = averagePosition;
+            Vector2 estimatedCenter = new RigidTransform2(module.getCurrentPosition(),
+                    Rotation2.fromRadians(robotRotation))
+                    .transformBy(new RigidTransform2(module.getModulePosition().inverse(), Rotation2.ZERO)).translation;
+
+            averageCenter = averageCenter.add(estimatedCenter);
+        }
+        averageCenter = averageCenter.scale(1.0 / swerveModules.length);
+
+        kinematicVelocity = averageCenter.subtract(kinematicPosition).scale(1 / (timestamp - lastKinematicTimestamp));
+        kinematicPosition = averageCenter;
 
         for (SwerveModule module : swerveModules) {
+            module.resetKinematics(new RigidTransform2(kinematicPosition, Rotation2.fromRadians(robotRotation))
+                    .transformBy(new RigidTransform2(module.getModulePosition(), Rotation2.ZERO)).translation);
             module.updateState(dt);
         }
     }
