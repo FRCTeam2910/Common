@@ -12,14 +12,12 @@ public abstract class PurePursuitTrajectoryFollowerBase<DriveSignalType> extends
     public static final double DEFAULT_SEARCH_DT = 5.0e-3;
 
     private final Function<Vector2, Double> lookaheadDistanceFunction;
-
     private double finishRange;
 
-    private Trajectory.Segment closestSegment = null;
-
     private double searchDt = DEFAULT_SEARCH_DT;
-
     private boolean finished = false;
+
+    private Trajectory.Segment closestSegment = null;
 
     public PurePursuitTrajectoryFollowerBase(Function<Vector2, Double> lookaheadDistanceFunction,
                                              double finishRange) {
@@ -35,10 +33,12 @@ public abstract class PurePursuitTrajectoryFollowerBase<DriveSignalType> extends
         Vector2 abMidpoint = pointA.interpolate(pointB, 0.5);
         if (headingA.isParallel(abMidpoint.getAngle())) {
             if (headingA.equals(abMidpoint.getAngle())) {
-                // Point A points towards point B so we have a line.
+                // Point A points exactly towards point B so we have a line.
                 return new PathLineSegment(pointA, pointB);
             } else {
-                //
+                // Point A points exactly away from point B so we cannot create an arc or a line to connect the two
+                // points. We create a line from point A and hope the heading changes so we can create an actual arc.
+                // The chance of this case happening is really low, so this should almost never happen.
                 return new PathLineSegment(pointA, pointA.subtract(pointB.subtract(pointA)));
             }
         }
@@ -71,7 +71,7 @@ public abstract class PurePursuitTrajectoryFollowerBase<DriveSignalType> extends
             Trajectory.Segment segment;
 
             // Use the last segment if the search time exceeds the trajectory's duration.
-            if (searchTime > trajectory.getDuration()) {
+            if (searchTime >= trajectory.getDuration()) {
                 segment = trajectory.calculateSegment(trajectory.getDuration());
                 atEndOfTrajectory = true;
             } else {
@@ -101,7 +101,7 @@ public abstract class PurePursuitTrajectoryFollowerBase<DriveSignalType> extends
             double searchTime = lookaheadSegment.time + searchDt;
 
             // Use the last segment of the trajectory if the search time exceeds of the trajectory's duration.
-            if (searchTime > trajectory.getDuration()) {
+            if (searchTime >= trajectory.getDuration()) {
                 lookaheadSegment = trajectory.calculateSegment(trajectory.getDuration());
                 atEndOfTrajectory = true;
             } else {
@@ -126,7 +126,6 @@ public abstract class PurePursuitTrajectoryFollowerBase<DriveSignalType> extends
                                                    double rotationalVelocity, Trajectory trajectory,
                                                    double time, double dt) {
         closestSegment = findClosestSegment(trajectory, currentPose, searchDt, closestSegment);
-
 
         Trajectory.Segment lookaheadSegment = findLookaheadSegment(trajectory, currentPose,
                 lookaheadDistanceFunction.apply(velocity), searchDt, closestSegment);

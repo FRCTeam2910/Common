@@ -24,27 +24,33 @@ public class DrivetrainFeedforwardConstantsTest {
     @Test
     public void getVelocityConstantTest() {
         DrivetrainFeedforwardConstants constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 0.0);
-        assertEquals(0.0, constants.getVelocityConstant(), MathUtils.EPSILON);
+        assertEquals("Incorrect velocity constant returned", 0.0,
+                constants.getVelocityConstant(), MathUtils.EPSILON);
 
         constants = new DrivetrainFeedforwardConstants(1.0, 0.0, 0.0);
-        assertEquals(1.0, constants.getVelocityConstant(), MathUtils.EPSILON);
+        assertEquals("Incorrect velocity constant returned",
+                1.0, constants.getVelocityConstant(), MathUtils.EPSILON);
     }
 
     @Test
     public void getAccelerationConstantTest() {
         DrivetrainFeedforwardConstants constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 0.0);
-        assertEquals(0.0, constants.getAccelerationConstant(), MathUtils.EPSILON);
+        assertEquals("Incorrect acceleration constant returned",
+                0.0, constants.getAccelerationConstant(), MathUtils.EPSILON);
 
         constants = new DrivetrainFeedforwardConstants(0.0, 1.0, 0.0);
-        assertEquals(1.0, constants.getAccelerationConstant(), MathUtils.EPSILON);
+        assertEquals("Incorrect acceleration constant returned", 1.0,
+                constants.getAccelerationConstant(), MathUtils.EPSILON);
     }
 
     @Test
     public void getStaticConstantTest() {
         DrivetrainFeedforwardConstants constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 0.0);
-        assertEquals(0.0, constants.getStaticConstant(), MathUtils.EPSILON);
+        assertEquals("Incorrect static constant returned", 0.0,
+                constants.getStaticConstant(), MathUtils.EPSILON);
 
         constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 1.0);
-        assertEquals(1.0, constants.getStaticConstant(), MathUtils.EPSILON);
+        assertEquals("Incorrect static constant returned", 1.0,
+                constants.getStaticConstant(), MathUtils.EPSILON);
     }
 }

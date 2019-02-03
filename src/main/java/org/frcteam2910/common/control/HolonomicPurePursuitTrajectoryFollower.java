@@ -8,7 +8,6 @@ import org.frcteam2910.common.util.HolonomicFeedforward;
 import java.util.function.Function;
 
 public class HolonomicPurePursuitTrajectoryFollower extends PurePursuitTrajectoryFollowerBase<HolonomicDriveSignal> {
-
     private final HolonomicFeedforward feedforward;
 
     private final PidController rotationController;
