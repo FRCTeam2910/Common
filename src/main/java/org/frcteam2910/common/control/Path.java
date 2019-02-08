@@ -44,15 +44,23 @@ public final class Path {
 	}
 
 	private int getSegmentAtDistance(double distance) {
-		for (int i = 0; i < segments.size() - 1; i++) {
-			double beginDistance = getDistanceToSegmentStart(i);
-			double endDistance = getDistanceToSegmentEnd(i);
+		int start = 0;
+		int end = segments.size() - 1;
+		int mid = start + (end - start) / 2;
 
-			if (beginDistance <= distance && distance < endDistance)
-				return i;
+		while (start < end) {
+			mid = start + (end - start) / 2;
+
+			if (distance > getDistanceToSegmentEnd(mid)) {
+				start = mid + 1;
+			} else if (distance < getDistanceToSegmentStart(mid)) {
+				end = mid;
+			} else {
+				break;
+			}
 		}
 
-		return segments.size() - 1;
+		return mid;
 	}
 
 	public Vector2 getPositionAtDistance(double distance) {

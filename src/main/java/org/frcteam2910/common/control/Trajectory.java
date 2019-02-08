@@ -19,6 +19,8 @@ public class Trajectory {
 	private double[] maxSegmentVelocities;
 	private double[] maxSegmentAccelerations;
 
+	private double[] profileStartTimes;
+
 	public Trajectory(Path path, ITrajectoryConstraint... constraints) {
 		this.path = path;
 
@@ -115,6 +117,8 @@ public class Trajectory {
 		}
 
 		this.profiles = new MotionProfile[path.getSegments().size()];
+		this.profileStartTimes = new double[profiles.length];
+
 		MotionProfile.Goal lastPosition = new MotionProfile.Goal(0, 0);
 		for (int i = 0; i < profiles.length; i++) {
 			PathSegment pathSegment = path.getSegments().get(i);
@@ -131,6 +135,7 @@ public class Trajectory {
 			MotionProfile.Goal endPosition = new MotionProfile.Goal(lastPosition.position + pathSegment.getLength(), endVelocity);
 			profiles[i] = new TrapezoidalMotionProfile(lastPosition, endPosition, segmentConstraints);
 
+			profileStartTimes[i] = duration;
 			duration += profiles[i].getDuration();
 
 			// The profile may not have been able to finish accelerating. We need to manually find the ending velocity
@@ -139,19 +144,39 @@ public class Trajectory {
 	}
 
 	public Segment calculateSegment(double time) {
-		int profileIndex = 0;
-		double profileTime = time;
-		while (profileIndex < profiles.length - 1 && profileTime > profiles[profileIndex].getDuration()) {
-			profileTime -= profiles[profileIndex++].getDuration();
+		int profileIndex;
+		double profileTime;
+
+		// Binary search to find the correct motion profile
+		{
+			int start = 0;
+			int end = profiles.length - 1;
+			int mid = start + (end - start) / 2;
+
+			while (start < end) {
+				// Mid is halfway between start and end
+				mid = start + (end - start) / 2;
+
+				if (time > profileStartTimes[mid] + profiles[mid].getDuration()) {
+					// Our time is greater than the end time of the profile, move start to mid and try again
+					start = mid + 1;
+				} else if (time < profileStartTimes[mid]) {
+					// Our time is less than the start time of the profile, move end to mid and try again
+					end = mid;
+				} else {
+					// We are within the start and end times of our profile. This is the profile we want.
+					break;
+				}
+			}
+
+			profileIndex = mid;
+			profileTime = time - profileStartTimes[profileIndex];
 		}
 
-		MotionProfile profile = profiles[profileIndex];
-		PathSegment segment = path.getSegments().get(profileIndex);
 
 		MotionProfile.State state = profiles[profileIndex].calculate(profileTime);
 		Vector2 pathPosition = path.getPositionAtDistance(state.position);
 		Rotation2 pathHeading = path.getHeadingAtDistance(state.position);
-//		Rotation2 pathRotation = segment.getRotationAtPercentage(profileTime / profile.getDuration());
 		Rotation2 pathRotation = path.getRotationAtDistance(path.getLength() * (time / getDuration()));
 
 		return new Segment(profileIndex, time, pathPosition, pathHeading, pathRotation, state.position, state.velocity,
