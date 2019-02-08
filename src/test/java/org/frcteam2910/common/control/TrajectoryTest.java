@@ -30,10 +30,10 @@ public class TrajectoryTest {
     private static final double MAX_FEEDFORWARD = 12.0;
     private static final double ALLOWABLE_FEEDFORWARD_ERROR = 0.5;
 
-    private static final double ALLOWABLE_DISTANCE_ERROR = 0.001;
-    private static final double ALLOWABLE_HEADING_ERROR = Math.toRadians(0.01);
-    private static final double ALLOWABLE_POSITION_ERROR = 0.001;
-    private static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(0.01);
+    private static final double ALLOWABLE_DISTANCE_ERROR = 0.05;
+    private static final double ALLOWABLE_HEADING_ERROR = Math.toRadians(0.05);
+    private static final double ALLOWABLE_POSITION_ERROR = 0.05;
+    private static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(0.05);
 
     private static final Waypoint[] WAYPOINTS = {
             new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),

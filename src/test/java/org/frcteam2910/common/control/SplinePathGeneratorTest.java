@@ -14,9 +14,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SplinePathGeneratorTest {
-    private static final double ALLOWABLE_HEADING_ERROR = Math.toRadians(0.01);
-    private static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(0.01);
-    private static final double ALLOWABLE_POSITION_ERROR = 0.001;
+    private static final double ALLOWABLE_HEADING_ERROR = Math.toRadians(0.05);
+    private static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(0.05);
+    private static final double ALLOWABLE_POSITION_ERROR = 0.05;
 
     private static final double WRITE_SEARCH = 0.1;
 
