@@ -121,8 +121,6 @@ public class Trajectory {
 
 		MotionProfile.Goal lastPosition = new MotionProfile.Goal(0, 0);
 		for (int i = 0; i < profiles.length; i++) {
-			PathSegment pathSegment = path.getSegments().get(i);
-
 			// Create the motion constraints for this segment
 			MotionProfile.Constraints segmentConstraints = new MotionProfile.Constraints(maxSegmentVelocities[i], Math.max(maxSegmentAccelerations[i], MathUtils.EPSILON));
 
@@ -132,14 +130,17 @@ public class Trajectory {
 				endVelocity = maxSegmentVelocities[i + 1];
 			}
 
-			MotionProfile.Goal endPosition = new MotionProfile.Goal(lastPosition.position + pathSegment.getLength(), endVelocity);
+			MotionProfile.Goal endPosition = new MotionProfile.Goal(path.getDistanceToSegmentEnd(i), endVelocity);
 			profiles[i] = new TrapezoidalMotionProfile(lastPosition, endPosition, segmentConstraints);
 
 			profileStartTimes[i] = duration;
 			duration += profiles[i].getDuration();
 
 			// The profile may not have been able to finish accelerating. We need to manually find the ending velocity
-			lastPosition = new MotionProfile.Goal(profiles[i].calculate(profiles[i].getDuration()));
+			lastPosition = new MotionProfile.Goal(
+					path.getDistanceToSegmentEnd(i),
+					profiles[i].calculate(profiles[i].getDuration()).velocity
+			);
 		}
 	}
 
