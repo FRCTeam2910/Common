@@ -54,6 +54,10 @@ public class PidController {
         integralAccum = 0.0;
     }
 
+    public double getSetpoint() {
+        return setpoint;
+    }
+
     public void setSetpoint(double setpoint) {
         this.setpoint = setpoint;
     }
