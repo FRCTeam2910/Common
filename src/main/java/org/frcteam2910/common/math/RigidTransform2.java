@@ -1,5 +1,7 @@
 package org.frcteam2910.common.math;
 
+import org.frcteam2910.common.util.Interpolable;
+
 import java.io.Serializable;
 
 /**
@@ -7,7 +9,7 @@ import java.io.Serializable;
  *
  * @since 0.2
  */
-public final class RigidTransform2 implements Serializable {
+public final class RigidTransform2 implements Serializable, Interpolable<RigidTransform2> {
     private static final long serialVersionUID = 1701732846641084965L;
 
     /**
@@ -87,5 +89,11 @@ public final class RigidTransform2 implements Serializable {
     @Override
     public String toString() {
         return "{T: " + translation + ", R: " + rotation + "}";
+    }
+
+    @Override
+    public RigidTransform2 interpolate(RigidTransform2 other, double t) {
+        return new RigidTransform2(translation.interpolate(other.translation, t),
+                rotation.interpolate(other.rotation, t));
     }
 }

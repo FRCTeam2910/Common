@@ -7,6 +7,27 @@ public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<
         extends TreeMap<K, V> implements Serializable {
     private static final long serialVersionUID = -2284755214507163440L;
 
+    private final int maxSize;
+
+    public InterpolatingTreeMap() {
+        maxSize = Integer.MAX_VALUE;
+    }
+
+    public InterpolatingTreeMap(int maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    @Override
+    public V put(K key, V value) {
+        if (maxSize > 0 && maxSize <= size()) {
+            remove(firstKey());
+        }
+
+        super.put(key, value);
+
+        return value;
+    }
+
     public V getInterpolated(K key) {
         V value = get(key);
 
