@@ -1,6 +1,14 @@
 package org.frcteam2910.common.motion;
 
 public abstract class MotionProfile {
+	private final Goal start;
+	private final Goal end;
+
+	public MotionProfile(Goal start, Goal end) {
+		this.start = start;
+		this.end = end;
+	}
+
 	public abstract State calculate(double time);
 
 	public abstract double getDuration();
@@ -9,7 +17,15 @@ public abstract class MotionProfile {
 		return time > getDuration();
 	}
 
-	public static class Constraints {
+	public Goal getStart() {
+		return start;
+	}
+
+	public Goal getEnd() {
+		return end;
+	}
+
+    public static class Constraints {
 		public final double maxVelocity;
 		public final double maxAcceleration;
 

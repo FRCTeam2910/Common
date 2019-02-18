@@ -8,6 +8,8 @@ public final class TrapezoidalMotionProfile extends MotionProfile {
 
 	public TrapezoidalMotionProfile(Goal start, Goal end,
 	                                Constraints constraints) {
+		super(start, end);
+
 		this.constraints = constraints;
 		this.start = start;
 		this.end = end;
