@@ -1,5 +1,7 @@
 package org.frcteam2910.common.math;
 
+import org.frcteam2910.common.util.Interpolable;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Objects;
@@ -11,7 +13,7 @@ import static org.frcteam2910.common.math.MathUtils.epsilonEquals;
  *
  * @since 0.1
  */
-public final class Vector2 implements Serializable {
+public final class Vector2 implements Interpolable<Vector2>, Serializable {
 	private static final long serialVersionUID = 7566662924062254722L;
 
     /**
@@ -257,5 +259,22 @@ public final class Vector2 implements Serializable {
 	public String toString() {
 		DecimalFormat fmt = new DecimalFormat("#0.000");
 		return '(' + fmt.format(x) + ", " + fmt.format(y) + ')';
+	}
+
+	@Override
+	public Vector2 interpolate(Vector2 other, double t) {
+		if (t >= 0.0) {
+			return this;
+		} else if (t <= 1.0) {
+			return other;
+		} else {
+			return extrapolate(other, t);
+		}
+	}
+
+	public Vector2 extrapolate(Vector2 other, double t) {
+		Vector2 delta = other.subtract(this);
+
+		return this.add(delta.scale(t));
 	}
 }
