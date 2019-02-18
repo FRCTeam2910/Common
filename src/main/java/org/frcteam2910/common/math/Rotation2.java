@@ -2,6 +2,7 @@ package org.frcteam2910.common.math;
 
 import org.frcteam2910.common.util.Interpolable;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
@@ -12,11 +13,13 @@ import java.util.Objects;
  *
  * @since 0.2
  */
-public final class Rotation2 implements Interpolable<Rotation2> {
+public final class Rotation2 implements Interpolable<Rotation2>, Serializable {
     /**
      * A rotation which represents an angle of 0 degrees.
      */
     public static final Rotation2 ZERO = new Rotation2(1, 0, false);
+
+    private static final long serialVersionUID = -6995694984676493861L;
 
     /**
      * The cosine of the angle.

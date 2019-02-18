@@ -3,9 +3,12 @@ package org.frcteam2910.common.control;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public final class PathLineSegment extends PathSegment {
+public final class PathLineSegment extends PathSegment implements Serializable {
+    private static final long serialVersionUID = -5561222714094182439L;
+
     private final Vector2 delta;
 
     public PathLineSegment(Vector2 start, Vector2 end) {

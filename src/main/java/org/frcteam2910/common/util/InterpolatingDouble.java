@@ -1,6 +1,10 @@
 package org.frcteam2910.common.util;
 
-public class InterpolatingDouble implements Interpolable<InterpolatingDouble>, InverseInterpolable<InterpolatingDouble>, Comparable<InterpolatingDouble> {
+import java.io.Serializable;
+
+public class InterpolatingDouble implements Interpolable<InterpolatingDouble>, InverseInterpolable<InterpolatingDouble>, Comparable<InterpolatingDouble>, Serializable {
+    private static final long serialVersionUID = -4236134181182630613L;
+
     public Double value;
 
     public InterpolatingDouble(Double value) {

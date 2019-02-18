@@ -6,11 +6,15 @@ import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.motion.MotionProfile;
 import org.frcteam2910.common.motion.TrapezoidalMotionProfile;
 
+import java.io.Serializable;
+
 /**
  * A trajectory describes how a path is followed.
  * It contains all the motion profiles for a path.
  */
-public class Trajectory {
+public class Trajectory implements Serializable {
+	private static final long serialVersionUID = -7533657200117435410L;
+
 	private final Path path;
 	private final MotionProfile[] profiles;
 	private Segment[] segments;
@@ -201,7 +205,9 @@ public class Trajectory {
 		return duration;
 	}
 
-	public static class Segment {
+	public static class Segment implements Serializable {
+		private static final long serialVersionUID = 1777234890765500009L;
+
 	    public final int pathSegmentIndex;
 		public final double time;
 		public final Vector2 translation;

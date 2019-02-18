@@ -5,10 +5,13 @@ import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.util.InterpolatingDouble;
 import org.frcteam2910.common.util.InterpolatingTreeMap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Path {
+public final class Path implements Serializable {
+	private static final long serialVersionUID = 6482549382610337817L;
+
 	private final List<PathSegment> segments = new ArrayList<>();
 	private final List<Double> distancesFromStart = new ArrayList<>();
 

@@ -4,9 +4,12 @@ import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public final class PathArcSegment extends PathSegment {
+public final class PathArcSegment extends PathSegment implements Serializable {
+    private static final long serialVersionUID = 1817031344401689498L;
+
     private final Vector2 center;
     private final Vector2 deltaStart;
     private final Vector2 deltaEnd;

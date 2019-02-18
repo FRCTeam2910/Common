@@ -3,7 +3,11 @@ package org.frcteam2910.common.control;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
-public abstract class PathSegment {
+import java.io.Serializable;
+
+public abstract class PathSegment implements Serializable {
+    private static final long serialVersionUID = -2218546434968558348L;
+
     private final Vector2 start;
     private final Vector2 end;
 
