@@ -17,7 +17,7 @@ public final class JoystickAxis extends Axis {
 		button = new Button() {
 			@Override
 			public boolean get() {
-				return !MathUtils.epsilonEquals(JoystickAxis.this.get(), 0, 0);
+				return !MathUtils.epsilonEquals(JoystickAxis.this.get(), 0, 0.1);
 			}
 		};
 	}
