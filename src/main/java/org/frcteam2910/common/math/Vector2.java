@@ -1,5 +1,6 @@
 package org.frcteam2910.common.math;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
@@ -10,7 +11,9 @@ import static org.frcteam2910.common.math.MathUtils.epsilonEquals;
  *
  * @since 0.1
  */
-public final class Vector2 {
+public final class Vector2 implements Serializable {
+	private static final long serialVersionUID = 7566662924062254722L;
+
     /**
      * A vector with a length of zero
      *

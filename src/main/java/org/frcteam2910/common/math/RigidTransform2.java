@@ -1,11 +1,15 @@
 package org.frcteam2910.common.math;
 
+import java.io.Serializable;
+
 /**
  * A rigid transform is a type of transformation that represents both a translation and a rotation.
  *
  * @since 0.2
  */
-public final class RigidTransform2 {
+public final class RigidTransform2 implements Serializable {
+    private static final long serialVersionUID = 1701732846641084965L;
+
     /**
      * The translation of the transform
      * @since 0.2

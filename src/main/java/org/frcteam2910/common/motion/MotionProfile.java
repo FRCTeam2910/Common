@@ -1,6 +1,10 @@
 package org.frcteam2910.common.motion;
 
-public abstract class MotionProfile {
+import java.io.Serializable;
+
+public abstract class MotionProfile implements Serializable {
+	private static final long serialVersionUID = -2686876020146146461L;
+
 	private final Goal start;
 	private final Goal end;
 
@@ -25,7 +29,9 @@ public abstract class MotionProfile {
 		return end;
 	}
 
-    public static class Constraints {
+	public static class Constraints implements Serializable {
+		private static final long serialVersionUID = -2874258314231931664L;
+
 		public final double maxVelocity;
 		public final double maxAcceleration;
 
@@ -35,7 +41,9 @@ public abstract class MotionProfile {
 		}
 	}
 
-	public static class Goal {
+	public static class Goal implements Serializable {
+		private static final long serialVersionUID = 269973003882036147L;
+
 		public final double position;
 		public final double velocity;
 
@@ -49,7 +57,9 @@ public abstract class MotionProfile {
 		}
 	}
 
-	public static class State {
+	public static class State implements Serializable {
+		private static final long serialVersionUID = -5701334715113990178L;
+
 		public final double time;
 		public final double position;
 		public final double velocity;
