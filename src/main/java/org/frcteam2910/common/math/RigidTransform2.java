@@ -92,6 +92,17 @@ public final class RigidTransform2 implements Serializable, Interpolable<RigidTr
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof RigidTransform2)) {
+            return false;
+        }
+
+        RigidTransform2 other = (RigidTransform2) obj;
+
+        return translation.equals(other.translation) && rotation.equals(other.rotation);
+    }
+
+    @Override
     public RigidTransform2 interpolate(RigidTransform2 other, double t) {
         return new RigidTransform2(translation.interpolate(other.translation, t),
                 rotation.interpolate(other.rotation, t));
