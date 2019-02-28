@@ -145,4 +145,8 @@ public final class XboxController extends Controller {
 	public Button getDPadButton(DPadButton.Direction direction) {
 		return dpadButtons[direction.ordinal()];
 	}
+
+	public Joystick getRawJoystick() {
+		return joystick;
+	}
 }
