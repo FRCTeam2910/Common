@@ -61,11 +61,11 @@ public final class PathArcSegment extends PathSegment implements Serializable {
     }
 
     @Override
-    public PathSegment mirror() {
+    public PathArcSegment mirror() {
         return new PathArcSegment(
                 getStart().multiply(-1.0, 1.0),
                 getEnd().multiply(-1.0, 1.0),
-                center
+                center.multiply(-1.0, 1.0)
         );
     }
 
