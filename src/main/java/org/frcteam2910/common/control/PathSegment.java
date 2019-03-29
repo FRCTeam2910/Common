@@ -18,6 +18,8 @@ public abstract class PathSegment implements Serializable {
 
     public abstract PathSegment[] subdivide();
 
+    public abstract PathSegment mirror();
+
     /**
      * Gets the curvature of the segment.
      *

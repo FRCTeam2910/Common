@@ -61,6 +61,15 @@ public final class PathArcSegment extends PathSegment implements Serializable {
     }
 
     @Override
+    public PathSegment mirror() {
+        return new PathArcSegment(
+                getStart().multiply(-1.0, 1.0),
+                getEnd().multiply(-1.0, 1.0),
+                center
+        );
+    }
+
+    @Override
     public double getCurvature() {
         return 1.0 / deltaStart.length;
     }
