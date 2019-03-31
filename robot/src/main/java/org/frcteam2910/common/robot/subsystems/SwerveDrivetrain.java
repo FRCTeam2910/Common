@@ -13,7 +13,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
     public final void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented) {
         if (fieldOriented) {
-            translation = translation.rotateBy(getGyroscope().getAngle());
+            translation = translation.rotateBy(getGyroscope().getAngle().inverse());
         }
 
         for (SwerveModule module : getSwerveModules()) {

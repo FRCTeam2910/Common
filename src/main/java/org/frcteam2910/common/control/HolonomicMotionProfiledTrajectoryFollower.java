@@ -12,6 +12,8 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
 
     private HolonomicFeedforward feedforward;
 
+    private Trajectory.Segment lastSegment = null;
+
     private boolean finished = false;
 
     public HolonomicMotionProfiledTrajectoryFollower(PidConstants translationConstants, PidConstants rotationConstants,
@@ -19,6 +21,8 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
         this.forwardController = new PidController(translationConstants);
         this.strafeController = new PidController(translationConstants);
         this.rotationController = new PidController(rotationConstants);
+        this.rotationController.setContinuous(true);
+        this.rotationController.setInputRange(0.0, 2.0 * Math.PI);
 
         this.feedforward = feedforward;
     }
@@ -32,16 +36,16 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
             return new HolonomicDriveSignal(Vector2.ZERO, 0.0, false);
         }
 
-        Trajectory.Segment currentSegment = trajectory.calculateSegment(time);
+        lastSegment = trajectory.calculateSegment(time);
 
-        Vector2 segmentVelocity = Vector2.fromAngle(currentSegment.heading).scale(currentSegment.velocity);
-        Vector2 segmentAcceleration = Vector2.fromAngle(currentSegment.heading).scale(currentSegment.acceleration);
+        Vector2 segmentVelocity = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.velocity);
+        Vector2 segmentAcceleration = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.acceleration);
 
         Vector2 feedforwardVector = feedforward.calculateFeedforward(segmentVelocity, segmentAcceleration);
 
-        forwardController.setSetpoint(currentSegment.translation.x);
-        strafeController.setSetpoint(currentSegment.translation.y);
-        rotationController.setSetpoint(currentSegment.rotation.toRadians());
+        forwardController.setSetpoint(lastSegment.translation.x);
+        strafeController.setSetpoint(lastSegment.translation.y);
+        rotationController.setSetpoint(lastSegment.rotation.toRadians());
 
         return new HolonomicDriveSignal(
                 new Vector2(
@@ -51,6 +55,10 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
                 rotationController.calculate(currentPose.rotation.toRadians(), dt),
                 true
         );
+    }
+
+    public Trajectory.Segment getLastSegment() {
+        return lastSegment;
     }
 
     @Override
