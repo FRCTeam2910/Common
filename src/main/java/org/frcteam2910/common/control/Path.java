@@ -87,7 +87,7 @@ public final class Path implements Serializable {
 		Rotation2 startingRotation = rotationAtDistance.firstEntry().getValue();
 
 		// Flip the starting rotation by negating the cosine of the rotation
-		Rotation2 mirroredStartingRotation = new Rotation2(-startingRotation.cos, startingRotation.sin, false);
+		Rotation2 mirroredStartingRotation = new Rotation2(startingRotation.cos, -startingRotation.sin, false);
 
 		Path mirroredPath = new Path(mirroredStartingRotation);
 
@@ -106,7 +106,7 @@ public final class Path implements Serializable {
             }
 
 		    Rotation2 rotation = rotationAtDistance.get(key);
-		    Rotation2 mirroredRotation = new Rotation2(-rotation.cos, rotation.sin, false);
+		    Rotation2 mirroredRotation = new Rotation2(rotation.cos, -rotation.sin, false);
 
 		    mirroredPath.rotationAtDistance.put(key, mirroredRotation);
         }

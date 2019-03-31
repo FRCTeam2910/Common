@@ -28,8 +28,8 @@ public final class PathLineSegment extends PathSegment implements Serializable {
     @Override
     public PathLineSegment mirror() {
         return new PathLineSegment(
-                getStart().multiply(-1.0, 1.0),
-                getEnd().multiply(-1.0, 1.0)
+                getStart().multiply(1.0, -1.0),
+                getEnd().multiply(1.0, -1.0)
         );
     }
 
