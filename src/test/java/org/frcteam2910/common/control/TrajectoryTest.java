@@ -62,30 +62,10 @@ public class TrajectoryTest {
         Path splinePath = generator.generate(WAYPOINTS);
         splinePath.subdivide(2);
 
-        Path loadingStationToCargoSideMidPathLeft = new Path(Rotation2.fromDegrees(0.0));
-        loadingStationToCargoSideMidPathLeft.addSegment(
-                new PathLineSegment(
-                        new Vector2(14.0, -135.0),
-                        new Vector2(26.0, -135.0)
-                ), Rotation2.fromDegrees(0.0));
-        loadingStationToCargoSideMidPathLeft.addSegment(
-                new PathArcSegment(
-                        new Vector2(26.0, -135.0),
-                        new Vector2(53.78, -131.81),
-                        new Vector2(26.0, -15.0)
-                ));
-        loadingStationToCargoSideMidPathLeft.addSegment(
-                new PathLineSegment(
-                        new Vector2(53.78, -131.81),
-                        new Vector2(282.75, -77.88)
-                ), Rotation2.fromDegrees(270.0));
-        loadingStationToCargoSideMidPathLeft.subdivide(8);
-
         PATHS = new Path[]{
                 simplePath,
                 curvedPath,
                 splinePath,
-                loadingStationToCargoSideMidPathLeft
         };
     }
 
@@ -221,9 +201,9 @@ public class TrajectoryTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void writeCsv() {
-        Trajectory trajectory = new Trajectory(PATHS[3], CONSTRAINTS);
+        Trajectory trajectory = new Trajectory(PATHS[1], CONSTRAINTS);
 
         try (PrintStream out = new PrintStream(new FileOutputStream("trajectory.csv"))) {
             out.printf("segment,time,x,y,heading,rotation,position,velocity,acceleration,maxVelocity,f%n");
