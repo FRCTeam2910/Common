@@ -28,10 +28,24 @@ public final class Path implements Serializable {
 		length += segment.getLength();
 	}
 
-	public void addSegment(PathSegment segment, Rotation2 endRotation) {
+	public void addSegment(PathSegment segment, Rotation2 rotation) {
 	    addSegment(segment);
-	    rotationAtDistance.put(new InterpolatingDouble(length), endRotation);
+	    addRotation(length, rotation);
     }
+
+    public void addRotation(double distance, Rotation2 rotation) {
+		addRotation(distance, rotation, true);
+	}
+
+	public void addRotation(double distance, Rotation2 rotation, boolean shortestPath) {
+		if (!shortestPath) {
+			Rotation2 lastRotation = rotationAtDistance.lastEntry().getValue();
+
+			addRotation(distance, rotation.interpolate(lastRotation, 0.5).rotateBy(Rotation2.fromDegrees(180.0)), true);
+		}
+
+		rotationAtDistance.put(new InterpolatingDouble(distance), rotation);
+	}
 
 	public List<PathSegment> getSegments() {
 		return segments;
