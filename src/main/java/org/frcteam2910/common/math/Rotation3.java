@@ -1,10 +1,11 @@
 package org.frcteam2910.common.math;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 import java.text.DecimalFormat;
 
-import static org.frcteam2910.common.util.MatHelper.*;
+import static org.frcteam2910.c2019.vision.util.MatHelper.*;
 import static org.opencv.core.Core.gemm;
 import static org.opencv.core.Core.transpose;
 
@@ -56,16 +57,9 @@ public class Rotation3 {
      * @return A rotation with the result of the addition
      */
     public Rotation3 add(Rotation3 other) {
-        return new Rotation3(rotationMatrix.mul(other.rotationMatrix));
-    }
-
-    /**
-     * Multiplies a rotation 
-     * @param vector
-     * @return
-     */
-    public Rotation3 multiply(Vector3 vector) {
-
+        Mat result = new Mat();
+        gemm(rotationMatrix, other.rotationMatrix, 1, Mat.zeros(3, 3, CvType.CV_32F), 0, result, 0);
+        return new Rotation3(result);
     }
 
     /**

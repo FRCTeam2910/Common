@@ -1,13 +1,14 @@
 package org.frcteam2910.common.math;
 
+import org.frcteam2910.common.math.MathUtils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 import java.text.DecimalFormat;
 import java.util.Objects;
 
-import static org.frcteam2910.common.util.MatHelper.doubleArrayToMat;
-import static org.frcteam2910.common.util.MatHelper.matToDoubleArray;
+import static org.frcteam2910.c2019.vision.util.MatHelper.doubleArrayToMat;
+import static org.frcteam2910.c2019.vision.util.MatHelper.matToDoubleArray;
 import static org.opencv.core.Core.*;
 
 /**
