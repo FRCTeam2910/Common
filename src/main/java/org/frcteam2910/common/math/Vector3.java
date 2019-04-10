@@ -1,7 +1,14 @@
 package org.frcteam2910.common.math;
 
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+
 import java.text.DecimalFormat;
 import java.util.Objects;
+
+import static org.frcteam2910.common.util.MatHelper.doubleArrayToMat;
+import static org.frcteam2910.common.util.MatHelper.matToDoubleArray;
+import static org.opencv.core.Core.*;
 
 /**
  * A vector representing a point in 3d space
@@ -110,11 +117,11 @@ public final class Vector3 {
 
     /**
      * Performs a component-wise multiplication on this vector with another vector
-     * @param vector The vector to multiply by
+     * @param scale The vector to multiply by
      * @return A vector with the result of the multiplication
      */
-    public Vector3 mulitply(Vector3 vector) {
-        return multiply(vector.x, vector.y, vector.z);
+    public Vector3 mulitply(Vector3 scale) {
+        return multiply(scale.x, scale.y, scale.z);
     }
 
     /**
@@ -172,10 +179,10 @@ public final class Vector3 {
      * @return A vector rotated by the rotation matrix
      */
     public Vector3 rotate(Rotation3 rotation) {
-        double result_x = x * rotation.rotationMatrix[0][0] + y * rotation.rotationMatrix[1][0] + z * rotation.rotationMatrix[2][0];
-        double result_y = x * rotation.rotationMatrix[0][1] + y * rotation.rotationMatrix[1][1] + z * rotation.rotationMatrix[2][1];
-        double result_z = x * rotation.rotationMatrix[0][2] + y * rotation.rotationMatrix[1][2] + z * rotation.rotationMatrix[2][2];
-        return new Vector3(result_x, result_y, result_z);
+        Mat result = new Mat();
+        gemm(doubleArrayToMat(new double[] {x, y, z}), rotation.rotationMatrix, 1, Mat.zeros(3, 3, CvType.CV_32F), 0, result, 0);
+        double[] _result = matToDoubleArray(result);
+        return new Vector3(_result);
     }
 
     /**
@@ -190,10 +197,25 @@ public final class Vector3 {
         return equals((Vector3) obj, MathUtils.EPSILON);
     }
 
+    /**
+     * Checks if the two vectors are equal with a default of 1e-9 error
+     * @param other The other vector to compare with
+     * @return True if the vectors are equals given the allowable error, false if not
+     */
+    public boolean equals(Vector3 other) {
+        return equals(other, MathUtils.EPSILON);
+    }
+
+    /**
+     * Checks if the two vectors are the same given the allowable error
+     * @param other The other vector to compare with
+     * @param allowableError
+     * @return True if the vectors are equals given the allowable error, false if not
+     */
     public boolean equals(Vector3 other, double allowableError) {
         return MathUtils.epsilonEquals(x, other.x, allowableError) &&
                 MathUtils.epsilonEquals(y, other.y, allowableError) &&
-                 MathUtils.epsilonEquals(z, other.z, allowableError);
+                MathUtils.epsilonEquals(z, other.z, allowableError);
     }
 
     /**

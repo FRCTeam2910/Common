@@ -1,6 +1,12 @@
 package org.frcteam2910.common.math;
 
+import org.opencv.core.Mat;
+
 import java.text.DecimalFormat;
+
+import static org.frcteam2910.common.util.MatHelper.*;
+import static org.opencv.core.Core.gemm;
+import static org.opencv.core.Core.transpose;
 
 /**
  * This represents a rotation in 3d space through a rotation matrix and its corresponding euler angles
@@ -10,20 +16,38 @@ public class Rotation3 {
     /**
      * The rotation matrix of the rotation
      */
-    public final double[][] rotationMatrix;
+    public final Mat rotationMatrix;
 
     /**
      * The euler angles from the rotation matrix
      */
-    public final double[] eulerAngles;
+    public final Mat eulerAngles;
 
     /**
      * Create a new Rotation3 from a rotation matrix
      * @param rotationMatrix The rotation matrix to create the rotation form
      */
     public Rotation3(double[][] rotationMatrix) {
+        this.rotationMatrix = multiDimensionalDoubleArrayToMat(rotationMatrix);
+        this.eulerAngles = doubleArrayToMat(getEulerAngles(rotationMatrix));
+    }
+
+    /**
+     * Create a new Rotation3 from a set of euler angles
+     * @param eulerAngles A double array of euler angles
+     */
+    public Rotation3(double[] eulerAngles) {
+        this.eulerAngles = doubleArrayToMat(eulerAngles);
+        rotationMatrix = multiDimensionalDoubleArrayToMat(getRotationMatrix(eulerAngles));
+    }
+
+    /**
+     * Create a new Rotation3 from a rotation matrix
+     * @param rotationMatrix The rotation matrix as a OpenCV matrix
+     */
+    public Rotation3(Mat rotationMatrix) {
         this.rotationMatrix = rotationMatrix;
-        this.eulerAngles = getEulerAngles(rotationMatrix);
+        eulerAngles = doubleArrayToMat(getEulerAngles(matTo2DDoubleArray(rotationMatrix)));
     }
 
     /**
@@ -32,22 +56,16 @@ public class Rotation3 {
      * @return A rotation with the result of the addition
      */
     public Rotation3 add(Rotation3 other) {
-        return add(other.rotationMatrix);
+        return new Rotation3(rotationMatrix.mul(other.rotationMatrix));
     }
 
     /**
-     * Adds another rotation matrix to this rotation
-     * @param other The rotation matrix to add
-     * @return A rotation with the result of the addition
+     * Multiplies a rotation 
+     * @param vector
+     * @return
      */
-    public Rotation3 add(double[][] other) {
-        double[][] result = new double[3][3];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                result[i][j] = this.rotationMatrix[i][j] + other[i][j];
-            }
-        }
-        return new Rotation3(result);
+    public Rotation3 multiply(Vector3 vector) {
+
     }
 
     /**
@@ -55,7 +73,41 @@ public class Rotation3 {
      * @return The transpose (inverse) of the rotation matrix
      */
     public Rotation3 inverse() {
-        return new Rotation3(transpose(rotationMatrix));
+        Mat inverse = new Mat();
+        transpose(rotationMatrix, inverse);
+        return new Rotation3(inverse);
+    }
+
+    /**
+     * Returns a rotation matrix made from the provided euler angles
+     * @param eulerAngles The euler angles to get create the rotation matrix from
+     * @return The resulting rotation matrix
+     */
+    private static double[][] getRotationMatrix(double[] eulerAngles) {
+        double[][] result_x = new double[][] {
+                {1, 0, 0},
+                {0, Math.cos(eulerAngles[0]), -Math.sin(eulerAngles[0])},
+                {0, Math.sin(eulerAngles[0]), Math.cos(eulerAngles[0])}
+        };
+
+        double[][] result_y = new double[][] {
+                {Math.cos(eulerAngles[1]), 0, Math.sin(eulerAngles[1])},
+                {0, 1, 0},
+                {-Math.sin(eulerAngles[1]), 0, Math.cos(eulerAngles[1])}
+        };
+
+        double [][] result_z = new double[][] {
+                {Math.cos(eulerAngles[2]), -Math.sin(eulerAngles[2]), 0},
+                {Math.sin(eulerAngles[2]), Math.cos(eulerAngles[2]), 0},
+                {0, 0, 1}
+        };
+
+        Mat x = multiDimensionalDoubleArrayToMat(result_x);
+        Mat y = multiDimensionalDoubleArrayToMat(result_y);
+        Mat z = multiDimensionalDoubleArrayToMat(result_z);
+        Mat result = new Mat();
+        gemm(x, y, 1, z, 0, result);
+        return matTo2DDoubleArray(result);
     }
 
     /**
@@ -66,9 +118,7 @@ public class Rotation3 {
     private static double[] getEulerAngles(double[][] rotationMatrix) {
         double sy = Math.sqrt(Math.pow(rotationMatrix[0][0], 2) + Math.pow(rotationMatrix[1][0], 2));
         boolean singular = sy < 1e-6;
-        double x;
-        double y;
-        double z;
+        double x, y, z;
         if (singular) {
             x = Math.atan2(-rotationMatrix[1][2], rotationMatrix[1][1]);
             y = Math.atan2(-rotationMatrix[2][0], sy);
@@ -82,31 +132,15 @@ public class Rotation3 {
     }
 
     /**
-     * Private method which gets the transpose of a rotation matrix
-     * @param a The rotation matrix
-     * @return The transpose of the rotation matrix
-     */
-    private static double[][] transpose(double a[][])
-    {
-        int i, j;
-        double[][] b = new double[a.length][a.length];
-        for (i = 0; i < a.length; i++) {
-            for (j = 0; j < a.length; j++) {
-                b[i][j] = a[j][i];
-            }
-        }
-        return b;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
+        double[] _eulerAngles = matToDoubleArray(eulerAngles);
         DecimalFormat fmt = new DecimalFormat("#0.000");
         return "Rotation " +
-                "- X: " + fmt.format(Math.toDegrees(eulerAngles[0])) + '\u00b0' +
-                ", Y: " + fmt.format(Math.toDegrees(eulerAngles[1])) + '\u00b0' +
-                ", Z: " + fmt.format(Math.toDegrees(eulerAngles[2])) + '\u00b0';
+                "- X: " + fmt.format(Math.toDegrees(_eulerAngles[0])) + '\u00b0' +
+                ", Y: " + fmt.format(Math.toDegrees(_eulerAngles[1])) + '\u00b0' +
+                ", Z: " + fmt.format(Math.toDegrees(_eulerAngles[2])) + '\u00b0';
     }
 }
