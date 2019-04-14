@@ -1,13 +1,6 @@
 package org.frcteam2910.common.math;
 
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-
 import java.text.DecimalFormat;
-
-import static org.frcteam2910.c2019.vision.util.MatHelper.*;
-import static org.opencv.core.Core.gemm;
-import static org.opencv.core.Core.transpose;
 
 /**
  * This represents a rotation in 3d space through a rotation matrix and its corresponding euler angles
@@ -17,20 +10,20 @@ public class Rotation3 {
     /**
      * The rotation matrix of the rotation
      */
-    public final Mat rotationMatrix;
+    public final double[][] rotationMatrix;
 
     /**
      * The euler angles from the rotation matrix
      */
-    public final Mat eulerAngles;
+    public final double[] eulerAngles;
 
     /**
      * Create a new Rotation3 from a rotation matrix
      * @param rotationMatrix The rotation matrix to create the rotation form
      */
     public Rotation3(double[][] rotationMatrix) {
-        this.rotationMatrix = multiDimensionalDoubleArrayToMat(rotationMatrix);
-        this.eulerAngles = doubleArrayToMat(getEulerAngles(rotationMatrix));
+        this.rotationMatrix = rotationMatrix;
+        eulerAngles = getEulerAngles(rotationMatrix);
     }
 
     /**
@@ -38,17 +31,8 @@ public class Rotation3 {
      * @param eulerAngles A double array of euler angles
      */
     public Rotation3(double[] eulerAngles) {
-        this.eulerAngles = doubleArrayToMat(eulerAngles);
-        rotationMatrix = multiDimensionalDoubleArrayToMat(getRotationMatrix(eulerAngles));
-    }
-
-    /**
-     * Create a new Rotation3 from a rotation matrix
-     * @param rotationMatrix The rotation matrix as a OpenCV matrix
-     */
-    public Rotation3(Mat rotationMatrix) {
-        this.rotationMatrix = rotationMatrix;
-        eulerAngles = doubleArrayToMat(getEulerAngles(matTo2DDoubleArray(rotationMatrix)));
+        this.eulerAngles = eulerAngles;
+        rotationMatrix = getRotationMatrix(eulerAngles);
     }
 
     /**
@@ -57,9 +41,28 @@ public class Rotation3 {
      * @return A rotation with the result of the addition
      */
     public Rotation3 add(Rotation3 other) {
-        Mat result = new Mat();
-        gemm(rotationMatrix, other.rotationMatrix, 1, Mat.zeros(3, 3, CvType.CV_32F), 0, result, 0);
-        return new Rotation3(result);
+        return new Rotation3(multiplyMatrices(this.rotationMatrix, other.rotationMatrix));
+    }
+
+    /**
+     * Multiplies two matrices together
+     * @param a The first matrix
+     * @param b The second one
+     * @return A new matrix which is the product of the two given matrices
+     */
+    public static double[][] multiplyMatrices(double[][] a, double[][] b) {
+        int r1 = a.length;
+        int c1 = a[0].length;
+        int c2 = b[0].length;
+        double[][] product = new double[r1][c2];
+        for (int i = 0; i < r1; i++) {
+            for (int j = 0; j < c2; j++) {
+                for (int k = 0; k < c1; k++) {
+                    product[i][j] += a[i][k] * b[k][j];
+                }
+            }
+        }
+        return product;
     }
 
     /**
@@ -67,10 +70,25 @@ public class Rotation3 {
      * @return The transpose (inverse) of the rotation matrix
      */
     public Rotation3 inverse() {
-        Mat inverse = new Mat();
-        transpose(rotationMatrix, inverse);
-        return new Rotation3(inverse);
+        return new Rotation3(transpose(rotationMatrix));
     }
+
+    /**
+     * Private method which gets the transpose of a rotation matrix
+     * @param a The rotation matrix
+     * @return The transpose of the rotation matrix
+     */
+    private static double[][] transpose(double a[][]) {
+        int i, j;
+        double[][] b = new double[a.length][a.length];
+        for (i = 0; i < a.length; i++) {
+            for (j = 0; j < a.length; j++) {
+                b[i][j] = a[j][i];
+            }
+        }
+        return b;
+    }
+
 
     /**
      * Returns a rotation matrix made from the provided euler angles
@@ -96,12 +114,8 @@ public class Rotation3 {
                 {0, 0, 1}
         };
 
-        Mat x = multiDimensionalDoubleArrayToMat(result_x);
-        Mat y = multiDimensionalDoubleArrayToMat(result_y);
-        Mat z = multiDimensionalDoubleArrayToMat(result_z);
-        Mat result = new Mat();
-        gemm(x, y, 1, z, 0, result);
-        return matTo2DDoubleArray(result);
+        double[][] result = multiplyMatrices(result_z, multiplyMatrices(result_y, result_x));
+        return result;
     }
 
     /**
@@ -130,11 +144,10 @@ public class Rotation3 {
      */
     @Override
     public String toString() {
-        double[] _eulerAngles = matToDoubleArray(eulerAngles);
         DecimalFormat fmt = new DecimalFormat("#0.000");
         return "Rotation " +
-                "- X: " + fmt.format(Math.toDegrees(_eulerAngles[0])) + '\u00b0' +
-                ", Y: " + fmt.format(Math.toDegrees(_eulerAngles[1])) + '\u00b0' +
-                ", Z: " + fmt.format(Math.toDegrees(_eulerAngles[2])) + '\u00b0';
+                "- X: " + fmt.format(Math.toDegrees(eulerAngles[0])) + '\u00b0' +
+                ", Y: " + fmt.format(Math.toDegrees(eulerAngles[1])) + '\u00b0' +
+                ", Z: " + fmt.format(Math.toDegrees(eulerAngles[2])) + '\u00b0';
     }
 }

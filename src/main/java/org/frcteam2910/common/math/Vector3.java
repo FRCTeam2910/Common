@@ -1,15 +1,9 @@
 package org.frcteam2910.common.math;
 
 import org.frcteam2910.common.math.MathUtils;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
 
 import java.text.DecimalFormat;
 import java.util.Objects;
-
-import static org.frcteam2910.c2019.vision.util.MatHelper.doubleArrayToMat;
-import static org.frcteam2910.c2019.vision.util.MatHelper.matToDoubleArray;
-import static org.opencv.core.Core.*;
 
 /**
  * A vector representing a point in 3d space
@@ -180,10 +174,11 @@ public final class Vector3 {
      * @return A vector rotated by the rotation matrix
      */
     public Vector3 rotate(Rotation3 rotation) {
-        Mat result = new Mat();
-        gemm(doubleArrayToMat(new double[] {x, y, z}), rotation.rotationMatrix, 1, Mat.zeros(3, 3, CvType.CV_32F), 0, result, 0);
-        double[] _result = matToDoubleArray(result);
-        return new Vector3(_result);
+        double[][] rotationMatrix = rotation.rotationMatrix;
+        double r_x = x * rotationMatrix[0][0] + y * rotationMatrix[1][0] + z * rotationMatrix[2][0];
+        double r_y = x * rotationMatrix[0][1] + y * rotationMatrix[1][1] + z * rotationMatrix[2][1];
+        double r_z = x * rotationMatrix[0][2] + y * rotationMatrix[1][2] + z * rotationMatrix[2][2];
+        return new Vector3(new double[] {r_x, r_y, r_z});
     }
 
     /**
