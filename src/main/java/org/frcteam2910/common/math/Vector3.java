@@ -178,7 +178,7 @@ public final class Vector3 {
         double r_x = x * rotationMatrix[0][0] + y * rotationMatrix[1][0] + z * rotationMatrix[2][0];
         double r_y = x * rotationMatrix[0][1] + y * rotationMatrix[1][1] + z * rotationMatrix[2][1];
         double r_z = x * rotationMatrix[0][2] + y * rotationMatrix[1][2] + z * rotationMatrix[2][2];
-        return new Vector3(new double[] {r_x, r_y, r_z});
+        return new Vector3(r_x, r_y, r_z);
     }
 
     /**

@@ -113,9 +113,8 @@ public class Rotation3 {
                 {Math.sin(eulerAngles[2]), Math.cos(eulerAngles[2]), 0},
                 {0, 0, 1}
         };
-
-        double[][] result = multiplyMatrices(result_z, multiplyMatrices(result_y, result_x));
-        return result;
+        
+        return multiplyMatrices(result_z, multiplyMatrices(result_y, result_x));
     }
 
     /**
