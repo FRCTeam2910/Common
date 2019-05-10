@@ -86,7 +86,7 @@ public final class Path implements Serializable {
     public Path mirror() {
         Rotation2 startingRotation = rotationAtDistance.firstEntry().getValue();
 
-        // Flip the starting rotation by negating the cosine of the rotation
+        // Flip the starting rotation across the X axis by negating the sine of the rotation
         Rotation2 mirroredStartingRotation = new Rotation2(startingRotation.cos, -startingRotation.sin, false);
 
         Path mirroredPath = new Path(mirroredStartingRotation);
@@ -96,8 +96,8 @@ public final class Path implements Serializable {
             mirroredPath.addSegment(segment.mirror());
         }
 
-        // Get each rotation (skipping the first one because it has already been added) and negate the cosine of it to
-        // mirror it along the Y axis
+        // Get each rotation (skipping the first one because it has already been added) and negate the sine of it to
+        // mirror it along the X axis
         NavigableSet<InterpolatingDouble> keys = rotationAtDistance.navigableKeySet();
         for (InterpolatingDouble key : keys) {
             // Skip the first entry, it is already added to the path.
