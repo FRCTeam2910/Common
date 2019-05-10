@@ -65,7 +65,7 @@ public class TrajectoryTest {
         PATHS = new Path[]{
                 simplePath,
                 curvedPath,
-                splinePath,
+                splinePath
         };
     }
 
