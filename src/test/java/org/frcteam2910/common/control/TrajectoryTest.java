@@ -61,6 +61,7 @@ public class TrajectoryTest {
         SplinePathGenerator generator = new SplinePathGenerator();
         Path splinePath = generator.generate(WAYPOINTS);
         splinePath.subdivide(2);
+
         PATHS = new Path[]{
                 simplePath,
                 curvedPath,
