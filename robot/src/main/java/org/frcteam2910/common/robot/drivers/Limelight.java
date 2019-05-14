@@ -2,6 +2,7 @@ package org.frcteam2910.common.robot.drivers;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.Vector2;
 
@@ -15,17 +16,18 @@ public final class Limelight {
     private final NetworkTableEntry ts;
     private final NetworkTableEntry tl;
 
-    private final NetworkTableEntry tcornx;
-    private final NetworkTableEntry tcorny;
-
     private final NetworkTableEntry ledMode;
     private final NetworkTableEntry camMode;
     private final NetworkTableEntry pipeline;
     private final NetworkTableEntry stream;
     private final NetworkTableEntry snapshot;
 
-    public Limelight(NetworkTable table) {
-        this.table = table;
+    public Limelight() {
+        this("limelight");
+    }
+
+    public Limelight(String name) {
+        table = NetworkTableInstance.getDefault().getTable(name);
 
         tv = table.getEntry("tv");
         tx = table.getEntry("tx");
@@ -33,9 +35,6 @@ public final class Limelight {
         ta = table.getEntry("ta");
         ts = table.getEntry("ts");
         tl = table.getEntry("tl");
-
-        tcornx = table.getEntry("tcornx");
-        tcorny = table.getEntry("tcorny");
 
         ledMode = table.getEntry("ledMode");
         camMode = table.getEntry("camMode");
@@ -58,17 +57,6 @@ public final class Limelight {
 
     public double getTargetSkew() {
         return ts.getDouble(0);
-    }
-
-    public double[][] getCorners() {
-        double[] x = tcornx.getDoubleArray(new double[]{0.0, 0.0});
-        double[] y = tcorny.getDoubleArray(new double[]{0.0, 0.0});
-        double[][] corners = new double[x.length][2];
-        for (int i = 0; i < x.length; i++) {
-            corners[i][0] = x[i];
-            corners[i][1] = y[i];
-        }
-        return corners;
     }
 
     public void setCamMode(CamMode mode) {
