@@ -8,6 +8,23 @@ import static org.junit.Assert.assertEquals;
 
 public class PathArcSegmentTest {
     @Test
+    public void mirrorTest() {
+        PathArcSegment[] originals = {
+                new PathArcSegment(new Vector2(-5.0, 0.0), new Vector2(0.0, 5.0), new Vector2(-5.0, 5.0)),
+                new PathArcSegment(new Vector2(1.0, 0.0), new Vector2(0.0, 1.0), new Vector2(0.0, 0.0))
+        };
+        PathArcSegment[] expected = {
+                new PathArcSegment(new Vector2(-5.0, 0.0), new Vector2(0.0, -5.0), new Vector2(-5.0, -5.0)),
+                new PathArcSegment(new Vector2(1.0, 0.0), new Vector2(0.0, -1.0), new Vector2(0.0, -0.0))
+        };
+
+        for (int i = 0; i < originals.length; i++) {
+            PathArcSegment actual = originals[i].mirror();
+            assertEquals(expected[i], actual);
+        }
+    }
+
+    @Test
     public void subdivideTest() {
         PathArcSegment[] originals = new PathArcSegment[]{
                 new PathArcSegment(new Vector2(1, 0), new Vector2(0, 1), Vector2.ZERO),

@@ -175,6 +175,11 @@ public class Trajectory implements Serializable {
 			}
 
 			profileIndex = mid;
+			if (profileIndex >= profileStartTimes.length) {
+				return new Segment(profileIndex, time, Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO, 0.0,
+						0.0, 0.0, 0.0, 0.0);
+			}
+
 			profileTime = time - profileStartTimes[profileIndex];
 		}
 

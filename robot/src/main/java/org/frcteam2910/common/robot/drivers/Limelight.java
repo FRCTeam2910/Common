@@ -2,7 +2,6 @@ package org.frcteam2910.common.robot.drivers;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.Vector2;
 
@@ -32,7 +31,7 @@ public final class Limelight {
     public Limelight(String name) {
         this(NetworkTableInstance.getDefault().getTable("limelight-" + name));
     }
-
+  
     public Limelight(NetworkTable table) {
         this.table = table;
 

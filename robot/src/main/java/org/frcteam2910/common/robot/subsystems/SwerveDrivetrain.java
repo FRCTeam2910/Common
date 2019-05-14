@@ -2,6 +2,7 @@ package org.frcteam2910.common.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frcteam2910.common.drivers.SwerveModule;
+import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
@@ -11,9 +12,9 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     private Vector2 kinematicVelocity = Vector2.ZERO;
     private double lastKinematicTimestamp;
 
-    public final void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented) {
+    public void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented) {
         if (fieldOriented) {
-            translation = translation.rotateBy(getGyroscope().getAngle());
+            translation = translation.rotateBy(getGyroscope().getAngle().inverse());
         }
 
         for (SwerveModule module : getSwerveModules()) {
@@ -61,12 +62,21 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
         }
     }
 
+    /**
+     * @deprecated Use {@link #resetKinematics(Vector2, double)} instead.
+     */
+    @Deprecated
     public synchronized void resetKinematics(double timestamp) {
+        resetKinematics(Vector2.ZERO, timestamp);
+    }
+
+    public synchronized void resetKinematics(Vector2 position, double timestamp) {
         for (SwerveModule module : getSwerveModules()) {
-            module.resetKinematics(module.getModulePosition());
+            module.resetKinematics(position.add(module.getModulePosition()));
         }
+
         kinematicVelocity = Vector2.ZERO;
-        kinematicPosition = Vector2.ZERO;
+        kinematicPosition = position;
         lastKinematicTimestamp = timestamp;
     }
 
@@ -87,6 +97,8 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
             SmartDashboard.putNumber(String.format("%s module angle", module.getName()), Math.toDegrees(module.getCurrentAngle()));
             SmartDashboard.putNumber(String.format("%s module drive distance", module.getName()), module.getCurrentDistance());
             SmartDashboard.putString(String.format("%s module position", module.getName()), module.getCurrentPosition().toString());
+            SmartDashboard.putNumber(String.format("%s module velocity", module.getName()), module.getCurrentVelocity());
+            SmartDashboard.putNumber(String.format("%s module drive current", module.getName()), module.getDriveCurrent() + Math.random() * MathUtils.EPSILON);
         }
     }
 }

@@ -46,10 +46,6 @@ public class Rotation3 {
         return new Rotation3(multiplyMatrices(this.rotationMatrix, other.rotationMatrix));
     }
 
-    /**
-     * Calculates the transpose of the rotation matrix, which is equal to it's inverse
-     * @return The transpose (inverse) of the rotation matrix
-     */
     public Rotation3 inverse() {
         return new Rotation3(transpose(rotationMatrix));
     }
@@ -69,7 +65,6 @@ public class Rotation3 {
         }
         return b;
     }
-
 
     /**
      * Returns a rotation matrix made from the provided euler angles
