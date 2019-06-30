@@ -124,6 +124,10 @@ public final class Limelight {
         }
     }
 
+    public NetworkTable getTable() {
+        return table;
+    }
+
     public enum CamMode {
         VISION,
         DRIVER
