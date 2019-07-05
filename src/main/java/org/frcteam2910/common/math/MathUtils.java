@@ -102,4 +102,21 @@ public class MathUtils {
                 (-b - sqrt) / (2 * a)
         };
 	}
+
+	public static double lerp(double start, double end, double t) {
+		return start + (end - start) * t;
+	}
+
+	public static double inverseLerp(double start, double end, double query) {
+		return inverseLerp(start, end, query, true);
+	}
+
+	public static double inverseLerp(double start, double end, double query, boolean shouldClamp) {
+		double t = (query - start) / (end - start);
+		if (shouldClamp) {
+			return clamp(t, 0.0, 1.0);
+		} else {
+			return t;
+		}
+	}
 }
