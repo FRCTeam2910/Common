@@ -32,4 +32,8 @@ public class MovingAverage {
 
         return average / values.size();
     }
+
+    public void clear() {
+        values.clear();
+    }
 }
