@@ -158,16 +158,16 @@ public class Trajectory implements Serializable {
 			int end = profiles.length - 1;
 			int mid = start + (end - start) / 2;
 
-			while (start < end) {
+			while (start <= end) {
 				// Mid is halfway between start and end
-				mid = start + (end - start) / 2;
+				mid = (start + end) / 2;
 
 				if (time > profileStartTimes[mid] + profiles[mid].getDuration()) {
 					// Our time is greater than the end time of the profile, move start to mid and try again
 					start = mid + 1;
 				} else if (time < profileStartTimes[mid]) {
 					// Our time is less than the start time of the profile, move end to mid and try again
-					end = mid;
+					end = mid - 1;
 				} else {
 					// We are within the start and end times of our profile. This is the profile we want.
 					break;
