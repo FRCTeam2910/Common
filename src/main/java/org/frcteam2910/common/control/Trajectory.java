@@ -26,6 +26,10 @@ public class Trajectory implements Serializable {
 	private double[] profileStartTimes;
 
 	public Trajectory(Path path, ITrajectoryConstraint... constraints) {
+		this(0.0, 0.0, path, constraints);
+	}
+
+	public Trajectory(double startingVelocity, double endingVelocity, Path path, ITrajectoryConstraint... constraints) {
 		this.path = path;
 
 		maxSegmentVelocities = new double[path.getSegments().size()];
@@ -35,7 +39,7 @@ public class Trajectory implements Serializable {
 		for (int i = 0; i < maxSegmentVelocities.length; i++) {
 			PathSegment pathSegment = path.getSegments().get(i);
 
-			double startVelocity = 0.0;
+			double startVelocity = startingVelocity;
 			if (i > 0) {
 				startVelocity = maxSegmentVelocities[i - 1];
 			}
@@ -79,7 +83,7 @@ public class Trajectory implements Serializable {
 		for (int i = maxSegmentVelocities.length - 1; i >= 0; i--) {
 			PathSegment pathSegment = path.getSegments().get(i);
 
-			double endVelocity = 0.0;
+			double endVelocity = endingVelocity;
 			if (i < maxSegmentVelocities.length - 1) {
 				endVelocity = maxSegmentVelocities[i + 1];
 			}
@@ -97,7 +101,7 @@ public class Trajectory implements Serializable {
 				maxAcceleration = Math.min(maxAcceleration, constraint.getMaxAcceleration(pathSegment, endVelocity));
 			}
 			if (maxAcceleration < 0.0 || !Double.isFinite(maxAcceleration)) {
-				throw new RuntimeException("Illegal max acceleration");
+				throw new RuntimeException("Illegal max acceleration: " + maxAcceleration);
 			}
 
 			// Now check if we can reach our max velocity
@@ -123,13 +127,13 @@ public class Trajectory implements Serializable {
 		this.profiles = new MotionProfile[path.getSegments().size()];
 		this.profileStartTimes = new double[profiles.length];
 
-		MotionProfile.Goal lastPosition = new MotionProfile.Goal(0, 0);
+		MotionProfile.Goal lastPosition = new MotionProfile.Goal(0, startingVelocity);
 		for (int i = 0; i < profiles.length; i++) {
 			// Create the motion constraints for this segment
 			MotionProfile.Constraints segmentConstraints = new MotionProfile.Constraints(maxSegmentVelocities[i], Math.max(maxSegmentAccelerations[i], MathUtils.EPSILON));
 
 			// Look ahead to see the end velocity for the segment
-			double endVelocity = 0;
+			double endVelocity = endingVelocity;
 			if (i < profiles.length - 1) {
 				endVelocity = maxSegmentVelocities[i + 1];
 			}

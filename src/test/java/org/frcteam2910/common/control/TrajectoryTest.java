@@ -222,7 +222,7 @@ public class TrajectoryTest {
     @Test
     @Ignore
     public void writeCsv() {
-        Trajectory trajectory = new Trajectory(PATHS[1], CONSTRAINTS);
+        Trajectory trajectory = new Trajectory(0.0, 4.0, PATHS[1], CONSTRAINTS);
 
         try (PrintStream out = new PrintStream(new FileOutputStream("trajectory.csv"))) {
             out.printf("segment,time,x,y,heading,rotation,position,velocity,acceleration,maxVelocity,f%n");
