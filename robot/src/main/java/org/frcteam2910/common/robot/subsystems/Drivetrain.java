@@ -6,9 +6,6 @@ import org.frcteam2910.common.math.Vector2;
 
 public abstract class Drivetrain extends Subsystem {
 	public abstract Gyroscope getGyroscope();
-	
-	public abstract double getMaximumVelocity();
-	public abstract double getMaximumAcceleration();
 
 	@Override
 	public abstract void updateKinematics(double timestamp);
@@ -19,9 +16,10 @@ public abstract class Drivetrain extends Subsystem {
 
 	public void outputToSmartDashboard() {
 		SmartDashboard.putString("Drivetrain position", getKinematicPosition().toString());
+		SmartDashboard.putString("Drivetrain velocity", getKinematicVelocity().toString());
 
 		SmartDashboard.putNumber("Drivetrain angle", getGyroscope().getAngle().toDegrees());
 	}
-	
+
 	public void zeroSensors() {}
 }
