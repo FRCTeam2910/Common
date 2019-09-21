@@ -28,7 +28,7 @@ public final class NavX extends Gyroscope {
 
     @Override
     public double getUnadjustedRate() {
-        return navX.getRate();
+        return Math.toRadians(navX.getRate());
     }
 
     public double getAxis(Axis axis) {
