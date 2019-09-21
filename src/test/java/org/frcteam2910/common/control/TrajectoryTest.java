@@ -91,6 +91,25 @@ public class TrajectoryTest {
     }
 
     @Test
+    public void startEndTest() {
+        for (Path path : PATHS) {
+            Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
+
+            Vector2 pathStart = path.getPositionAtDistance(0.0);
+            Vector2 pathEnd = path.getPositionAtDistance(path.getLength());
+            Trajectory.Segment trajStart = trajectory.calculateSegment(0.0);
+            Trajectory.Segment trajEnd = trajectory.calculateSegment(trajectory.getDuration());
+
+            assertEquals("Starting velocity is not zero", 0.0, trajStart.velocity, MathUtils.EPSILON);
+            assertEquals("Start X values do not match", pathStart.x, trajStart.translation.x, MathUtils.EPSILON);
+            assertEquals("Start Y values do not match", pathStart.y, trajStart.translation.y, MathUtils.EPSILON);
+            assertEquals("Ending velocity is not zero", 0.0, trajEnd.velocity, MathUtils.EPSILON);
+            assertEquals("End X values do not match", pathEnd.x, trajEnd.translation.x, MathUtils.EPSILON);
+            assertEquals("End Y values do not match", pathEnd.y, trajEnd.translation.y, MathUtils.EPSILON);
+        }
+    }
+
+    @Test
     public void velocityContinuityTest() {
         for (Path path : PATHS) {
             Trajectory trajectory = new Trajectory(path, CONSTRAINTS);
@@ -203,7 +222,7 @@ public class TrajectoryTest {
     @Test
     @Ignore
     public void writeCsv() {
-        Trajectory trajectory = new Trajectory(PATHS[1], CONSTRAINTS);
+        Trajectory trajectory = new Trajectory(0.0, 4.0, PATHS[1], CONSTRAINTS);
 
         try (PrintStream out = new PrintStream(new FileOutputStream("trajectory.csv"))) {
             out.printf("segment,time,x,y,heading,rotation,position,velocity,acceleration,maxVelocity,f%n");

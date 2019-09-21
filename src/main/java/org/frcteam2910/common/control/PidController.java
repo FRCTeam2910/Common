@@ -12,9 +12,10 @@ public class PidController {
     private double minOutput = Double.NEGATIVE_INFINITY;
     private double maxOutput = Double.POSITIVE_INFINITY;
 
-    private double lastError = Double.NaN;
-    private double integralAccum = 0.0;
+    public double lastError = Double.NaN;
+    public double integralAccum = 0.0;
     private double integralRange = Double.POSITIVE_INFINITY;
+    private boolean shouldClearIntegralOnErrorSignChange = false;
 
     public PidController(PidConstants constants) {
         this.constants = constants;
@@ -33,8 +34,12 @@ public class PidController {
             }
         }
 
+        if (shouldClearIntegralOnErrorSignChange && !MathUtils.epsilonEquals(error, Math.copySign(error, integralAccum)) && !MathUtils.epsilonEquals(integralAccum, 0.0)) {
+            integralAccum = 0.0;
+        }
+
         double integral = 0.0;
-        if (Math.abs(error) > integralRange / 2.0) {
+        if (Math.abs(error) < integralRange / 2.0) {
             integral = integralAccum + error * dt;
         }
         integralAccum = integral;
@@ -72,6 +77,10 @@ public class PidController {
 
     public void setIntegralRange(double integralRange) {
         this.integralRange = integralRange;
+    }
+
+    public void setShouldClearIntegralOnErrorSignChange(boolean shouldClearIntegralOnErrorSignChange) {
+        this.shouldClearIntegralOnErrorSignChange = shouldClearIntegralOnErrorSignChange;
     }
 
     /**

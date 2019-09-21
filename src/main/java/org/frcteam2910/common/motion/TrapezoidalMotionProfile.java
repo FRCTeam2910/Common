@@ -5,6 +5,8 @@ import java.io.Serializable;
 public final class TrapezoidalMotionProfile extends MotionProfile implements Serializable {
 	private static final long serialVersionUID = 6593296352896093663L;
 
+	private final int direction;
+
 	private final Constraints constraints;
 	private final Goal start, end;
 
@@ -13,6 +15,10 @@ public final class TrapezoidalMotionProfile extends MotionProfile implements Ser
 	public TrapezoidalMotionProfile(Goal start, Goal end,
 	                                Constraints constraints) {
 		super(start, end);
+
+		this.direction = shouldFlipAcceleration(start, end) ? -1 : 1;
+		start = direct(start);
+		end = direct(end);
 
 		this.constraints = constraints;
 		this.start = start;
@@ -38,6 +44,26 @@ public final class TrapezoidalMotionProfile extends MotionProfile implements Ser
 		endAccelerationTime = accelerationTime - cutoffBegin;
 		endFullSpeedTime = endAccelerationTime + fullSpeedDist / constraints.maxVelocity;
 		endDecelerationTime = endFullSpeedTime + accelerationTime - cutoffEnd;
+	}
+
+	private static boolean shouldFlipAcceleration(Goal start, Goal end) {
+		return start.position > end.position;
+	}
+
+	private State direct(State in) {
+		return new State(
+				in.time,
+				in.position * direction,
+				in.velocity * direction,
+				in.acceleration * direction
+		);
+	}
+
+	private Goal direct(Goal in) {
+		return new Goal(
+				in.position * direction,
+				in.velocity * direction
+		);
 	}
 
 	@Override
@@ -66,7 +92,7 @@ public final class TrapezoidalMotionProfile extends MotionProfile implements Ser
 			position = end.position;
 		}
 
-		return new State(time, position, velocity, acceleration);
+		return direct(new State(time, position, velocity, acceleration));
 	}
 
 	@Override
