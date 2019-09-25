@@ -6,11 +6,19 @@ import org.frcteam2910.common.math.MathUtils;
 import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
+import org.frcteam2910.common.util.InterpolatingDouble;
+import org.frcteam2910.common.util.InterpolatingTreeMap;
+
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     private Vector2 kinematicPosition = Vector2.ZERO;
     private Vector2 kinematicVelocity = Vector2.ZERO;
     private double lastKinematicTimestamp;
+
+    private InterpolatingTreeMap<InterpolatingDouble, Vector2> positionSamples = new InterpolatingTreeMap<>(5);
 
     public void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented) {
         if (fieldOriented) {
@@ -52,7 +60,12 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
         }
         averageCenter = averageCenter.scale(1.0 / swerveModules.length);
 
-        kinematicVelocity = averageCenter.subtract(kinematicPosition).scale(1 / (timestamp - lastKinematicTimestamp));
+        positionSamples.put(new InterpolatingDouble(timestamp), averageCenter);
+
+        {
+            Map.Entry<InterpolatingDouble, Vector2> lastPosition = positionSamples.firstEntry();
+            kinematicVelocity = averageCenter.subtract(lastPosition.getValue()).scale(1 / (timestamp - lastPosition.getKey().value));
+        }
         kinematicPosition = averageCenter;
 
         for (SwerveModule module : swerveModules) {
