@@ -38,4 +38,12 @@ public class HolonomicFeedforward {
 
         return new Vector2(forwardFeedforward, strafeFeedforward);
     }
+
+    public DrivetrainFeedforwardConstants getForwardConstants() {
+        return forwardConstants;
+    }
+
+    public DrivetrainFeedforwardConstants getStrafeConstants() {
+        return strafeConstants;
+    }
 }
