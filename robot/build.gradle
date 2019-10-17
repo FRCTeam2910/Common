@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_11
 sourceCompatibility = JavaVersion.VERSION_11
 
-group = 'com.github.frcteam2910'
+group = 'com.github.frcteam2910.common'
 version = '2019.0.0'
 
 repositories {
@@ -21,4 +21,12 @@ dependencies {
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     // Depend on the common library
     compile project.parent
+}
+
+publishing {
+    publications {
+        robot(MavenPublication) {
+            from components.java
+        }
+    }
 }

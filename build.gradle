@@ -27,16 +27,24 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-group = 'com.github.frcteam2910'
+group = 'com.github.frcteam2910.common'
 version = '2019.0.0'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
+}
+
+publishing {
+    publications {
+        common(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 // Only add a wrapper block if we are the root project
