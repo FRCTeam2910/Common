@@ -7,7 +7,7 @@ public class PidController {
 
     private double setpoint;
 
-    private boolean continuous = true;
+    private boolean continuous = false;
     private double inputRange = Double.POSITIVE_INFINITY;
     private double minOutput = Double.NEGATIVE_INFINITY;
     private double maxOutput = Double.POSITIVE_INFINITY;
