@@ -12,8 +12,8 @@ and should only be ran on robots.
 The common library is imported into a project by using
 [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). In
 order to add this project as a submodule run `git submodule add
-https://github.com/FRCTeam2910/Common.git jester` in your project's root
-directory. This will clone this repository into the directory `jester`.
+https://github.com/FRCTeam2910/Common-Public.git common` in your project's root
+directory. This will clone this repository into the directory `common`.
 
 ### Using the Common library
 
@@ -22,13 +22,13 @@ your `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile project(':jester')
+    compile project(':common')
     ...
 }
 ```
 The following also needs to be added to your `settings.gradle` file:
 ```gradle
-include ':jester'
+include ':common'
 ```
 
 ### Using the Robot library
@@ -44,7 +44,7 @@ plugins {
 ...
 dependencies {
     ...
-    compile project(':jester:robot')
+    compile project(':common:robot')
     ...
 }
 ```
@@ -55,6 +55,6 @@ Replace `<GRADLERIO_VERSION>` with the version of GradleRIO you want to use.
 
 The following also needs to be added to your `settings.gradle` file:
 ```gradle
-include ':jester'
-include ':jester:robot'
+include ':common'
+include ':common:robot'
 ```
