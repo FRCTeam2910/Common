@@ -8,6 +8,8 @@ public final class HermiteSpline extends Spline {
     private final double[] xCoefficients;
     private final double[] yCoefficients;
 
+    private HermiteSpline derivative;
+
     public HermiteSpline(double[] xCoefficients, double[] yCoefficients) {
         this.xCoefficients = xCoefficients;
         this.yCoefficients = yCoefficients;
@@ -80,6 +82,23 @@ public final class HermiteSpline extends Spline {
     }
 
     @Override
+    public HermiteSpline derivative() {
+        if (derivative == null) {
+            double[] dxCoefficients = new double[xCoefficients.length - 1];
+            double[] dyCoefficients = new double[yCoefficients.length - 1];
+
+            for (int i = 0; i < dxCoefficients.length; i++) {
+                dxCoefficients[i] = (dxCoefficients.length - i) * xCoefficients[i];
+                dyCoefficients[i] = (dyCoefficients.length - i) * yCoefficients[i];
+            }
+
+            derivative = new HermiteSpline(dxCoefficients, dyCoefficients);
+        }
+
+        return derivative;
+    }
+
+    @Override
     public Vector2 getPoint(double t) {
         double x = 0.0;
         double y = 0.0;
@@ -90,18 +109,5 @@ public final class HermiteSpline extends Spline {
         }
 
         return new Vector2(x, y);
-    }
-
-    @Override
-    public Rotation2 getHeading(double t) {
-        double dx = 0.0;
-        double dy = 0.0;
-
-        for (int i = 0; i < xCoefficients.length - 1; i++) {
-            dx += (xCoefficients.length - 1 - i) * Math.pow(t, xCoefficients.length - 2 - i) * xCoefficients[i];
-            dy += (yCoefficients.length - 1 - i) * Math.pow(t, yCoefficients.length - 2 - i) * yCoefficients[i];
-        }
-
-        return new Rotation2(dx, dy, true);
     }
 }

@@ -15,6 +15,8 @@ public abstract class MotionProfile implements Serializable {
 
 	public abstract State calculate(double time);
 
+	public abstract Constraints getConstraints();
+
 	public abstract double getDuration();
 
 	public boolean isFinished(double time) {
