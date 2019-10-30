@@ -1,5 +1,8 @@
 package org.frcteam2910.common.control;
 
+/**
+ * Constrain both the velocity and acceleration based on the equation <code>F = K<sub>V</sub>*V + K<sub>A</sub>*A</code>.
+ */
 public class FeedforwardConstraint implements ITrajectoryConstraint {
     private final double targetFeedforward;
 

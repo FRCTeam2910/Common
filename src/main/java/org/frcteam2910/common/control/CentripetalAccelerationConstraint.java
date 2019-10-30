@@ -1,8 +1,20 @@
 package org.frcteam2910.common.control;
 
+/**
+ * A constraint that limits velocity by not allowing the centripetal acceleration to exceed a specified amount.
+ * <p>
+ * Limiting centripetal acceleration will slow down the robot as it tries to take a turn. This can be used to prevent
+ * tipping when corners are taken at high speeds.
+ * <p>
+ * For more information on centripetal acceleration see <a href="https://www.youtube.com/watch?v=NH1_sO8QY3o">this Khan
+ * Academy video</a>.
+ */
 public class CentripetalAccelerationConstraint implements ITrajectoryConstraint {
     private final double maxCentripetalAcceleration;
 
+    /**
+     * @param maxCentripetalAcceleration the maximum centripetal acceleration
+     */
     public CentripetalAccelerationConstraint(double maxCentripetalAcceleration) {
         this.maxCentripetalAcceleration = maxCentripetalAcceleration;
     }
