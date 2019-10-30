@@ -36,7 +36,7 @@ public class Main {
         Trajectory trajectory = new Trajectory(path, constraints, 1.0e-2);
 
         // Now that we have our trajectory lets evaluate it at a 5ms sample period and save it to a csv.
-        try (CSVPrinter printer = new CSVPrinter(new FileWriter("examples/trajectory-generation/trajectory.csv"), CSVFormat.RFC4180)) {
+        try (CSVPrinter printer = new CSVPrinter(new FileWriter("trajectory.csv"), CSVFormat.RFC4180)) {
             // Print out the header for the csv file
             printer.printRecord(
                     "time",
