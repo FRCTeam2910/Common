@@ -21,6 +21,10 @@ public class SplinePathBuilder {
         return addWaypoint(new Waypoint(position, heading));
     }
 
+    public SplinePathBuilder addWaypoint(Vector2 position, Rotation2 heading, Rotation2 rotation) {
+        return addWaypoint(new Waypoint(position, heading, rotation));
+    }
+
     public SplinePathBuilder addWaypoints(Waypoint... waypoints) {
         for (Waypoint waypoint : waypoints) {
             addWaypoint(waypoint);
