@@ -27,7 +27,7 @@ public class TrajectoryTest {
             new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),
             new Waypoint(new Vector2(50.0, 50.0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(0))
     };
-    private static final ITrajectoryConstraint[] CONSTRAINTS = {
+    private static final TrajectoryConstraint[] CONSTRAINTS = {
             new CentripetalAccelerationConstraint(7.5),
             new MaxAccelerationConstraint(MAX_ACCELERATION),
             new FeedforwardConstraint(MAX_FEEDFORWARD, KV, KA, true)
@@ -45,7 +45,7 @@ public class TrajectoryTest {
             Trajectory.State currentState = trajectory.calculate(i * DT);
 
             double maximumVelocity = Double.POSITIVE_INFINITY;
-            for (ITrajectoryConstraint constraint : CONSTRAINTS) {
+            for (TrajectoryConstraint constraint : CONSTRAINTS) {
                 maximumVelocity = Math.min(maximumVelocity, constraint.getMaxVelocity(currentState.getPathState()));
             }
 
@@ -53,7 +53,7 @@ public class TrajectoryTest {
                     greaterThanOrEqualTo(Math.abs(currentState.getVelocity())));
 
             double maximumAcceleration = Double.POSITIVE_INFINITY;
-            for (ITrajectoryConstraint constraint : CONSTRAINTS) {
+            for (TrajectoryConstraint constraint : CONSTRAINTS) {
                 if (currentState.getAcceleration() > 0.0) {
                     maximumAcceleration = Math.min(maximumAcceleration, constraint.getMaxAcceleration(currentState.getPathState(), currentState.getVelocity()));
                 } else {

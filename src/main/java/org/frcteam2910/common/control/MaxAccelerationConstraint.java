@@ -3,7 +3,7 @@ package org.frcteam2910.common.control;
 /**
  * A constraint that limits the acceleration.
  */
-public class MaxAccelerationConstraint implements ITrajectoryConstraint {
+public class MaxAccelerationConstraint extends TrajectoryConstraint {
     private final double maxAcceleration;
     private final double maxDeceleration;
 
@@ -14,11 +14,6 @@ public class MaxAccelerationConstraint implements ITrajectoryConstraint {
     public MaxAccelerationConstraint(double maxAcceleration, double maxDeceleration) {
         this.maxAcceleration = maxAcceleration;
         this.maxDeceleration = maxDeceleration;
-    }
-
-    @Override
-    public double getMaxVelocity(Path.State state) {
-        return Double.POSITIVE_INFINITY;
     }
 
     @Override

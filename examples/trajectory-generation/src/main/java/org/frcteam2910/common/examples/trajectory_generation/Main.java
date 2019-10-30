@@ -20,7 +20,7 @@ public class Main {
                 .build();
 
         // Once we have our path we need to then specify some constraints for our trajectory.
-        ITrajectoryConstraint[] constraints = {
+        TrajectoryConstraint[] constraints = {
                 // Lets specify a maximum acceleration of 10.0 units/s^2
                 new MaxAccelerationConstraint(10.0),
                 // And lets have a maximum velocity of 12.0 units/s

@@ -1,13 +1,15 @@
 package org.frcteam2910.common.control;
 
-public interface ITrajectoryConstraint {
+public abstract class TrajectoryConstraint {
     /**
      * Gets the maximum velocity this constraint allows for a path state.
      *
      * @param state the path state.
      * @return the maximum velocity.
      */
-    double getMaxVelocity(Path.State state);
+    public double getMaxVelocity(Path.State state) {
+        return Double.POSITIVE_INFINITY;
+    }
 
     /**
      * Gets the maximum acceleration this constraint allows for a path state and velocity.
@@ -16,7 +18,9 @@ public interface ITrajectoryConstraint {
      * @param velocity the velocity.
      * @return the maximum acceleration.
      */
-    double getMaxAcceleration(Path.State state, double velocity);
+    public double getMaxAcceleration(Path.State state, double velocity) {
+        return Double.POSITIVE_INFINITY;
+    }
 
     /**
      * Gets the maximum deceleration this constraint allows for a path state and velocity.
@@ -25,5 +29,7 @@ public interface ITrajectoryConstraint {
      * @param velocity the velocity.
      * @return the maximum deceleration.s
      */
-    double getMaxDeceleration(Path.State state, double velocity);
+    public double getMaxDeceleration(Path.State state, double velocity) {
+        return getMaxAcceleration(state, velocity);
+    }
 }

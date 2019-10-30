@@ -9,7 +9,7 @@ package org.frcteam2910.common.control;
  * For more information on centripetal acceleration see <a href="https://www.youtube.com/watch?v=NH1_sO8QY3o">this Khan
  * Academy video</a>.
  */
-public class CentripetalAccelerationConstraint implements ITrajectoryConstraint {
+public class CentripetalAccelerationConstraint extends TrajectoryConstraint {
     private final double maxCentripetalAcceleration;
 
     /**
@@ -38,15 +38,5 @@ public class CentripetalAccelerationConstraint implements ITrajectoryConstraint 
         }
 
         return Math.sqrt(Math.abs(maxCentripetalAcceleration / state.getCurvature()));
-    }
-
-    @Override
-    public double getMaxAcceleration(Path.State state, double velocity) {
-        return Double.POSITIVE_INFINITY;
-    }
-
-    @Override
-    public double getMaxDeceleration(Path.State state, double velocity) {
-        return Double.POSITIVE_INFINITY;
     }
 }

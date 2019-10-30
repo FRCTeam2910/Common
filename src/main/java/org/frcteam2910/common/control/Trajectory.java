@@ -13,7 +13,7 @@ public class Trajectory {
     private List<ConstrainedPathState> constrainedPathStates = new ArrayList<>();
     private double[] pathStateStartTimes;
 
-    public Trajectory(Path path, ITrajectoryConstraint[] trajectoryConstraints, double sampleDistance) {
+    public Trajectory(Path path, TrajectoryConstraint[] trajectoryConstraints, double sampleDistance) {
         this.path = path;
 
         double distance = 0.0;
@@ -38,7 +38,7 @@ public class Trajectory {
 
             double maxEndingVelocity = Double.POSITIVE_INFINITY;
 
-            for (ITrajectoryConstraint constraint : trajectoryConstraints) {
+            for (TrajectoryConstraint constraint : trajectoryConstraints) {
                 maxEndingVelocity = Math.min(constraint.getMaxVelocity(endingState), maxEndingVelocity);
             }
 
@@ -63,7 +63,7 @@ public class Trajectory {
                 // We are accelerating
                 double maxStartingAcceleration = Double.POSITIVE_INFINITY;
                 double maxEndingAcceleration = Double.POSITIVE_INFINITY;
-                for (ITrajectoryConstraint constraint : trajectoryConstraints) {
+                for (TrajectoryConstraint constraint : trajectoryConstraints) {
                     maxStartingAcceleration = Math.min(constraint.getMaxAcceleration(startingState, startingVelocity), maxStartingAcceleration);
                     maxEndingAcceleration = Math.min(constraint. getMaxAcceleration(endingState, startingVelocity), maxEndingAcceleration); // TODO: Use endingVelocity instead of startingVelocity
                 }
@@ -106,7 +106,7 @@ public class Trajectory {
             if (deltaVelocity < 0.0) {
                 // Use the deceleration constraint for when we decelerate
                 double deceleration = Double.POSITIVE_INFINITY;
-                for (ITrajectoryConstraint constraint : trajectoryConstraints) {
+                for (TrajectoryConstraint constraint : trajectoryConstraints) {
                     deceleration = Math.min(deceleration, constraint.getMaxDeceleration(constrainedState.pathState, constrainedState.endingVelocity));
                 }
 
