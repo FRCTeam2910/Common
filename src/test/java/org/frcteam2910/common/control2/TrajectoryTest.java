@@ -1,7 +1,5 @@
 package org.frcteam2910.common.control2;
 
-import com.github.sh0nk.matplotlib4j.Plot;
-import com.github.sh0nk.matplotlib4j.PythonExecutionException;
 import org.frcteam2910.common.Constants;
 import org.frcteam2910.common.Logger;
 import org.frcteam2910.common.control.Waypoint;
@@ -10,15 +8,11 @@ import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.util.MovingAverage;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
 public class TrajectoryTest {
-    private static final double SAMPLE_DISTANCE = 1.0e-3;
+    private static final double SAMPLE_DISTANCE = 1.0e-2;
 
     private static final double DT = 5.0e-3;
 
@@ -27,8 +21,8 @@ public class TrajectoryTest {
     private static final double MAX_FEEDFORWARD = 10.0;
 
     private static final double MAX_ACCELERATION = 30.0;
-    private static final double ALLOWABLE_ACCELERATION_ERROR = 1.0e-1;
-    private static final double ALLOWABLE_VELOCITY_ERROR = 1.0e-3;
+    private static final double ALLOWABLE_ACCELERATION_ERROR = 0.5;
+    private static final double ALLOWABLE_VELOCITY_ERROR = 0.01;
 
     private static final Waypoint[] WAYPOINTS = {
             new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),
@@ -121,50 +115,5 @@ public class TrajectoryTest {
         logger.info("Longest generation time: %.3f ms", highTime);
         logger.info("Shortest generation time: %.3f ms", lowTime);
         logger.info("Average trajectory time: %.3f ms", average.get());
-    }
-
-    @Test
-    public void showGraph() throws IOException, PythonExecutionException {
-        long startNs = System.nanoTime();
-
-        Path splinePath = new SplinePathBuilder()
-                .addWaypoints(WAYPOINTS)
-                .build();
-
-        Trajectory trajectory = new Trajectory(splinePath, CONSTRAINTS, 1.0e-2);
-
-        int iterations = (int) (Math.ceil(trajectory.getDuration() / 5.0e-3));
-
-        List<Double> recordedTimes = new ArrayList<>(iterations + 1);
-        List<Double> recordedVelocities = new ArrayList<>(iterations + 1);
-        List<Double> recordedAccelerations = new ArrayList<>(iterations + 1);
-        List<Double> recordedDistances = new ArrayList<>(iterations + 1);
-        List<Double> recordedFeedforwards = new ArrayList<>(iterations + 1);
-
-        for (int i = 0; i <= iterations; i++) {
-            double time = i * 5.0e-3;
-            Trajectory.State state = trajectory.calculate(time);
-            recordedTimes.add(time);
-            recordedVelocities.add(state.getVelocity());
-            recordedAccelerations.add(state.getAcceleration());
-            recordedDistances.add(state.getPathState().getDistance());
-            recordedFeedforwards.add(KV * state.getVelocity() + KA * state.getAcceleration());
-        }
-        long endNs = System.nanoTime();
-
-        System.out.printf("Trajectory generation took %.3f ms!%n", (endNs - startNs) * 1.0e-6);
-
-
-        Plot plt = Plot.create();
-        plt.plot()
-                .add(recordedTimes, recordedVelocities);
-//        plt.plot()
-//                .add(recordedTimes, recordedAccelerations);
-//        plt.plot()
-//                .add(recordedTimes, recordedDistances);
-        plt.plot()
-                .add(recordedTimes, recordedFeedforwards);
-
-        plt.show();
     }
 }
