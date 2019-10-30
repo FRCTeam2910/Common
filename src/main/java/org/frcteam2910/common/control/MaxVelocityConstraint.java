@@ -1,6 +1,6 @@
 package org.frcteam2910.common.control;
 
-public final class MaxVelocityConstraint implements ITrajectoryConstraint {
+public class MaxVelocityConstraint implements ITrajectoryConstraint {
     private final double maxVelocity;
 
     public MaxVelocityConstraint(double maxVelocity) {
@@ -8,12 +8,17 @@ public final class MaxVelocityConstraint implements ITrajectoryConstraint {
     }
 
     @Override
-    public double getMaxVelocity(PathSegment segment) {
+    public double getMaxVelocity(Path.State state) {
         return maxVelocity;
     }
 
     @Override
-    public double getMaxAcceleration(PathSegment segment, double velocity) {
+    public double getMaxAcceleration(Path.State state, double velocity) {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public double getMaxDeceleration(Path.State state, double velocity) {
         return Double.POSITIVE_INFINITY;
     }
 }

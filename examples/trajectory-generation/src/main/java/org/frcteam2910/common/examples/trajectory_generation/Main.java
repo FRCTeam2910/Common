@@ -2,7 +2,7 @@ package org.frcteam2910.common.examples.trajectory_generation;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.frcteam2910.common.control2.*;
+import org.frcteam2910.common.control.*;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 

@@ -12,7 +12,7 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
 
     private HolonomicFeedforward feedforward;
 
-    private Trajectory.Segment lastSegment = null;
+    private Trajectory.State lastState = null;
 
     private boolean finished = false;
 
@@ -36,16 +36,16 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
             return new HolonomicDriveSignal(Vector2.ZERO, 0.0, false);
         }
 
-        lastSegment = trajectory.calculateSegment(time);
+        lastState = trajectory.calculate(time);
 
-        Vector2 segmentVelocity = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.velocity);
-        Vector2 segmentAcceleration = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.acceleration);
+        Vector2 segmentVelocity = Vector2.fromAngle(lastState.getPathState().getHeading()).scale(lastState.getVelocity());
+        Vector2 segmentAcceleration = Vector2.fromAngle(lastState.getPathState().getHeading()).scale(lastState.getAcceleration());
 
         Vector2 feedforwardVector = feedforward.calculateFeedforward(segmentVelocity, segmentAcceleration);
 
-        forwardController.setSetpoint(lastSegment.translation.x);
-        strafeController.setSetpoint(lastSegment.translation.y);
-        rotationController.setSetpoint(lastSegment.rotation.toRadians());
+        forwardController.setSetpoint(lastState.getPathState().getTranslation().x);
+        strafeController.setSetpoint(lastState.getPathState().getTranslation().y);
+        rotationController.setSetpoint(lastState.getPathState().getRotation().toRadians());
 
         return new HolonomicDriveSignal(
                 new Vector2(
@@ -57,8 +57,8 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
         );
     }
 
-    public Trajectory.Segment getLastSegment() {
-        return lastSegment;
+    public Trajectory.State getLastState() {
+        return lastState;
     }
 
     @Override

@@ -1,6 +1,5 @@
-package org.frcteam2910.common.control2;
+package org.frcteam2910.common.control;
 
-import org.frcteam2910.common.control.Waypoint;
 import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
