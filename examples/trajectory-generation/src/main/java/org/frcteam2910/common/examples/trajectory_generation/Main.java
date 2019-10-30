@@ -12,11 +12,12 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         // First we have to generate our path. We will use the SplinePathBuilder to generate a path using splines.
-        Path path = new SplinePathBuilder()
-                // For each waypoint we must specify a position, heading, and optionally a rotation.
-                .addWaypoint(Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO)
-                .addWaypoint(new Vector2(100.0, 100.0), Rotation2.ZERO, Rotation2.fromDegrees(90.0))
-                // Once we've added all the waypoints we can then build the path.
+        Path path = new SplinePathBuilder(Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO)
+                // When using hermite splines we must specify a position and a heading. We can also optionally specify
+                // a rotation.
+                .hermite(new Vector2(100.0, 100.0), Rotation2.ZERO, Rotation2.fromDegrees(90.0))
+                .hermite(new Vector2(50.0, 50.0), Rotation2.fromDegrees(180.0), Rotation2.ZERO)
+                // Once we've added all the splines we can then build the path.
                 .build();
 
         // Once we have our path we need to then specify some constraints for our trajectory.
@@ -59,8 +60,8 @@ public class Main {
                 printer.printRecord(
                         i * 5.0e-3,
                         state.getPathState().getDistance(),
-                        state.getPathState().getTranslation().x,
-                        state.getPathState().getTranslation().y,
+                        state.getPathState().getPosition().x,
+                        state.getPathState().getPosition().y,
                         state.getPathState().getHeading().toDegrees(),
                         state.getPathState().getRotation().toDegrees(),
                         state.getPathState().getCurvature(),

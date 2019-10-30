@@ -6,89 +6,77 @@ import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.math.spline.HermiteSpline;
 import org.frcteam2910.common.math.spline.Spline;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.BiFunction;
 
 public class SplinePathBuilder {
-    private List<Waypoint> waypointList = new ArrayList<>();
+    private List<SplineSegment> segmentList = new LinkedList<>();
+    private Map<Double, Rotation2> rotationMap = new TreeMap<>();
+    private double length = 0.0;
 
-    public SplinePathBuilder addWaypoint(Waypoint waypoint) {
-        waypointList.add(waypoint);
-        return this;
+    private double splineLengthSampleStep = 1.0e-4;
+    private BiFunction<RigidTransform2, RigidTransform2, Spline> hermiteSplineFactoryFunction = HermiteSpline::quintic;
+
+    private PathSegment.State lastState;
+
+    public SplinePathBuilder(Vector2 initialPosition, Rotation2 initialHeading, Rotation2 initialRotation) {
+        lastState = new PathSegment.State(initialPosition, initialHeading, 0.0);
+        rotationMap.put(0.0, initialHeading);
     }
 
-    public SplinePathBuilder addWaypoint(Vector2 position, Rotation2 heading) {
-        return addWaypoint(new Waypoint(position, heading));
-    }
+    private void addSpline(Spline spline) {
+        double splineLength = 0.0;
+        Vector2 p0 = spline.getPoint(0.0);
+        for (double t = splineLengthSampleStep; t <= 1.0; t += splineLengthSampleStep) {
+            Vector2 p1 = spline.getPoint(t);
+            splineLength += p1.subtract(p0).length;
 
-    public SplinePathBuilder addWaypoint(Vector2 position, Rotation2 heading, Rotation2 rotation) {
-        return addWaypoint(new Waypoint(position, heading, rotation));
-    }
-
-    public SplinePathBuilder addWaypoints(Waypoint... waypoints) {
-        for (Waypoint waypoint : waypoints) {
-            addWaypoint(waypoint);
+            p0 = p1;
         }
 
-        return this;
+        SplineSegment segment = new SplineSegment(spline, splineLength);
+        segmentList.add(segment);
+        lastState = segment.getEnd();
+        length += splineLength;
     }
 
     public Path build() {
-        if (waypointList.size() < 2) {
-            throw new IllegalStateException("At least 2 waypoints must be added before the path is built.");
-        }
+        return new Path(segmentList.toArray(new PathSegment[0]), rotationMap);
+    }
 
-        SplineSegment[] segments = new SplineSegment[waypointList.size() - 1];
-        for (int i = 0; i < segments.length; i++) {
-            Waypoint start = waypointList.get(i);
-            Waypoint end = waypointList.get(i + 1);
+    public SplinePathBuilder hermite(Vector2 position, Rotation2 heading) {
+        addSpline(hermiteSplineFactoryFunction.apply(
+                new RigidTransform2(lastState.getPosition(), lastState.getHeading()),
+                new RigidTransform2(position, heading)
+        ));
+        return this;
+    }
 
-            segments[i] = new SplineSegment(HermiteSpline.quintic(
-                    new RigidTransform2(start.position, start.heading),
-                    new RigidTransform2(end.position, end.heading)),
-                    start.rotation,
-                    end.rotation
-            );
-        }
-
-        return new Path(segments);
+    public SplinePathBuilder hermite(Vector2 position, Rotation2 heading, Rotation2 rotation) {
+        hermite(position, heading);
+        rotationMap.put(length, rotation);
+        return this;
     }
 
     public static class SplineSegment extends PathSegment {
-        private static final double SPLINE_LENGTH_DT = 1.0e-3;
-
         private final Spline spline;
-        private final Rotation2 startingRotation;
-        private final Rotation2 endingRotation;
-
         private final double length;
 
-        public SplineSegment(Spline spline, Rotation2 startingRotation, Rotation2 endingRotation) {
+        private SplineSegment(Spline spline, double length) {
             this.spline = spline;
-            this.startingRotation = startingRotation;
-            this.endingRotation = endingRotation;
-
-            double length = 0.0;
-            Vector2 p0 = spline.getPoint(0.0);
-            for (double t = SPLINE_LENGTH_DT; t <= 1.0; t += SPLINE_LENGTH_DT) {
-                Vector2 p1 = spline.getPoint(t);
-                length += p1.subtract(p0).length;
-
-                p0 = p1;
-            }
-
             this.length = length;
         }
 
         @Override
-        public Path.State calculate(double distance) {
+        public State calculate(double distance) {
             double t = distance / length;
 
-            return new Path.State(
-                    distance,
+            return new State(
                     spline.getPoint(t),
                     spline.getHeading(t),
-                    startingRotation.interpolate(endingRotation, t),
                     spline.getCurvature(t)
             );
         }

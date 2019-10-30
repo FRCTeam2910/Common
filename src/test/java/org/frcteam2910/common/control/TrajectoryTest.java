@@ -23,10 +23,6 @@ public class TrajectoryTest {
     private static final double ALLOWABLE_ACCELERATION_ERROR = 0.5;
     private static final double ALLOWABLE_VELOCITY_ERROR = 0.01;
 
-    private static final Waypoint[] WAYPOINTS = {
-            new Waypoint(new Vector2(0, 0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(90)),
-            new Waypoint(new Vector2(50.0, 50.0), Rotation2.fromDegrees(90), Rotation2.fromDegrees(0))
-    };
     private static final TrajectoryConstraint[] CONSTRAINTS = {
             new CentripetalAccelerationConstraint(7.5),
             new MaxAccelerationConstraint(MAX_ACCELERATION),
@@ -35,8 +31,8 @@ public class TrajectoryTest {
 
     @Test
     public void obeysConstraints() {
-        Path path = new SplinePathBuilder()
-                .addWaypoints(WAYPOINTS)
+        Path path = new SplinePathBuilder(Vector2.ZERO, Rotation2.fromDegrees(90.0), Rotation2.fromDegrees(90.0))
+                .hermite(new Vector2(50.0, 50.0), Rotation2.fromDegrees(90.0), Rotation2.ZERO)
                 .build();
         Trajectory trajectory = new Trajectory(path, CONSTRAINTS, SAMPLE_DISTANCE);
 
@@ -72,8 +68,8 @@ public class TrajectoryTest {
 
         Logger logger = new Logger("TrajectoryTest.speedTest");
 
-        Path loggedPath = new SplinePathBuilder()
-                .addWaypoints(WAYPOINTS)
+        Path loggedPath = new SplinePathBuilder(Vector2.ZERO, Rotation2.fromDegrees(90.0), Rotation2.fromDegrees(90.0))
+                .hermite(new Vector2(50.0, 50.0), Rotation2.fromDegrees(90.0), Rotation2.ZERO)
                 .build();
         Trajectory loggedTrajectory = new Trajectory(loggedPath, CONSTRAINTS, SAMPLE_DISTANCE);
 
@@ -85,8 +81,8 @@ public class TrajectoryTest {
         for (int run = 1; run <= speedRuns; run++) {
             long start = System.nanoTime();
 
-            Path path = new SplinePathBuilder()
-                    .addWaypoints(WAYPOINTS)
+            Path path = new SplinePathBuilder(Vector2.ZERO, Rotation2.fromDegrees(90.0), Rotation2.fromDegrees(90.0))
+                    .hermite(new Vector2(50.0, 50.0), Rotation2.fromDegrees(90.0), Rotation2.ZERO)
                     .build();
             Trajectory trajectory = new Trajectory(path, CONSTRAINTS, SAMPLE_DISTANCE);
 
