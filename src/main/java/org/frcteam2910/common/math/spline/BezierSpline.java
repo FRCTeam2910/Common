@@ -1,5 +1,6 @@
 package org.frcteam2910.common.math.spline;
 
+import org.ejml.simple.SimpleMatrix;
 import org.frcteam2910.common.math.Vector2;
 
 import java.util.List;
@@ -16,30 +17,24 @@ public final class BezierSpline extends Spline {
             new int[]{1, 6, 15, 20, 15, 6, 1}
     );
 
-    private final double[] xWeights;
-    private final double[] yWeights;
+    private final int degree;
+    private final SimpleMatrix weightMatrix;
+    private final SimpleMatrix bezierMatrix;
 
-    public BezierSpline(Vector2 start, Vector2 end, Vector2... controlPoints) {
-        xWeights = new double[controlPoints.length + 2];
-        yWeights = new double[controlPoints.length + 2];
-
-        xWeights[0] = start.x;
-        yWeights[0] = start.y;
-
-        for (int i = 0; i < controlPoints.length; i++) {
-            xWeights[i + 1] = controlPoints[i].x;
-            yWeights[i + 1] = controlPoints[i].y;
-        }
-
-        xWeights[xWeights.length - 1] = end.x;
-        yWeights[yWeights.length - 1] = end.y;
+    public BezierSpline(SimpleMatrix weightMatrix) {
+        this.degree = weightMatrix.numRows() - 1;
+        this.weightMatrix = weightMatrix;
+        this.bezierMatrix = makeBezierMatrix(weightMatrix.numRows() - 1);
     }
 
-    public BezierSpline(double[] xWeights, double[] yWeights) {
-        assert xWeights.length == yWeights.length;
+    public BezierSpline(Vector2[] controlPoints) {
+        this.degree = controlPoints.length - 1;
+        this.weightMatrix = new SimpleMatrix(controlPoints.length, 2);
+        this.bezierMatrix = makeBezierMatrix(degree);
 
-        this.xWeights = xWeights;
-        this.yWeights = yWeights;
+        for (int i = 0; i < controlPoints.length; i++) {
+            weightMatrix.setRow(i, 0, controlPoints[i].x, controlPoints[i].y);
+        }
     }
 
     private static int binomial(int order, int k) {
@@ -60,39 +55,37 @@ public final class BezierSpline extends Spline {
         }
     }
 
-    private static double basis(int order, double t, double[] weights) {
-        double sum = 0.0;
-        for (int k = 0; k <= order; k++) {
-            sum += weights[k] * binomial(order, k) * Math.pow(1 - t, order - k) * Math.pow(t, k);
+    public static SimpleMatrix makeBezierMatrix(int degree) {
+        SimpleMatrix matrix = new SimpleMatrix(degree + 1, degree + 1);
+        for (int i = 0; i <= degree; i++) {
+            for (int j = 0; j <= i; j++) {
+                matrix.set(i, j, Math.pow(-1, i - j) * binomial(degree, i) * binomial(i, j));
+            }
         }
 
-        return sum;
+        return matrix;
     }
 
     @Override
     public Vector2 getPoint(double t) {
-        double x = 0.0;
-        double y = 0.0;
-
-        for (int k = 0; k < xWeights.length; k++) {
-            double unweightedBasis = binomial(xWeights.length - 1, k) * Math.pow(1 - t, xWeights.length - 1 - k) * Math.pow(t, k);
-
-            x += xWeights[k] * unweightedBasis;
-            y += yWeights[k] * unweightedBasis;
+        SimpleMatrix powerMatrix = new SimpleMatrix(1, weightMatrix.numRows());
+        for (int i = 0; i < powerMatrix.numCols(); i++) {
+            powerMatrix.set(i, Math.pow(t, i));
         }
 
-        return new Vector2(x, y);
+        SimpleMatrix result = powerMatrix.mult(bezierMatrix).mult(weightMatrix);
+
+        return new Vector2(result.get(0), result.get(1));
     }
 
     public BezierSpline derivative() {
-        double[] dxWeights = new double[xWeights.length - 1];
-        double[] dyWeights = new double[yWeights.length - 1];
-
-        for (int i = 0; i < dxWeights.length; i++) {
-            dxWeights[i] = dxWeights.length * (xWeights[i + 1] - xWeights[i]);
-            dyWeights[i] = dyWeights.length * (yWeights[i + 1] - yWeights[i]);
+        SimpleMatrix derivativeMatrix = new SimpleMatrix(degree, degree + 1);
+        for (int i = 0; i < degree; i++) {
+            derivativeMatrix.setRow(i, i, -degree, degree);
         }
 
-        return new BezierSpline(dxWeights, dyWeights);
+        SimpleMatrix dWeights = derivativeMatrix.mult(weightMatrix);
+
+        return new BezierSpline(dWeights);
     }
 }
