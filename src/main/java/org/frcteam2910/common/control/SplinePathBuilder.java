@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 
-public class SplinePathBuilder {
+public final class SplinePathBuilder {
     private List<SplineSegment> segmentList = new LinkedList<>();
     private Map<Double, Rotation2> rotationMap = new TreeMap<>();
     private double length = 0.0;
@@ -24,7 +24,7 @@ public class SplinePathBuilder {
 
     public SplinePathBuilder(Vector2 initialPosition, Rotation2 initialHeading, Rotation2 initialRotation) {
         lastState = new PathSegment.State(initialPosition, initialHeading, 0.0);
-        rotationMap.put(0.0, initialHeading);
+        rotationMap.put(0.0, initialRotation);
     }
 
     private void addSpline(Spline spline) {
