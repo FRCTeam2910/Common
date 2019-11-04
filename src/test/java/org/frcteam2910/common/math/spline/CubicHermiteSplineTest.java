@@ -1,4 +1,4 @@
-package org.frcteam2910.common.math.spline2;
+package org.frcteam2910.common.math.spline;
 
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;

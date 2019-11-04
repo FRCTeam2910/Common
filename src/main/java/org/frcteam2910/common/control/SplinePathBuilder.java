@@ -1,16 +1,14 @@
 package org.frcteam2910.common.control;
 
-import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
-import org.frcteam2910.common.math.spline.HermiteSpline;
+import org.frcteam2910.common.math.spline.CubicHermiteSpline;
 import org.frcteam2910.common.math.spline.Spline;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.BiFunction;
 
 public final class SplinePathBuilder {
     private List<SplineSegment> segmentList = new LinkedList<>();
@@ -18,7 +16,6 @@ public final class SplinePathBuilder {
     private double length = 0.0;
 
     private double splineLengthSampleStep = 1.0e-4;
-    private BiFunction<RigidTransform2, RigidTransform2, Spline> hermiteSplineFactoryFunction = HermiteSpline::quintic;
 
     private PathSegment.State lastState;
 
@@ -48,9 +45,9 @@ public final class SplinePathBuilder {
     }
 
     public SplinePathBuilder hermite(Vector2 position, Rotation2 heading) {
-        addSpline(hermiteSplineFactoryFunction.apply(
-                new RigidTransform2(lastState.getPosition(), lastState.getHeading()),
-                new RigidTransform2(position, heading)
+        addSpline(new CubicHermiteSpline(
+                lastState.getPosition(), lastState.getHeading(),
+                position, heading
         ));
         return this;
     }

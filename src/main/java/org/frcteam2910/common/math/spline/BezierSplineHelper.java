@@ -1,9 +1,9 @@
-package org.frcteam2910.common.math.spline2;
+package org.frcteam2910.common.math.spline;
 
 import org.ejml.simple.SimpleMatrix;
 import org.frcteam2910.common.math.Vector2;
 
-import static org.frcteam2910.common.math.spline2.SplineHelper.binomial;
+import static org.frcteam2910.common.math.spline.SplineHelper.binomial;
 
 class BezierSplineHelper {
     private BezierSplineHelper() {
