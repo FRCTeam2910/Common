@@ -8,6 +8,8 @@ public class Spline {
     private final SimpleMatrix basisMatrix;
     private final SimpleMatrix basisWeightMatrix;
 
+    private Spline derivative;
+
     public Spline(SimpleMatrix basisMatrix, SimpleMatrix basisWeightMatrix) {
         if (basisMatrix.numRows() != basisMatrix.numCols()) {
             throw new IllegalArgumentException("The basis matrix must be a square matrix");
@@ -35,17 +37,25 @@ public class Spline {
         return basisWeightMatrix;
     }
 
+    /**
+     * Gets the derivative of the spline.
+     *
+     * @return The spline's derivative.
+     */
     public Spline derivative() {
-        SimpleMatrix coefficients = basisMatrix.mult(basisWeightMatrix);
+        // The derivative is used when calculating the tangent or curvature. Cache it so we don't have to calculate it
+        // multiple times.
+        if (derivative == null) {
+            SimpleMatrix coefficients = basisMatrix.mult(basisWeightMatrix);
+            SimpleMatrix derivativeMatrix = new SimpleMatrix(coefficients.numRows() - 1, coefficients.numRows());
+            for (int i = 0; i < derivativeMatrix.numRows(); i++) {
+                derivativeMatrix.set(i, i + 1, i + 1);
+            }
 
-        SimpleMatrix derivativeMatrix = new SimpleMatrix(coefficients.numRows() - 1, coefficients.numRows());
-        // TODO: Fill out derivative matrix so that multiplying the coefficients by it results in a matrix containing
-        // the coefficients of the derivative of the polynomial that the coefficients matrix represent
-        for (int i = 0; i < derivativeMatrix.numRows(); i++) {
-            derivativeMatrix.set(i, i, coefficients.numCols() - i);
+            derivative = new Spline(SimpleMatrix.identity(getDegree()), derivativeMatrix.mult(coefficients));
         }
 
-        return new Spline(SimpleMatrix.identity(getDegree()), derivativeMatrix.mult(coefficients));
+        return derivative;
     }
 
     public Vector2 getPoint(double t) {

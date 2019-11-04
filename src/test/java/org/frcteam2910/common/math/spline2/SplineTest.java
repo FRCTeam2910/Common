@@ -1,57 +1,42 @@
 package org.frcteam2910.common.math.spline2;
 
-import org.frcteam2910.common.math.Rotation2;
-import org.frcteam2910.common.math.Vector2;
-import org.frcteam2910.common.math.spline.BezierSpline;
+import org.ejml.simple.SimpleMatrix;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class SplineTest {
     @Test
-    public void verifyStartEndHeading() {
-        Spline spline = new CubicBezierSpline(
-                new Vector2(0, 0),
-                new Vector2(5, 0),
-                new Vector2(45, 50),
-                new Vector2(50, 50)
-        );
-        assertEquals("Starting heading is not correct", Rotation2.ZERO, spline.getHeading(0.0));
-        assertEquals("Ending heading is not correct", Rotation2.ZERO, spline.getHeading(1.0));
-
-        spline = new CubicBezierSpline(
-                new Vector2(0, 0),
-                new Vector2(0, 5),
-                new Vector2(40, 40),
-                new Vector2(50, 50)
-        );
-        assertEquals("Starting heading is not correct", Rotation2.fromDegrees(90), spline.getHeading(0.0));
-        assertEquals("Ending heading is not correct", Rotation2.fromDegrees(45), spline.getHeading(1.0));
-    }
-
-    @Test
     public void derivative() {
-        Spline spline = new CubicBezierSpline(
-                new Vector2(0, 0),
-                new Vector2(5, 0),
-                new Vector2(45, 50),
-                new Vector2(50, 50)
+        // Use the polynomials:
+        // x(t) = 5x^3 - 20x^2 + x - 9
+        // y(t) = -52x^3 - 7x + 2
+        //
+        // NOTE: Coefficients have to be put in the matrix in reverse order. I.e. x^3 should be in the last row, x^2 in
+        // the second to last, and so on.
+        //
+        // Because we are just putting our coefficients into the weight matrix, the basis matrix will the the identity
+        // matrix.
+        Spline spline = new Spline(
+                SimpleMatrix.identity(4),
+                new SimpleMatrix(new double[][]{
+                        new double[]{-9, 2},
+                        new double[]{1, -7},
+                        new double[]{-20, 0},
+                        new double[]{5, -52}
+                })
         );
 
+        // Based off of the given polynomials, we would expect the derivatives to be the following:
+        // x'(t) = 15x^2 - 40x + 1
+        // y'(t) = -156x^2 - 7
+        SimpleMatrix dcoefficients = new SimpleMatrix(new double[][]{
+                new double[]{1, -7},
+                new double[]{-40, 0},
+                new double[]{15, -156}
+        });
         Spline dspline = spline.derivative();
 
-        BezierSpline ds = new BezierSpline(
-                new Vector2[]{
-                        new Vector2(0, 0),
-                        new Vector2(5, 0),
-                        new Vector2(45, 50),
-                        new Vector2(50, 50)
-                }
-        ).derivative();
-
-        for (int i = 0; i <= 100; i++) {
-            double t = i * 0.01;
-            assertEquals(String.format("Derivative incorrect at t = %.2f", t), ds.getPoint(t), dspline.getPoint(t));
-        }
+        assertEquals(dcoefficients.toString(), dspline.getBasisWeightMatrix().toString());
     }
 }
