@@ -2,6 +2,7 @@ package org.frcteam2910.common.control;
 
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
+import org.frcteam2910.common.math.spline.CubicBezierSpline;
 import org.frcteam2910.common.math.spline.CubicHermiteSpline;
 import org.frcteam2910.common.math.spline.Spline;
 
@@ -42,6 +43,22 @@ public final class SplinePathBuilder {
 
     public Path build() {
         return new Path(segmentList.toArray(new PathSegment[0]), rotationMap);
+    }
+
+    public SplinePathBuilder bezier(Vector2 controlPoint1, Vector2 controlPoint2, Vector2 end) {
+        addSpline(new CubicBezierSpline(
+                lastState.getPosition(),
+                controlPoint1,
+                controlPoint2,
+                end
+        ));
+        return this;
+    }
+
+    public SplinePathBuilder bezier(Vector2 controlPoint1, Vector2 controlPoint2, Vector2 end, Rotation2 rotation) {
+        bezier(controlPoint1, controlPoint2, end);
+        rotationMap.put(length, rotation);
+        return this;
     }
 
     public SplinePathBuilder hermite(Vector2 position, Rotation2 heading) {
