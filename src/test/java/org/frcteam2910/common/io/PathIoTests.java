@@ -52,7 +52,6 @@ public class PathIoTests {
         }
     }
 
-
     @Test
     public void readerIsCompatibleWithWriter() throws IOException {
         Path expectedPath = new SplinePathBuilder(Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO)
@@ -73,5 +72,29 @@ public class PathIoTests {
         }
 
         assertPathsAreEqual(expectedPath, actualPath);
+    }
+
+    @Test(expected = IOException.class)
+    public void readerThrowsOnBadJson() throws IOException {
+        try (StringReader reader = new StringReader("{\"this\":\"is\", \"bad\":1234}")) {
+            PathReader pathReader = new PathReader(reader);
+            pathReader.read();
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void readerThrowsOnBadInput() throws IOException {
+        try (StringReader reader = new StringReader("This is not json")) {
+            PathReader pathReader = new PathReader(reader);
+            pathReader.read();
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void readerThrowsOnEmptyInput() throws IOException {
+        try (StringReader reader = new StringReader("")) {
+            PathReader pathReader = new PathReader(reader);
+            pathReader.read();
+        }
     }
 }

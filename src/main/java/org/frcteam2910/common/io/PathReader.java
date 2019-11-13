@@ -34,7 +34,15 @@ public final class PathReader implements AutoCloseable {
 
     public Path read() throws IOException {
         try {
-            JsonObject root = JsonParser.parseReader(in).getAsJsonObject();
+            JsonElement rootElement = JsonParser.parseReader(in);
+            if (!rootElement.isJsonObject()) {
+                throw new IOException("Path must be a JSON object");
+            }
+
+            JsonObject root = rootElement.getAsJsonObject();
+            if (!root.has("segments") || !root.has("rotations")) {
+                throw new IOException("Path is not valid");
+            }
 
             PathSegment[] pathSegments = gson.fromJson(root.get("segments"), PathSegment[].class);
 
