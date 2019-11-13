@@ -12,11 +12,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public final class SplinePathBuilder {
-    private List<SplineSegment> segmentList = new LinkedList<>();
+    private List<PathSegment> segmentList = new LinkedList<>();
     private Map<Double, Rotation2> rotationMap = new TreeMap<>();
     private double length = 0.0;
-
-    private double splineLengthSampleStep = 1.0e-4;
 
     private PathSegment.State lastState;
 
@@ -26,19 +24,10 @@ public final class SplinePathBuilder {
     }
 
     private void addSpline(Spline spline) {
-        double splineLength = 0.0;
-        Vector2 p0 = spline.getPoint(0.0);
-        for (double t = splineLengthSampleStep; t <= 1.0; t += splineLengthSampleStep) {
-            Vector2 p1 = spline.getPoint(t);
-            splineLength += p1.subtract(p0).length;
-
-            p0 = p1;
-        }
-
-        SplineSegment segment = new SplineSegment(spline, splineLength);
+        SplinePathSegment segment = new SplinePathSegment(spline);
         segmentList.add(segment);
         lastState = segment.getEnd();
-        length += splineLength;
+        length += segment.getLength();
     }
 
     public Path build() {
@@ -73,31 +62,5 @@ public final class SplinePathBuilder {
         hermite(position, heading);
         rotationMap.put(length, rotation);
         return this;
-    }
-
-    public static class SplineSegment extends PathSegment {
-        private final Spline spline;
-        private final double length;
-
-        private SplineSegment(Spline spline, double length) {
-            this.spline = spline;
-            this.length = length;
-        }
-
-        @Override
-        public State calculate(double distance) {
-            double t = distance / length;
-
-            return new State(
-                    spline.getPoint(t),
-                    spline.getHeading(t),
-                    spline.getCurvature(t)
-            );
-        }
-
-        @Override
-        public double getLength() {
-            return length;
-        }
     }
 }

@@ -78,6 +78,14 @@ public class Path {
         return length;
     }
 
+    public PathSegment[] getSegments() {
+        return segments;
+    }
+
+    public InterpolatingTreeMap<InterpolatingDouble, Rotation2> getRotationMap() {
+        return rotationMap;
+    }
+
     public static class State {
         private final double distance;
         private final Vector2 position;
