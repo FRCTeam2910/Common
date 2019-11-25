@@ -10,6 +10,8 @@ import java.io.Serializable;
  * @since 0.2
  */
 public final class RigidTransform2 implements Serializable, Interpolable<RigidTransform2> {
+    public static final RigidTransform2 ZERO = new RigidTransform2(Vector2.ZERO, Rotation2.ZERO);
+
     private static final long serialVersionUID = 1701732846641084965L;
 
     /**
@@ -81,6 +83,29 @@ public final class RigidTransform2 implements Serializable, Interpolable<RigidTr
         } else {
             return intersectionInternal(other, this);
         }
+    }
+
+    public RigidTransform2 exp(Twist2 twist) {
+        double dx = twist.dx;
+        double dy = twist.dy;
+        double dtheta = twist.dtheta;
+
+        double sinTheta = Math.sin(dtheta);
+        double cosTheta = Math.cos(dtheta);
+
+        double s;
+        double c;
+        if (Math.abs(dtheta) < 1E-9) {
+            s = 1.0 - 1.0 / 6.0 * dtheta * dtheta;
+            c = 0.5 * dtheta;
+        } else {
+            s = sinTheta / dtheta;
+            c = (1 - cosTheta) / dtheta;
+        }
+        RigidTransform2 transform = new RigidTransform2(new Vector2(dx * s - dy * c, dx * c + dy * s),
+                new Rotation2(cosTheta, sinTheta, false));
+
+        return this.transformBy(transform);
     }
 
     /**
