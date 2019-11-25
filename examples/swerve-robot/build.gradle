@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+    id 'edu.wpi.first.GradleRIO'
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_11
+
+wpi.deps.vendor.loadFrom(rootProject.project(':robot'))
+
+dependencies {
+    compile wpi.deps.wpilib()
+    compile wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
+    compile rootProject.project(':robot')
+}
