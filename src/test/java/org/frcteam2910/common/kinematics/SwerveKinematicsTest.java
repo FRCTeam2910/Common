@@ -37,7 +37,7 @@ public class SwerveKinematicsTest {
 
         assertEquals(5.0, velocity.getTranslationalVelocity().x, MathUtils.EPSILON);
         assertEquals(0.0, velocity.getTranslationalVelocity().y, MathUtils.EPSILON);
-        assertEquals(0.0, velocity.getRotationalVelocity(), MathUtils.EPSILON);
+        assertEquals(0.0, velocity.getAngularVelocity(), MathUtils.EPSILON);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class SwerveKinematicsTest {
 
         assertEquals(0.0, velocity.getTranslationalVelocity().x, MathUtils.EPSILON);
         assertEquals(5.0, velocity.getTranslationalVelocity().y, MathUtils.EPSILON);
-        assertEquals(0.0, velocity.getRotationalVelocity(), MathUtils.EPSILON);
+        assertEquals(0.0, velocity.getAngularVelocity(), MathUtils.EPSILON);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class SwerveKinematicsTest {
 
         assertEquals(0.0, velocity.getTranslationalVelocity().x, MathUtils.EPSILON);
         assertEquals(0.0, velocity.getTranslationalVelocity().y, MathUtils.EPSILON);
-        assertEquals(2.0 * Math.PI, velocity.getRotationalVelocity(), 0.1);
+        assertEquals(2.0 * Math.PI, velocity.getAngularVelocity(), 0.1);
     }
 
     @Test

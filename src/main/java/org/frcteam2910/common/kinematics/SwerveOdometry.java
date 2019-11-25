@@ -5,6 +5,11 @@ import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Twist2;
 import org.frcteam2910.common.math.Vector2;
 
+/**
+ * Helper class for swerve drive odometry.
+ * <p>
+ * Odometry allows a robot to track what it's position on the field is using the encoders on it's swerve modules.
+ */
 public class SwerveOdometry {
     private final SwerveKinematics kinematics;
     private RigidTransform2 pose;
@@ -18,22 +23,63 @@ public class SwerveOdometry {
         this.pose = initialPose;
     }
 
+    /**
+     * Resets the robot's pose.
+     *
+     * @param pose The robot's new pose.
+     */
     public void resetPose(RigidTransform2 pose) {
         this.pose = pose;
     }
 
-    public void resetPose(Vector2 position, Rotation2 gyroAngle) {
-        resetPose(new RigidTransform2(position, gyroAngle));
+    /**
+     * Resets the robot's pose.
+     *
+     * @param position The new position of the robot.
+     * @param rotation The new rotation of the robot.
+     */
+    public void resetPose(Vector2 position, Rotation2 rotation) {
+        resetPose(new RigidTransform2(position, rotation));
     }
 
-    public void resetRotation(Rotation2 gyroAngle) {
-        resetPose(new RigidTransform2(pose.translation, gyroAngle));
+    /**
+     * Resets the robot's position.
+     *
+     * @param position The robot's new position.
+     */
+    public void resetPosition(Vector2 position) {
+        resetPose(position, getPose().rotation);
     }
 
+    /**
+     * Resets the robot's rotation.
+     * <p>
+     * This should be called when the gyroscope's angle is reset.
+     *
+     * @param rotation The robot's new rotation.
+     */
+    public void resetRotation(Rotation2 rotation) {
+        resetPose(getPose().translation, rotation);
+    }
+
+    /**
+     * Gets the position of the robot.
+     *
+     * @return The pose of the robot.
+     */
     public RigidTransform2 getPose() {
         return pose;
     }
 
+    /**
+     * Updates the robot's position using forward kinematics and integration of the pose over time.
+     *
+     * @param gyroAngle        The angle from the gyroscope.
+     * @param dt               The change in time.
+     * @param moduleVelocities The velocities of the swerve modules. The modules must be in the same order that
+     *                         {@link SwerveKinematics} was given when it was instantiated.
+     * @return The new pose of the robot.
+     */
     public RigidTransform2 update(Rotation2 gyroAngle, double dt, Vector2... moduleVelocities) {
         ChassisVelocity velocity = kinematics.toChassisVelocity(moduleVelocities);
 
