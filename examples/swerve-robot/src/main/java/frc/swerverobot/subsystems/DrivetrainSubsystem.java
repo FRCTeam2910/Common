@@ -62,10 +62,10 @@ public class DrivetrainSubsystem extends Subsystem {
     private final Mk2SwerveModule[] modules = {frontLeftModule, frontRightModule, backLeftModule, backRightModule};
 
     private final SwerveKinematics kinematics = new SwerveKinematics(
-            new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0), // Front Left
-            new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0), // Front Right
-            new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0), // Back Left
-            new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0) // Back Right
+            new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0), // Front Left
+            new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0), // Front Right
+            new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0), // Back Left
+            new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0) // Back Right
     );
     private final SwerveOdometry odometry = new SwerveOdometry(kinematics, RigidTransform2.ZERO);
     private double lastUpdateTime = Timer.getFPGATimestamp();
@@ -91,6 +91,10 @@ public class DrivetrainSubsystem extends Subsystem {
     }
 
     private DrivetrainSubsystem() {
+        synchronized (sensorLock) {
+            navX$sensorLock.setInverted(true);
+        }
+
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
         poseXEntry = tab.add("Pose X", 0.0)
                 .withPosition(0, 0)
@@ -180,7 +184,9 @@ public class DrivetrainSubsystem extends Subsystem {
 
     private void updateModules(HolonomicDriveSignal signal, double dt) {
         ChassisVelocity velocity;
-        if (signal.isFieldOriented()) {
+        if (signal == null) {
+            velocity = new ChassisVelocity(Vector2.ZERO, 0.0);
+        } else if (signal.isFieldOriented()) {
             velocity = new ChassisVelocity(
                     signal.getTranslation().rotateBy(getPose().rotation.inverse()),
                     signal.getRotation()
