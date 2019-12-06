@@ -67,6 +67,7 @@ public class Mk2SwerveModuleBuilder {
      * @param encoder The analog input handle to use for the encoder.
      * @param offset  The offset of the encoder in radians. This value is added to the analog encoder reading to obtain
      *                the true module angle.
+     * @return The builder.
      */
     public Mk2SwerveModuleBuilder angleEncoder(AnalogInput encoder, double offset) {
         angleSupplier = () -> {
@@ -93,6 +94,7 @@ public class Mk2SwerveModuleBuilder {
      *
      * @param motor The CAN Spark MAX to use as the angle motor. The NEO's encoder is set to output the module's angle
      *              in radians.
+     * @return The builder.
      */
     public Mk2SwerveModuleBuilder angleMotor(CANSparkMax motor) {
         return angleMotor(motor, DEFAULT_CAN_SPARK_MAX_ANGLE_CONSTANTS, DEFAULT_ANGLE_REDUCTION);
@@ -106,9 +108,10 @@ public class Mk2SwerveModuleBuilder {
      *
      * @param motor     The CAN Spark MAX to use as the angle motor. The NEO's encoder is set to output the module's
      *                  angle in radians.
-     * @param constants The PID constants to use to control the module's angle (Units are in radians).
+     * @param constants The PID constants to use to control the module's angle (units are in radians).
      * @param reduction The reduction of the angle motor. It should be specified so the number is greater than 1.
      *                  For example, an 18:1 ratio should be specified by {@code 18.0 / 1.0}.
+     * @return The builder.
      */
     public Mk2SwerveModuleBuilder angleMotor(CANSparkMax motor, PidConstants constants, double reduction) {
         CANEncoder encoder = motor.getEncoder();
@@ -150,6 +153,7 @@ public class Mk2SwerveModuleBuilder {
      * controlled by a NEO using the standard angle reduction.
      *
      * @param motor The PWM Spark MAX to use as the angle motor.
+     * @return The builder.
      */
     public Mk2SwerveModuleBuilder angleMotor(SpeedController motor) {
         return angleMotor(motor, DEFAULT_ONBOARD_ANGLE_CONSTANTS);
@@ -161,7 +165,8 @@ public class Mk2SwerveModuleBuilder {
      * This method is usually used when custom PID tuning is required or a NEO is not used.
      *
      * @param motor     The speed controller to use as the angle motor.
-     * @param constants The PID constants to use to control the module's angle (Units are in radians).
+     * @param constants The PID constants to use to control the module's angle (units are in radians).
+     * @return The builder.
      */
     public Mk2SwerveModuleBuilder angleMotor(SpeedController motor, PidConstants constants) {
         PidController controller = new PidController(constants);
@@ -182,6 +187,7 @@ public class Mk2SwerveModuleBuilder {
      *
      * @param motor The CAN Spark MAX to use as the drive motor. The NEO's encoder is set to output the module's driven
      *              distance and current velocity in inches and inches per second.
+     * @return The builder.
      */
     public Mk2SwerveModuleBuilder driveMotor(CANSparkMax motor) {
         return driveMotor(motor, DEFAULT_DRIVE_REDUCTION, DEFAULT_WHEEL_DIAMETER);
@@ -196,7 +202,7 @@ public class Mk2SwerveModuleBuilder {
      *                      For example, an 18:1 ratio should be specified by {@code 18.0 / 1.0}.
      * @param wheelDiameter The diameter of the module's wheel. By default this is {@value DEFAULT_WHEEL_DIAMETER}
      *                      inches.
-     * @return
+     * @return The builder.
      */
     public Mk2SwerveModuleBuilder driveMotor(CANSparkMax motor, double reduction, double wheelDiameter) {
         CANEncoder encoder = motor.getEncoder();
@@ -213,6 +219,8 @@ public class Mk2SwerveModuleBuilder {
 
     /**
      * Builds and returns a configured swerve module.
+     *
+     * @return The built swerve module.
      */
     public SwerveModule build() {
         // Verify everything is populated
