@@ -83,15 +83,14 @@ public class SwerveOdometry {
     public RigidTransform2 update(Rotation2 gyroAngle, double dt, Vector2... moduleVelocities) {
         ChassisVelocity velocity = kinematics.toChassisVelocity(moduleVelocities);
 
-        RigidTransform2 newPose = pose.exp(
-                new Twist2(
-                        velocity.getTranslationalVelocity().x * dt,
-                        velocity.getTranslationalVelocity().y * dt,
-                        gyroAngle.rotateBy(pose.rotation.inverse()).toRadians()
-                )
-        );
+        // Calculate the field-oriented translational velocity of the robot
+        Vector2 fieldOrientedVelocity = velocity.getTranslationalVelocity().rotateBy(gyroAngle);
 
-        pose = new RigidTransform2(newPose.translation, gyroAngle);
+        // Integrate using dt to determine our new position
+        Vector2 newPosition = pose.translation
+                .add(fieldOrientedVelocity.scale(dt));
+
+        pose = new RigidTransform2(newPosition, gyroAngle);
 
         return pose;
     }
