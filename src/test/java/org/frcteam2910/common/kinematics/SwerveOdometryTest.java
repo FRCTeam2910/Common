@@ -52,25 +52,19 @@ public class SwerveOdometryTest {
     }
 
     @Test
-    public void turn90DegreesTest() {
-        // This is a 90 degree turn about the point between front left and back left wheels
-        //        Module 0: speed 18.84955592153876 angle 90.0
-        //        Module 1: speed 42.14888838624436 angle 26.565051177077986
-        //        Module 2: speed 18.84955592153876 angle -90.0
-        //        Module 3: speed 42.14888838624436 angle -26.565051177077986
-
+    public void turnInPlaceTest() {
         final Vector2[] moduleVelocities = {
-                Vector2.fromAngle(Rotation2.fromDegrees(90.0)).scale(18.85),
-                Vector2.fromAngle(Rotation2.fromDegrees(26.565)).scale(42.15),
-                Vector2.fromAngle(Rotation2.fromDegrees(-90)).scale(18.85),
-                Vector2.fromAngle(Rotation2.fromDegrees(-26.565)).scale(42.15)
+                Vector2.fromAngle(Rotation2.fromDegrees(135.0)).scale(106.629),
+                Vector2.fromAngle(Rotation2.fromDegrees(45.0)).scale(106.629),
+                Vector2.fromAngle(Rotation2.fromDegrees(225.0)).scale(106.629),
+                Vector2.fromAngle(Rotation2.fromDegrees(315.0)).scale(106.629)
         };
 
         odometry.resetPose(RigidTransform2.ZERO);
         final var pose = odometry.update(Rotation2.fromDegrees(90.0), 1.0, moduleVelocities);
 
-        assertEquals(12.0, pose.translation.x, 0.01);
-        assertEquals(12.0, pose.translation.y, 0.01);
+        assertEquals(0.0, pose.translation.x, 0.01);
+        assertEquals(0.0, pose.translation.y, 0.01);
         assertEquals(90.0, pose.rotation.toDegrees(), 0.01);
     }
 
