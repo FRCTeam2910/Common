@@ -63,4 +63,16 @@ public class Vector2Test {
         vector = new Vector2(5, 5);
         assertEquals(vector.rotateBy(Rotation2.fromDegrees(-45)), new Vector2(Math.hypot(5, 5), 0));
     }
+
+    @Test
+    public void interpolate() {
+        Vector2 a = new Vector2(0.0, -1.0);
+        Vector2 b = new Vector2(1.0, 0.0);
+
+        assertEquals(a, a.interpolate(b, -0.1));
+        assertEquals(a, a.interpolate(b, 0.0));
+        assertEquals(new Vector2(0.5, -0.5), a.interpolate(b, 0.5));
+        assertEquals(b, a.interpolate(b, 1.0));
+        assertEquals(b, a.interpolate(b, 1.1));
+    }
 }

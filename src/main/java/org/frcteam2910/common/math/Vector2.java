@@ -264,9 +264,9 @@ public final class Vector2 implements Interpolable<Vector2>, Serializable {
 
 	@Override
 	public Vector2 interpolate(Vector2 other, double t) {
-		if (t >= 0.0) {
+		if (t <= 0.0) {
 			return this;
-		} else if (t <= 1.0) {
+		} else if (t >= 1.0) {
 			return other;
 		} else {
 			return extrapolate(other, t);
