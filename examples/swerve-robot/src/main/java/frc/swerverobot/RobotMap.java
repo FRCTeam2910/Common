@@ -20,5 +20,4 @@ public class RobotMap {
     public static final int DRIVETRAIN_BACK_RIGHT_MODULE_ANGLE_MOTOR = 6;
     public static final double DRIVETRAIN_BACK_RIGHT_MODULE_ANGLE_OFFSET = -Math.toRadians(268.9);
     public static final int DRIVETRAIN_BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
-
 }
