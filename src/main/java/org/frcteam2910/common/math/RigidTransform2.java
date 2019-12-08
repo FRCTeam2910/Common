@@ -10,6 +10,8 @@ import java.io.Serializable;
  * @since 0.2
  */
 public final class RigidTransform2 implements Serializable, Interpolable<RigidTransform2> {
+    public static final RigidTransform2 ZERO = new RigidTransform2(Vector2.ZERO, Rotation2.ZERO);
+
     private static final long serialVersionUID = 1701732846641084965L;
 
     /**

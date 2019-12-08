@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'edu.wpi.first.GradleRIO'
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+deploy {
+    targets {
+        roboRIO('roborio') {
+            team = frc.getTeamOrDefault(2910)
+        }
+    }
+    artifacts {
+        frcJavaArtifact('frcJava') {
+            targets << 'roborio'
+
+            debug = frc.getDebugOrDefault(false)
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url = 'http://devsite.ctr-electronics.com/maven/release/'
+    }
+
+    maven {
+        url = "http://www.revrobotics.com/content/sw/max/sdk/maven/"
+    }
+
+    maven {
+        url = 'http://first.wpi.edu/FRC/roborio/maven/release/'
+    }
+}
+
+wpi.deps.vendor.loadFrom(rootProject.project(':robot'))
+
+dependencies {
+    compile wpi.deps.wpilib()
+    compile wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
+    compile rootProject.project(':robot')
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest('frc.swerverobot.Main')
+}
