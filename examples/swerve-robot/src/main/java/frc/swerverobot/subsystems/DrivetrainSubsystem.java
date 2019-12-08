@@ -110,22 +110,22 @@ public class DrivetrainSubsystem extends Subsystem {
                 .getEntry();
 
         ShuffleboardLayout frontLeftModuleContainer = tab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                .withPosition(1, 1)
+                .withPosition(1, 0)
                 .withSize(2, 3);
         moduleAngleEntries[0] = frontLeftModuleContainer.add("Angle", 0.0).getEntry();
 
         ShuffleboardLayout frontRightModuleContainer = tab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                .withPosition(3, 1)
+                .withPosition(3, 0)
                 .withSize(2, 3);
         moduleAngleEntries[1] = frontRightModuleContainer.add("Angle", 0.0).getEntry();
 
         ShuffleboardLayout backLeftModuleContainer = tab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                .withPosition(5, 1)
+                .withPosition(5, 0)
                 .withSize(2, 3);
         moduleAngleEntries[2] = backLeftModuleContainer.add("Angle", 0.0).getEntry();
 
         ShuffleboardLayout backRightModuleContainer = tab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                .withPosition(7, 1)
+                .withPosition(7, 0)
                 .withSize(2, 3);
         moduleAngleEntries[3] = backRightModuleContainer.add("Angle", 0.0).getEntry();
     }
