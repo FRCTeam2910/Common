@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import org.frcteam2910.common.control.PidConstants;
 import org.frcteam2910.common.control.PidController;
@@ -35,9 +36,19 @@ public class Mk2SwerveModuleBuilder {
     private static final double DEFAULT_WHEEL_DIAMETER = 4.0;
 
     /**
-     * Default constants for angle pid running on-board when running NEOs.
+     * Default constants for angle pid running on-board with NEOs.
      */
-    private static final PidConstants DEFAULT_ONBOARD_ANGLE_CONSTANTS = new PidConstants(0.5, 0.0, 0.0001);
+    private static final PidConstants DEFAULT_ONBOARD_NEO_ANGLE_CONSTANTS = new PidConstants(0.5, 0.0, 0.0001);
+
+    /**
+     * Default constants for angle pid running on-board with CIMs.
+     */
+    private static final PidConstants DEFAULT_ONBOARD_CIM_ANGLE_CONSTANTS = new PidConstants(0.5, 0.0, 0.0001);
+
+    /**
+     * Default constants for angle pid running on-board with Mini CIMs
+     */
+    private static final PidConstants DEFAULT_ONBOARD_MINI_CIM_ANGLE_CONSTANTS = new PidConstants(0.5, 0.0, 0.0001);
 
     /**
      * Default constants for angle pid running on a Spark MAX using NEOs.
@@ -100,6 +111,14 @@ public class Mk2SwerveModuleBuilder {
         return angleMotor(motor, DEFAULT_CAN_SPARK_MAX_ANGLE_CONSTANTS, DEFAULT_ANGLE_REDUCTION);
     }
 
+    public Mk2SwerveModuleBuilder angleMotor(CANSparkMax motor, MotorType motorType) {
+        if (motorType == MotorType.NEO) {
+            return angleMotor(motor, DEFAULT_CAN_SPARK_MAX_ANGLE_CONSTANTS, DEFAULT_ANGLE_REDUCTION);
+        }
+
+        return angleMotor((SpeedController) motor, motorType);
+    }
+
     /**
      * Configures the swerve module to use a CAN Spark MAX driving a NEO as it's angle motor.
      * <p>
@@ -156,7 +175,31 @@ public class Mk2SwerveModuleBuilder {
      * @return The builder.
      */
     public Mk2SwerveModuleBuilder angleMotor(SpeedController motor) {
-        return angleMotor(motor, DEFAULT_ONBOARD_ANGLE_CONSTANTS);
+        return angleMotor(motor, MotorType.NEO);
+    }
+
+    public Mk2SwerveModuleBuilder angleMotor(SpeedController motor, MotorType motorType) {
+        switch (motorType) {
+            case CIM:
+                // Spark MAXs are special and drive brushed motors in the opposite direction of every other motor
+                // controller
+                if (motor instanceof Spark || motor instanceof CANSparkMax) {
+                    motor.setInverted(true);
+                }
+
+                return angleMotor(motor, DEFAULT_ONBOARD_CIM_ANGLE_CONSTANTS);
+            case MINI_CIM:
+                // Spark MAXs are special and drive brushed motors in the opposite direction of every other motor controller
+                if (motor instanceof Spark || motor instanceof CANSparkMax) {
+                    motor.setInverted(true);
+                }
+
+                return angleMotor(motor, DEFAULT_ONBOARD_MINI_CIM_ANGLE_CONSTANTS);
+            case NEO:
+                return angleMotor(motor, DEFAULT_ONBOARD_NEO_ANGLE_CONSTANTS);
+            default:
+                throw new IllegalArgumentException("Unknown motor type " + motorType);
+        }
     }
 
     /**
@@ -190,7 +233,15 @@ public class Mk2SwerveModuleBuilder {
      * @return The builder.
      */
     public Mk2SwerveModuleBuilder driveMotor(CANSparkMax motor) {
-        return driveMotor(motor, DEFAULT_DRIVE_REDUCTION, DEFAULT_WHEEL_DIAMETER);
+        return driveMotor(motor, MotorType.NEO);
+    }
+
+    public Mk2SwerveModuleBuilder driveMotor(CANSparkMax motor, MotorType motorType) {
+        if (motorType == MotorType.NEO) {
+            return driveMotor(motor, DEFAULT_DRIVE_REDUCTION, DEFAULT_WHEEL_DIAMETER);
+        }
+
+        return driveMotor((SpeedController) motor, motorType);
     }
 
     /**
@@ -218,6 +269,24 @@ public class Mk2SwerveModuleBuilder {
     }
 
     /**
+     * Configures the swerve module to use a generic speed controller driving the specified motor.
+     *
+     * @param motor     The speed controller to use.
+     * @param motorType The type of motor used.
+     * @return The builder.
+     */
+    public Mk2SwerveModuleBuilder driveMotor(SpeedController motor, MotorType motorType) {
+        // Spark MAXs are special and drive brushed motors in the opposite direction of every other motor controller
+        if (motorType != MotorType.NEO & (motor instanceof Spark || motor instanceof CANSparkMax)) {
+            motor.setInverted(true);
+        }
+
+        driveOutputConsumer = motor::set;
+
+        return this;
+    }
+
+    /**
      * Builds and returns a configured swerve module.
      *
      * @return The built swerve module.
@@ -226,12 +295,6 @@ public class Mk2SwerveModuleBuilder {
         // Verify everything is populated
         if (angleSupplier == null) {
             // Absolute angle encoder not configured
-            throw new IllegalStateException(""); // TODO: Exception message
-        } else if (currentDrawSupplier == null) {
-            // Current draw not configured
-            throw new IllegalStateException(""); // TODO: Exception message
-        } else if (distanceSupplier == null || velocitySupplier == null) {
-            // Drive encoder not configured
             throw new IllegalStateException(""); // TODO: Exception message
         } else if (driveOutputConsumer == null) {
             // Drive motor not configured
@@ -252,7 +315,9 @@ public class Mk2SwerveModuleBuilder {
         public SwerveModuleImpl() {
             super(modulePosition);
 
-            initializeAngleCallback.accept(angleSupplier.getAsDouble());
+            if (initializeAngleCallback != null) {
+                initializeAngleCallback.accept(angleSupplier.getAsDouble());
+            }
         }
 
         @Override
@@ -261,15 +326,27 @@ public class Mk2SwerveModuleBuilder {
         }
 
         protected double readCurrentDraw() {
+            if (currentDrawSupplier == null) {
+                return Double.NaN;
+            }
+
             return currentDrawSupplier.getAsDouble();
         }
 
         @Override
         protected double readDistance() {
+            if (distanceSupplier == null) {
+                return Double.NaN;
+            }
+
             return distanceSupplier.getAsDouble();
         }
 
         protected double readVelocity() {
+            if (velocitySupplier == null) {
+                return Double.NaN;
+            }
+
             return velocitySupplier.getAsDouble();
         }
 
@@ -316,5 +393,11 @@ public class Mk2SwerveModuleBuilder {
 
             updateCallbacks.forEach(c -> c.accept(this, dt));
         }
+    }
+
+    public enum MotorType {
+        CIM,
+        MINI_CIM,
+        NEO
     }
 }
