@@ -2,6 +2,7 @@ package org.frcteam2910.common.robot.subsystems;
 
 import org.frcteam2910.common.math.Vector2;
 
+@Deprecated
 public abstract class TankDrivetrain extends Drivetrain {
     private final double trackWidth;
 

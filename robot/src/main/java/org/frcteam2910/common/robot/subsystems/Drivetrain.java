@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frcteam2910.common.drivers.Gyroscope;
 import org.frcteam2910.common.math.Vector2;
 
+@Deprecated
 public abstract class Drivetrain extends Subsystem {
 	public abstract Gyroscope getGyroscope();
 	

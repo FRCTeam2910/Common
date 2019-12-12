@@ -9,7 +9,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class SubsystemManager {
-	private final List<Subsystem> subsystems = new ArrayList<>();
+	private final List<Updatable> updatables = new ArrayList<>();
+
+	@FunctionalInterface
+	private interface Updatable {
+		void update(double time, double dt);
+	}
 
 	private double lastTimestamp = 0.0;
 
@@ -19,43 +24,24 @@ public final class SubsystemManager {
 			final double dt = timestamp - lastTimestamp;
 			lastTimestamp = timestamp;
 			SmartDashboard.putNumber("Updater rate", 1.0 / dt);
-			subsystems.forEach(s -> s.updateKinematics(timestamp));
+			updatables.forEach(s -> s.update(timestamp, dt));
 		}
 	});
 
-	public SubsystemManager(Subsystem... subsystems) {
-		this(Arrays.asList(subsystems));
+	public SubsystemManager(Updatable... updatables) {
+		this(Arrays.asList(updatables));
 	}
 
-	public SubsystemManager(List<Subsystem> subsystems) {
-		this.subsystems.addAll(subsystems);
+	public SubsystemManager(List<Updatable> subsystems) {
+		this.updatables.addAll(subsystems);
 	}
 
 	public void enableKinematicLoop(double period) {
 		final double timestamp = Timer.getFPGATimestamp();
-		for (Subsystem subsystem : subsystems) {
-			subsystem.resetKinematics(timestamp);
-		}
 		kinematicThread.startPeriodic(period);
 	}
 
 	public void disableKinematicLoop() {
 		kinematicThread.stop();
-	}
-
-	public void outputToSmartDashboard() {
-		subsystems.forEach(Subsystem::outputToSmartDashboard);
-	}
-
-	public void writeToLog() {
-		subsystems.forEach(Subsystem::writeToLog);
-	}
-
-	public void stop() {
-		subsystems.forEach(Subsystem::stop);
-	}
-
-	public void zeroSensors() {
-		subsystems.forEach(Subsystem::zeroSensors);
 	}
 }
