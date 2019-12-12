@@ -8,6 +8,7 @@ import org.frcteam2910.common.robot.input.NullButton;
 import org.frcteam2910.common.robot.subsystems.ShiftingTankDrivetrain;
 import org.frcteam2910.common.robot.subsystems.TankDrivetrain;
 
+@Deprecated
 public final class CheesyDriveCommand extends Command {
 	private static final double HIGH_WHEEL_NON_LINEARITY = 0.65;
 	private static final double LOW_WHEEL_NON_LINEARITY = 0.5;
