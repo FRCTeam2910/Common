@@ -27,22 +27,6 @@ deploy {
     }
 }
 
-//repositories {
-//    mavenCentral()
-//
-//    maven {
-//        url = 'http://devsite.ctr-electronics.com/maven/release/'
-//    }
-//
-//    maven {
-//        url = "http://www.revrobotics.com/content/sw/max/sdk/maven/"
-//    }
-//
-//    maven {
-//        url = 'http://first.wpi.edu/FRC/roborio/maven/release/'
-//    }
-//}
-
 wpi.deps.vendor.loadFrom(rootProject.project(':robot'))
 
 dependencies {
