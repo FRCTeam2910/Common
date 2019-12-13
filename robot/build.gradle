@@ -1,26 +1,27 @@
 plugins {
     id 'edu.wpi.first.GradleRIO'
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-group = 'org.frcteam2910.common'
-version = '2019.0.0'
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile wpi.deps.wpilib()
-    compile wpi.deps.vendor.java()
+    api wpi.deps.wpilib()
+    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+
+    api wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
     // Depend on the common library
-    compile project.parent
+    api project.parent
 }
 
 publishing {
