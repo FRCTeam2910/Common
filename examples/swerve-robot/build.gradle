@@ -11,6 +11,14 @@ application {
     mainClassName 'frc.swerverobot.Main'
 }
 
+wpi {
+    maven {
+        useLocal false
+    }
+
+    deps.vendor.loadFrom(rootProject.project(':robot'))
+}
+
 deploy {
     targets {
         roboRIO('roborio') {
@@ -26,8 +34,6 @@ deploy {
         }
     }
 }
-
-wpi.deps.vendor.loadFrom(rootProject.project(':robot'))
 
 dependencies {
     implementation wpi.deps.wpilib()
