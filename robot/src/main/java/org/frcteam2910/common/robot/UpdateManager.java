@@ -18,7 +18,7 @@ public final class UpdateManager {
 
 	private double lastTimestamp = 0.0;
 
-	private final Notifier kinematicThread = new Notifier(() -> {
+	private final Notifier updaterThread = new Notifier(() -> {
 		synchronized (UpdateManager.this) {
 			final double timestamp = Timer.getFPGATimestamp();
 			final double dt = timestamp - lastTimestamp;
@@ -36,12 +36,12 @@ public final class UpdateManager {
 		this.updatables.addAll(subsystems);
 	}
 
-	public void enableKinematicLoop(double period) {
+	public void enableLoop(double period) {
 		final double timestamp = Timer.getFPGATimestamp();
-		kinematicThread.startPeriodic(period);
+		updaterThread.startPeriodic(period);
 	}
 
-	public void disableKinematicLoop() {
-		kinematicThread.stop();
+	public void disableLoop() {
+		updaterThread.stop();
 	}
 }
