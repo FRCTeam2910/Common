@@ -12,7 +12,7 @@ public final class UpdateManager {
 	private final List<Updatable> updatables = new ArrayList<>();
 
 	@FunctionalInterface
-	private interface Updatable {
+	public interface Updatable {
 		void update(double time, double dt);
 	}
 
@@ -23,7 +23,6 @@ public final class UpdateManager {
 			final double timestamp = Timer.getFPGATimestamp();
 			final double dt = timestamp - lastTimestamp;
 			lastTimestamp = timestamp;
-			SmartDashboard.putNumber("Updater rate", 1.0 / dt);
 			updatables.forEach(s -> s.update(timestamp, dt));
 		}
 	});
