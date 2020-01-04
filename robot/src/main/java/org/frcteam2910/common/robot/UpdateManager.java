@@ -2,14 +2,13 @@ package org.frcteam2910.common.robot;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public final class UpdateManager {
-	private final List<Updatable> updatables = new ArrayList<>();
+	public final List<Updatable> updatables = new ArrayList<>();
 
 	@FunctionalInterface
 	public interface Updatable {
@@ -31,16 +30,15 @@ public final class UpdateManager {
 		this(Arrays.asList(updatables));
 	}
 
-	public UpdateManager(List<Updatable> subsystems) {
-		this.updatables.addAll(subsystems);
+	public UpdateManager(List<Updatable> updatables) {
+		this.updatables.addAll(updatables);
 	}
 
 	public void enableLoop(double period) {
-		final double timestamp = Timer.getFPGATimestamp();
 		updaterThread.startPeriodic(period);
 	}
 
-	public void disableLoop() {
+	public void stopLoop() {
 		updaterThread.stop();
 	}
 }
