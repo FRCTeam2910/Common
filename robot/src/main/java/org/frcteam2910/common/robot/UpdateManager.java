@@ -34,7 +34,7 @@ public final class UpdateManager {
 		this.updatables.addAll(updatables);
 	}
 
-	public void enableLoop(double period) {
+	public void startLoop(double period) {
 		updaterThread.startPeriodic(period);
 	}
 
