@@ -27,7 +27,7 @@ deploy {
     }
     artifacts {
         frcJavaArtifact('frcJava') {
-            jar << 'shadowJar'
+            jar = 'shadowJar'
             targets << 'roborio'
 
             debug = frc.getDebugOrDefault(false)
