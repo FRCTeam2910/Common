@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Deprecated
 public final class SubsystemManager {
 	private final List<Subsystem> subsystems = new ArrayList<>();
 

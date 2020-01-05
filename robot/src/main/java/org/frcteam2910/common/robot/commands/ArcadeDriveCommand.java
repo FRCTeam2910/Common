@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import org.frcteam2910.common.robot.input.Axis;
 import org.frcteam2910.common.robot.subsystems.TankDrivetrain;
 
+@Deprecated
 public final class ArcadeDriveCommand extends Command {
 	private final TankDrivetrain drivetrain;
 

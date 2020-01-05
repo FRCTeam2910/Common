@@ -6,7 +6,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -18,14 +18,14 @@ import org.frcteam2910.common.kinematics.SwerveOdometry;
 import org.frcteam2910.common.math.RigidTransform2;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
+import org.frcteam2910.common.robot.UpdateManager;
 import org.frcteam2910.common.robot.drivers.Mk2SwerveModule;
 import org.frcteam2910.common.robot.drivers.NavX;
-import org.frcteam2910.common.robot.subsystems.Subsystem;
 import org.frcteam2910.common.util.HolonomicDriveSignal;
 
 import static frc.swerverobot.RobotMap.*;
 
-public class DrivetrainSubsystem extends Subsystem {
+public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Updatable {
     private static final double TRACKWIDTH = 1.0;
     private static final double WHEELBASE = 1.0;
 
@@ -68,7 +68,6 @@ public class DrivetrainSubsystem extends Subsystem {
             new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0) // Back Right
     );
     private final SwerveOdometry odometry = new SwerveOdometry(kinematics, RigidTransform2.ZERO);
-    private double lastUpdateTime = Timer.getFPGATimestamp();
 
     private final Object sensorLock = new Object();
     private final NavX navX$sensorLock = new NavX(SPI.Port.kMXP);
@@ -155,10 +154,7 @@ public class DrivetrainSubsystem extends Subsystem {
     }
 
     @Override
-    public void updateKinematics(double now) {
-        double dt = now - lastUpdateTime;
-        lastUpdateTime = now;
-
+    public void update(double timestamp, double dt) {
         updateOdometry(dt);
 
         HolonomicDriveSignal driveSignal;
@@ -219,7 +215,7 @@ public class DrivetrainSubsystem extends Subsystem {
     }
 
     @Override
-    public void outputToSmartDashboard() {
+    public void periodic() {
         var pose = getPose();
         poseXEntry.setDouble(pose.translation.x);
         poseYEntry.setDouble(pose.translation.y);
@@ -229,15 +225,5 @@ public class DrivetrainSubsystem extends Subsystem {
             var module = modules[i];
             moduleAngleEntries[i].setDouble(Math.toDegrees(module.getCurrentAngle()));
         }
-    }
-
-    @Override
-    public void stop() {
-        drive(Vector2.ZERO, 0.0, false);
-    }
-
-    @Override
-    public void zeroSensors() {
-
     }
 }

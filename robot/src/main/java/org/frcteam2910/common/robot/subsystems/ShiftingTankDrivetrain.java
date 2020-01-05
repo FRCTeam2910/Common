@@ -1,5 +1,6 @@
 package org.frcteam2910.common.robot.subsystems;
 
+@Deprecated
 public abstract class ShiftingTankDrivetrain extends TankDrivetrain {
 
 	public ShiftingTankDrivetrain(double trackWidth) {
