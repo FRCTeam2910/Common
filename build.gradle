@@ -29,11 +29,3 @@ publishing {
         }
     }
 }
-
-// Only add a wrapper block if we are the root project
-if (rootProject == project) {
-    wrapper {
-        distributionType = Wrapper.DistributionType.ALL
-        gradleVersion = '6.0.1'
-    }
-}
