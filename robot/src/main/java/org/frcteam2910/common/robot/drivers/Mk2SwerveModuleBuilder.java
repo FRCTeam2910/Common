@@ -295,13 +295,13 @@ public class Mk2SwerveModuleBuilder {
         // Verify everything is populated
         if (angleSupplier == null) {
             // Absolute angle encoder not configured
-            throw new IllegalStateException(""); // TODO: Exception message
+            throw new IllegalStateException("No absolute encoder has been configured! See Mk2SwerveModuleBuilder.angleEncoder");
         } else if (driveOutputConsumer == null) {
             // Drive motor not configured
-            throw new IllegalStateException(""); // TODO: Exception message
+            throw new IllegalStateException("No drive motor has been configured! See Mk2SwerveModuleBuilder.driveMotor");
         } else if (targetAngleConsumer == null) {
             // Angle motor not configured
-            throw new IllegalStateException(""); // TODO: Exception message
+            throw new IllegalStateException("No angle motor has been configured! See Mk2SwerveModuleBuilder.angleMotor");
         }
 
         return new SwerveModuleImpl();
