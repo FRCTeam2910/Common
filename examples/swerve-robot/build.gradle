@@ -1,10 +1,23 @@
 plugins {
-    id 'java'
+    id 'application'
     id 'edu.wpi.first.GradleRIO'
+    id 'com.github.johnrengelman.shadow'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
+
+application {
+    mainClassName 'frc.swerverobot.Main'
+}
+
+wpi {
+    maven {
+        useLocal false
+    }
+
+    deps.vendor.loadFrom(rootProject.project(':robot'))
+}
 
 deploy {
     targets {
@@ -14,6 +27,7 @@ deploy {
     }
     artifacts {
         frcJavaArtifact('frcJava') {
+            jar = 'shadowJar'
             targets << 'roborio'
 
             debug = frc.getDebugOrDefault(false)
@@ -21,34 +35,16 @@ deploy {
     }
 }
 
-repositories {
-    mavenCentral()
-
-    maven {
-        url = 'http://devsite.ctr-electronics.com/maven/release/'
-    }
-
-    maven {
-        url = "http://www.revrobotics.com/content/sw/max/sdk/maven/"
-    }
-
-    maven {
-        url = 'http://first.wpi.edu/FRC/roborio/maven/release/'
-    }
-}
-
-wpi.deps.vendor.loadFrom(rootProject.project(':robot'))
-
 dependencies {
-    compile wpi.deps.wpilib()
-    compile wpi.deps.vendor.java()
+    implementation wpi.deps.wpilib()
+    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+
+    implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
-    compile rootProject.project(':robot')
-}
+    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
 
-jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest('frc.swerverobot.Main')
+    implementation rootProject.project(':robot')
 }
