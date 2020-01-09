@@ -15,6 +15,7 @@ import org.frcteam2910.common.robot.subsystems.HolonomicDrivetrain;
 import org.frcteam2910.common.control.PidConstants;
 
 @Deprecated
+@SuppressWarnings("removal")
 public final class HolonomicDriveCommand extends Command {
 	private static final double ROTATION_END_TIMEOUT = 0.5;
 	private static final Logger LOGGER = new Logger(HolonomicDriveCommand.class);

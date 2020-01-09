@@ -26,13 +26,13 @@ public class MaxAccelerationConstraintTest {
     public void constructorTest() {
         for (double maxAcceleration : MAX_ACCELERATIONS) {
             try {
-                MaxAccelerationConstraint constraint = new MaxAccelerationConstraint(maxAcceleration);
+                new MaxAccelerationConstraint(maxAcceleration);
             } catch (IllegalArgumentException e) {
-                fail("Threw exception when max acceleration was positive");
+                throw new AssertionError("Threw exception when max acceleration was positive", e);
             }
 
             try {
-                MaxAccelerationConstraint constraint = new MaxAccelerationConstraint(-maxAcceleration);
+                new MaxAccelerationConstraint(-maxAcceleration);
                 fail("Did not throw exception when max acceleration was negative");
             } catch (IllegalArgumentException e) {
                 // Do nothing, this is expected.

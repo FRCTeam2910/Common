@@ -21,6 +21,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
     private InterpolatingTreeMap<InterpolatingDouble, Vector2> positionSamples = new InterpolatingTreeMap<>(5);
 
+    @Override
     public void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented) {
         if (fieldOriented) {
             translation = translation.rotateBy(getGyroscope().getAngle().inverse());
@@ -80,6 +81,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
      * @deprecated Use {@link #resetKinematics(Vector2, double)} instead.
      */
     @Deprecated
+    @Override
     public synchronized void resetKinematics(double timestamp) {
         resetKinematics(Vector2.ZERO, timestamp);
     }

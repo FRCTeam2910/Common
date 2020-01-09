@@ -3,6 +3,7 @@ package org.frcteam2910.common.math;
 import org.frcteam2910.common.util.Interpolable;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A rigid transform is a type of transformation that represents both a translation and a rotation.
@@ -102,6 +103,11 @@ public final class RigidTransform2 implements Serializable, Interpolable<RigidTr
         RigidTransform2 other = (RigidTransform2) obj;
 
         return translation.equals(other.translation) && rotation.equals(other.rotation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(translation, rotation);
     }
 
     @Override

@@ -277,7 +277,7 @@ public class Mk2SwerveModuleBuilder {
      */
     public Mk2SwerveModuleBuilder driveMotor(SpeedController motor, MotorType motorType) {
         // Spark MAXs are special and drive brushed motors in the opposite direction of every other motor controller
-        if (motorType != MotorType.NEO & (motor instanceof Spark || motor instanceof CANSparkMax)) {
+        if (motorType != MotorType.NEO && (motor instanceof Spark || motor instanceof CANSparkMax)) {
             motor.setInverted(true);
         }
 

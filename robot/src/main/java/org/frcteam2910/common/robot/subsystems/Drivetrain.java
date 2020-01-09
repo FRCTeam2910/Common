@@ -18,6 +18,7 @@ public abstract class Drivetrain extends Subsystem {
 
 	public abstract Vector2 getKinematicVelocity();
 
+	@Override
 	public void outputToSmartDashboard() {
 		SmartDashboard.putString("Drivetrain position", getKinematicPosition().toString());
 		SmartDashboard.putNumber("Drivetrain X velocity", getKinematicVelocity().x);
@@ -25,6 +26,7 @@ public abstract class Drivetrain extends Subsystem {
 
 		SmartDashboard.putNumber("Drivetrain angle", getGyroscope().getAngle().toDegrees());
 	}
-	
+
+	@Override
 	public void zeroSensors() {}
 }

@@ -166,6 +166,7 @@ public final class Rotation2 implements Interpolable<Rotation2>, Serializable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Rotation2 interpolate(Rotation2 other, double t) {
         if (t <= 0.0) {
             return this;
