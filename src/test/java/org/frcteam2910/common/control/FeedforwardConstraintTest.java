@@ -30,7 +30,7 @@ public class FeedforwardConstraintTest {
             try {
                 new FeedforwardConstraint(constants[0], constants[1], constants[2], constants[3]);
             } catch (IllegalArgumentException e) {
-                fail("Threw exception when constants were valid");
+                throw new AssertionError("Threw exception when constants were valid", e);
             }
 
             try {

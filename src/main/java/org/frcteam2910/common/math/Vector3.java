@@ -182,7 +182,9 @@ public final class Vector3 {
     }
 
     /**
-     * {@inheritDoc}
+     * Checks if the two vectors are equal with a default of 1e-9 error
+     * @param obj The other vector to compare with
+     * @return True if the vectors are equals given the allowable error, false if not
      */
     @Override
     public boolean equals(Object obj) {
@@ -191,15 +193,6 @@ public final class Vector3 {
         }
 
         return equals((Vector3) obj, MathUtils.EPSILON);
-    }
-
-    /**
-     * Checks if the two vectors are equal with a default of 1e-9 error
-     * @param other The other vector to compare with
-     * @return True if the vectors are equals given the allowable error, false if not
-     */
-    public boolean equals(Vector3 other) {
-        return equals(other, MathUtils.EPSILON);
     }
 
     /**

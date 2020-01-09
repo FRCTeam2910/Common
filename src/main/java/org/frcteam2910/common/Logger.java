@@ -1,5 +1,7 @@
 package org.frcteam2910.common;
 
+import com.google.errorprone.annotations.FormatMethod;
+
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.UUID;
@@ -95,6 +97,7 @@ public class Logger {
 		}
 	}
 
+	@FormatMethod
 	public void debug(String format, Object... args) {
 		log(Severity.DEBUG, String.format(format, args));
 	}
@@ -103,6 +106,7 @@ public class Logger {
 		log(Severity.DEBUG, throwable);
 	}
 
+	@FormatMethod
 	public void info(String format, Object... args) {
 		log(Severity.INFO, String.format(format, args));
 	}
@@ -111,6 +115,7 @@ public class Logger {
 		log(Severity.INFO, throwable);
 	}
 
+	@FormatMethod
 	public void warn(String format, Object... args) {
 		log(Severity.WARNING, String.format(format, args));
 	}
@@ -119,6 +124,7 @@ public class Logger {
 		log(Severity.WARNING, throwable);
 	}
 
+	@FormatMethod
 	public void error(String format, Object... args) {
 		log(Severity.ERROR, String.format(format, args));
 	}

@@ -68,8 +68,6 @@ public class SplinePathGeneratorTest {
                 out.printf("%f,%f,%f,%f,%f%n", distance, position.x, position.y, heading.toDegrees(),
                         rotation.toDegrees());
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        } catch (FileNotFoundException ignored) { }
     }
 }

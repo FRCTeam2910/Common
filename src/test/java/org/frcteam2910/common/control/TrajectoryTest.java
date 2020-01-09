@@ -232,8 +232,6 @@ public class TrajectoryTest {
                         segment.translation.y, segment.heading.toDegrees(), segment.rotation.toDegrees(), segment.position,
                         segment.velocity, segment.acceleration, segment.maxVelocity, calculateFeedforward(segment));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException ignored) { }
     }
 }
