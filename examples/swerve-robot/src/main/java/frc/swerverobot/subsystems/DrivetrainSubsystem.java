@@ -1,5 +1,6 @@
 package frc.swerverobot.subsystems;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -91,13 +92,16 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
     private final SwerveOdometry odometry = new SwerveOdometry(kinematics, RigidTransform2.ZERO);
 
     private final Object sensorLock = new Object();
-    private final NavX navX$sensorLock = new NavX(SPI.Port.kMXP);
+    @GuardedBy("sensorLock")
+    private final NavX navX = new NavX(SPI.Port.kMXP);
 
     private final Object kinematicsLock = new Object();
-    private RigidTransform2 pose$kinematicsLock = RigidTransform2.ZERO;
+    @GuardedBy("kinematicsLock")
+    private RigidTransform2 pose = RigidTransform2.ZERO;
 
     private final Object stateLock = new Object();
-    private HolonomicDriveSignal driveSignal$stateLock = null;
+    @GuardedBy("stateLock")
+    private HolonomicDriveSignal driveSignal = null;
 
     // Logging stuff
     private NetworkTableEntry poseXEntry;
@@ -112,7 +116,7 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
 
     private DrivetrainSubsystem() {
         synchronized (sensorLock) {
-            navX$sensorLock.setInverted(true);
+            navX.setInverted(true);
         }
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -156,20 +160,20 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
 
     public RigidTransform2 getPose() {
         synchronized (kinematicsLock) {
-            return pose$kinematicsLock;
+            return pose;
         }
     }
 
     public void drive(Vector2 translationalVelocity, double rotationalVelocity, boolean fieldOriented) {
         synchronized (stateLock) {
-            driveSignal$stateLock = new HolonomicDriveSignal(translationalVelocity, rotationalVelocity, fieldOriented);
+            driveSignal = new HolonomicDriveSignal(translationalVelocity, rotationalVelocity, fieldOriented);
         }
     }
 
     public void resetGyroAngle(Rotation2 angle) {
         synchronized (sensorLock) {
-            navX$sensorLock.setAdjustmentAngle(
-                    navX$sensorLock.getUnadjustedAngle().rotateBy(angle.inverse())
+            navX.setAdjustmentAngle(
+                    navX.getUnadjustedAngle().rotateBy(angle.inverse())
             );
         }
     }
@@ -180,7 +184,7 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
 
         HolonomicDriveSignal driveSignal;
         synchronized (stateLock) {
-            driveSignal = driveSignal$stateLock;
+            driveSignal = this.driveSignal;
         }
 
         updateModules(driveSignal, dt);
@@ -197,13 +201,13 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
 
         Rotation2 angle;
         synchronized (sensorLock) {
-            angle = navX$sensorLock.getAngle();
+            angle = navX.getAngle();
         }
 
         RigidTransform2 pose = odometry.update(angle, dt, moduleVelocities);
 
         synchronized (kinematicsLock) {
-            pose$kinematicsLock = pose;
+            this.pose = pose;
         }
     }
 
