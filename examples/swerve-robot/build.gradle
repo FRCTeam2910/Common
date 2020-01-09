@@ -1,7 +1,8 @@
 plugins {
     id 'application'
-    id 'edu.wpi.first.GradleRIO'
     id 'com.github.johnrengelman.shadow'
+    id 'edu.wpi.first.GradleRIO'
+    id 'net.ltgt.errorprone'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -36,6 +37,8 @@ deploy {
 }
 
 dependencies {
+    compileOnly group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.3.4'
+
     implementation wpi.deps.wpilib()
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
@@ -47,4 +50,6 @@ dependencies {
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
 
     implementation rootProject.project(':robot')
+
+    errorprone "com.google.errorprone:error_prone_core:2.3.4"
 }
