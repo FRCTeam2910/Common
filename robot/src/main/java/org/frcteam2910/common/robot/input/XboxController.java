@@ -102,46 +102,57 @@ public final class XboxController extends Controller {
 		return rightYAxis;
 	}
 
+	@Override
 	public Button getAButton() {
 		return aButton;
 	}
 
+	@Override
 	public Button getBButton() {
 		return bButton;
 	}
 
+	@Override
 	public Button getXButton() {
 		return xButton;
 	}
 
+	@Override
 	public Button getYButton() {
 		return yButton;
 	}
 
+	@Override
 	public Button getLeftBumperButton() {
 		return leftBumperButton;
 	}
 
+	@Override
 	public Button getRightBumperButton() {
 		return rightBumperButton;
 	}
 
+	@Override
 	public Button getBackButton() {
 		return backButton;
 	}
 
+	@Override
 	public Button getStartButton() {
 		return startButton;
 	}
 
+	@Override
 	public Button getLeftJoystickButton() {
 		return leftStickButton;
 	}
 
+	@Override
 	public Button getRightJoystickButton() {
 		return rightStickButton;
 	}
 
+	@Override
 	public Button getDPadButton(DPadButton.Direction direction) {
 		return dpadButtons[direction.ordinal()];
 	}
