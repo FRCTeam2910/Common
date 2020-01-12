@@ -12,7 +12,7 @@ and should only be ran on robots.
 The common library is imported into a project by using
 [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). In
 order to add this project as a submodule run `git submodule add
-https://github.com/FRCTeam2910/Common-Public.git common` in your project's root
+https://github.com/FRCTeam2910/Common.git common` in your project's root
 directory. This will clone this repository into the directory `common`.
 
 ### Using the Common library
