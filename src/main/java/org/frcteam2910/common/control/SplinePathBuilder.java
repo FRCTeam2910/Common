@@ -6,13 +6,10 @@ import org.frcteam2910.common.math.spline.CubicBezierSpline;
 import org.frcteam2910.common.math.spline.CubicHermiteSpline;
 import org.frcteam2910.common.math.spline.Spline;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public final class SplinePathBuilder {
-    private List<PathSegment> segmentList = new LinkedList<>();
+    private List<PathSegment> segmentList = new ArrayList<>();
     private Map<Double, Rotation2> rotationMap = new TreeMap<>();
     private double length = 0.0;
 

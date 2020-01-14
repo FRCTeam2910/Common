@@ -3,11 +3,13 @@ package org.frcteam2910.common.control;
 import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.math.Vector2;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 
 public final class SimplePathBuilder {
-    private LinkedList<PathSegment> segmentList = new LinkedList<>();
+    private List<PathSegment> segmentList = new ArrayList<>();
     private TreeMap<Double, Rotation2> rotationMap = new TreeMap<>();
 
     private Vector2 lastPosition;

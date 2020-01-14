@@ -8,6 +8,8 @@ import org.frcteam2910.common.math.Vector2;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -45,7 +47,7 @@ public class PathIoTests {
         try (InputStream in = getClass().getResourceAsStream("example_path.json")) {
             assertNotNull("Unable to find example path", in);
 
-            PathReader reader = new PathReader(new InputStreamReader(in));
+            PathReader reader = new PathReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             Path actualPath = reader.read();
 
             assertPathsAreEqual(expectedPath, actualPath);
@@ -62,12 +64,12 @@ public class PathIoTests {
         File tempFile = File.createTempFile("pathbuffer-", ".tmp");
         tempFile.deleteOnExit();
 
-        try (PathWriter writer = new PathWriter(new BufferedWriter(new FileWriter(tempFile)))) {
+        try (PathWriter writer = new PathWriter(Files.newBufferedWriter(tempFile.toPath(), StandardCharsets.UTF_8))) {
             writer.write(expectedPath);
         }
 
         Path actualPath;
-        try (PathReader reader = new PathReader(new BufferedReader(new FileReader(tempFile)))) {
+        try (PathReader reader = new PathReader(Files.newBufferedReader(tempFile.toPath(), StandardCharsets.UTF_8))) {
             actualPath = reader.read();
         }
 
