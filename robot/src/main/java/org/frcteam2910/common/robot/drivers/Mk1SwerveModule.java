@@ -120,7 +120,7 @@ public final class Mk1SwerveModule extends SwerveModule {
 
     @Override
     protected double readDriveCurrent() {
-        return driveMotor.getOutputCurrent();
+        return driveMotor.getSupplyCurrent();
     }
 
     @Override
