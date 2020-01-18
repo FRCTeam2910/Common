@@ -1,6 +1,6 @@
 package org.frcteam2910.common.robot.input;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.Command;
 import org.frcteam2910.common.robot.Utilities;
 
 public abstract class Axis {
