@@ -1,31 +1,43 @@
 package frc.swerverobot.commands;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.swerverobot.subsystems.DrivetrainSubsystem;
-import frc.swerverobot.Robot;
 import org.frcteam2910.common.math.Vector2;
 
-public class DriveCommand extends Command {
-    public DriveCommand() {
-        requires(DrivetrainSubsystem.getInstance());
+import java.util.function.DoubleSupplier;
+
+public class DriveCommand extends CommandBase {
+    private final DrivetrainSubsystem drivetrain;
+    private final DoubleSupplier forward;
+    private final DoubleSupplier strafe;
+    private final DoubleSupplier rotation;
+
+    public DriveCommand(DrivetrainSubsystem drivetrain,
+                        DoubleSupplier forward,
+                        DoubleSupplier strafe,
+                        DoubleSupplier rotation) {
+        this.drivetrain = drivetrain;
+        this.forward = forward;
+        this.strafe = strafe;
+        this.rotation = rotation;
+
+        addRequirements(drivetrain);
     }
 
     @Override
-    protected void execute() {
-        double forward = Robot.getOi().getDriveForwardAxis().get(true);
-        double strafe = Robot.getOi().getDriveStrafeAxis().get(true);
-        double rotation = Robot.getOi().getDriveRotationAxis().get(true);
-
-        DrivetrainSubsystem.getInstance().drive(new Vector2(forward, strafe), rotation, true);
+    public void execute() {
+        drivetrain.drive(
+                new Vector2(
+                        forward.getAsDouble(),
+                        strafe.getAsDouble()
+                ),
+                rotation.getAsDouble(),
+                true
+        );
     }
 
     @Override
-    protected void end() {
-        DrivetrainSubsystem.getInstance().drive(Vector2.ZERO, 0.0, false);
-    }
-
-    @Override
-    protected boolean isFinished() {
-        return false;
+    public void end(boolean interrupted) {
+        drivetrain.drive(Vector2.ZERO, 0.0, false);
     }
 }

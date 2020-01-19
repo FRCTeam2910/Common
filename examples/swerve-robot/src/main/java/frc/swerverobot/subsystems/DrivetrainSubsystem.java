@@ -7,12 +7,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.swerverobot.commands.DriveCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frcteam2910.common.drivers.SwerveModule;
 import org.frcteam2910.common.kinematics.ChassisVelocity;
 import org.frcteam2910.common.kinematics.SwerveKinematics;
@@ -27,11 +26,9 @@ import org.frcteam2910.common.util.HolonomicDriveSignal;
 
 import static frc.swerverobot.RobotMap.*;
 
-public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Updatable {
+public class DrivetrainSubsystem extends SubsystemBase implements UpdateManager.Updatable {
     private static final double TRACKWIDTH = 1.0;
     private static final double WHEELBASE = 1.0;
-
-    private static final DrivetrainSubsystem instance;
 
     private final SwerveModule frontLeftModule =
             new Mk2SwerveModuleBuilder(new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0))
@@ -110,11 +107,7 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
 
     private NetworkTableEntry[] moduleAngleEntries = new NetworkTableEntry[modules.length];
 
-    static {
-        instance = new DrivetrainSubsystem();
-    }
-
-    private DrivetrainSubsystem() {
+    public DrivetrainSubsystem() {
         synchronized (sensorLock) {
             navX.setInverted(true);
         }
@@ -152,10 +145,6 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
                 .withPosition(7, 0)
                 .withSize(2, 3);
         moduleAngleEntries[3] = backRightModuleContainer.add("Angle", 0.0).getEntry();
-    }
-
-    public static DrivetrainSubsystem getInstance() {
-        return instance;
     }
 
     public RigidTransform2 getPose() {
@@ -232,11 +221,6 @@ public class DrivetrainSubsystem extends Subsystem implements UpdateManager.Upda
             module.setTargetVelocity(moduleOutputs[i]);
             module.updateState(dt);
         }
-    }
-
-    @Override
-    protected void initDefaultCommand() {
-        setDefaultCommand(new DriveCommand());
     }
 
     @Override

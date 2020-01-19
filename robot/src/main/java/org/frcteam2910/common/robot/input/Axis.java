@@ -1,6 +1,5 @@
 package org.frcteam2910.common.robot.input;
 
-import edu.wpi.first.wpilibj.command.Command;
 import org.frcteam2910.common.robot.Utilities;
 
 public abstract class Axis {
@@ -58,14 +57,4 @@ public abstract class Axis {
 
 		return value;
 	}
-
-	public abstract void whenPressed(final Command command);
-
-	public abstract void whileHeld(final Command command);
-
-	public abstract void whenReleased(final Command command);
-
-	public abstract void toggleWhenPressed(final Command command);
-
-	public abstract void cancelWhenPressed(final Command command);
 }

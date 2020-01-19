@@ -38,7 +38,7 @@ public final class CheesyDriveCommand extends Command {
 	private double negInertiaAccumulator;
 
 	public CheesyDriveCommand(TankDrivetrain drivetrain, Axis forwardAxis, Axis turnAxis) {
-		this(drivetrain, forwardAxis, turnAxis, new NullButton(false));
+		this(drivetrain, forwardAxis, turnAxis, null);
 	}
 
 	public CheesyDriveCommand(TankDrivetrain drivetrain, Axis forwardAxis, Axis turnAxis, Button quickTurnButton) {
@@ -62,7 +62,10 @@ public final class CheesyDriveCommand extends Command {
 		double throttle = forwardAxis.get(true);
 		double wheel = turnAxis.get(true);
 
-		boolean quickTurn = quickTurnButton.get();
+		boolean quickTurn = false;
+		if (quickTurnButton != null) {
+			quickTurn = quickTurnButton.get();
+		}
 
 		double negInertia = wheel - oldTurn;
 		oldTurn = wheel;

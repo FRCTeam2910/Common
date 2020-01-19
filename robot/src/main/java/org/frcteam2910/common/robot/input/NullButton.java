@@ -1,6 +1,6 @@
 package org.frcteam2910.common.robot.input;
 
-import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj2.command.button.Button;
 
 public final class NullButton extends Button {
 	private boolean value;
