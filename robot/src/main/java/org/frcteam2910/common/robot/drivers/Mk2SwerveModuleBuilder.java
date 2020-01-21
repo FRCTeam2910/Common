@@ -1,5 +1,9 @@
 package org.frcteam2910.common.robot.drivers;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -268,6 +272,23 @@ public class Mk2SwerveModuleBuilder {
         return this;
     }
 
+    public Mk2SwerveModuleBuilder driveMotor(TalonFX motor) {
+        return driveMotor(motor, DEFAULT_DRIVE_REDUCTION, DEFAULT_WHEEL_DIAMETER);
+    }
+
+    public Mk2SwerveModuleBuilder driveMotor(TalonFX motor, double reduction, double wheelDiameter) {
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        motor.configAllSettings(config);
+        motor.setNeutralMode(NeutralMode.Brake);
+
+        currentDrawSupplier = motor::getSupplyCurrent;
+        distanceSupplier = () -> (Math.PI * wheelDiameter * motor.getSensorCollection().getIntegratedSensorPosition()) / (2048.0 * reduction);
+        velocitySupplier = () -> (10.0 * Math.PI * wheelDiameter * motor.getSensorCollection().getIntegratedSensorVelocity()) / (2048.0 * reduction);
+        driveOutputConsumer = output -> motor.set(TalonFXControlMode.PercentOutput, output);
+
+        return this;
+    }
+
     /**
      * Configures the swerve module to use a generic speed controller driving the specified motor.
      *
@@ -398,6 +419,7 @@ public class Mk2SwerveModuleBuilder {
     public enum MotorType {
         CIM,
         MINI_CIM,
-        NEO
+        NEO,
+        FALCON_500
     }
 }
