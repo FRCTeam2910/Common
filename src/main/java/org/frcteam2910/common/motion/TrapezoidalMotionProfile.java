@@ -96,6 +96,11 @@ public final class TrapezoidalMotionProfile extends MotionProfile implements Ser
 	}
 
 	@Override
+	public Constraints getConstraints() {
+		return constraints;
+	}
+
+	@Override
 	public double getDuration() {
 		return endDecelerationTime;
 	}

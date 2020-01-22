@@ -1,31 +1,28 @@
 package org.frcteam2910.common.control;
 
 /**
- * A constraint that limits the acceleration by capping it at a maximum.
- * <p>
- * Usually this is used to make sure the robot won't tip over as we accelerate.
+ * A constraint that limits the acceleration.
  */
-public final class MaxAccelerationConstraint implements ITrajectoryConstraint {
+public class MaxAccelerationConstraint extends TrajectoryConstraint {
     private final double maxAcceleration;
+    private final double maxDeceleration;
 
-    /**
-     * @param maxAcceleration the maximum linear acceleration of the robot. Must be positive.
-     */
-    public MaxAccelerationConstraint(double maxAcceleration) {
-        if (maxAcceleration < 0.0) {
-            throw new IllegalArgumentException("Max acceleration must be positive");
-        }
+    public MaxAccelerationConstraint(double maxAbsAcceleration) {
+        this(maxAbsAcceleration, maxAbsAcceleration);
+    }
 
+    public MaxAccelerationConstraint(double maxAcceleration, double maxDeceleration) {
         this.maxAcceleration = maxAcceleration;
+        this.maxDeceleration = maxDeceleration;
     }
 
     @Override
-    public double getMaxVelocity(PathSegment segment) {
-        return Double.POSITIVE_INFINITY; // We don't constrain velocity
-    }
-
-    @Override
-    public double getMaxAcceleration(PathSegment segment, double velocity) {
+    public double getMaxAcceleration(Path.State state, double velocity) {
         return maxAcceleration;
+    }
+
+    @Override
+    public double getMaxDeceleration(Path.State state, double velocity) {
+        return maxDeceleration;
     }
 }
