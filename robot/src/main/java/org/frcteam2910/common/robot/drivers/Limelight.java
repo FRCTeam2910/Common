@@ -13,7 +13,6 @@ public final class Limelight {
     private final NetworkTableEntry ty;
     private final NetworkTableEntry ta;
     private final NetworkTableEntry ts;
-    @SuppressWarnings("unused")
     private final NetworkTableEntry tl;
 
     private final NetworkTableEntry tcornx;
@@ -59,6 +58,10 @@ public final class Limelight {
 
     public double getTargetSkew() {
         return ts.getDouble(0);
+    }
+
+    public double getPipelineLatency() {
+        return tl.getDouble(0.0);
     }
 
     public double[][] getCorners() {
