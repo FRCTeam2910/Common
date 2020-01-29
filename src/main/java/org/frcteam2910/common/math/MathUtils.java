@@ -24,7 +24,7 @@ public class MathUtils {
 	 *
 	 * @param value The value to clamp.
 	 * @param min The minimum value of the range. This value must be less than max.
-	 * @param max The maximum value of the range. This value must be less than min.
+	 * @param max The maximum value of the range. This value must be greater than min.
 	 * @return the clamped value.
 	 *
 	 * @since 0.2
