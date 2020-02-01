@@ -26,27 +26,24 @@ public final class Limelight {
     private final NetworkTableEntry snapshot;
 
     /*
-     * The default constructor for the Limelight class. Assumes the name of the Limelight is "limelight"
-     * @returns nothing
+     * This method creates a Limelight, assuming the name is "limelight"
      */
     public Limelight() {
         this(NetworkTableInstance.getDefault().getTable("limelight"));
     }
 
     /*
-     * This is a constructor that takes the name of the limelight. For example, if your Limelight is named
-     * "limelight-cargo", pass in "cargo"
+     * This is a method that takes the name of the Limelight. For example, if the Limelight is called "limelight-cargo",
+     * pass in "cargo".
      * @param name The name of the Limelight
-     * @returns nothing
      */
     public Limelight(String name) {
         this(NetworkTableInstance.getDefault().getTable("limelight-" + name));
     }
 
     /*
-     * This is a constructor that takes a NetworkTable instance
-     * @param table The NetworkTable instance to get values from the Limelight
-     * @returns nothing
+     * This method creates a Limelight with a NetworkTable
+     * @param table The Networktable to create the Limelight
      */
     public Limelight(NetworkTable table) {
         this.table = table;
@@ -69,15 +66,15 @@ public final class Limelight {
     }
 
     /*
-     * Returns true if the Limelight has a target, else false
-     * @returns A boolean value stating whether the Limelight has a target
+     * This method checks if the method has a target
+     * @returns Whether the Limelight has a target
      */
     public boolean hasTarget() {
         return MathUtils.epsilonEquals(tv.getDouble(0), 1);
     }
 
     /*
-     * Returns the area of the target divided by the size of the image
+     * This method gets the area of the target divided by the size of the image
      * @returns A value from 0.0 to 1.0 representing the target area
      */
     public double getTargetArea() {
@@ -85,32 +82,32 @@ public final class Limelight {
     }
 
     /*
-     * Returns the position of the target in degrees within the image
-     * @returns A Vector2 representing the position of the target
+     * This method returns the position of the target in radians within the image
+     * @returns The position of the target
      */
     public Vector2 getTargetPosition() {
         return new Vector2(Math.toRadians(tx.getDouble(0)), Math.toRadians(ty.getDouble(0)));
     }
 
     /*
-     * This gives the target's skew or rotation
-     * @returns The target's skew from -90 to 0 as a double
+     * This method gets the target's skew or rotation in degrees
+     * @returns The target's skew from -90 to 0 in degrees
      */
     public double getTargetSkew() {
         return ts.getDouble(0);
     }
 
     /*
-     * This returns the latency of the pipeline
-     * @returns The latency of the pipeline
+     * This method returns the latency of the pipeline in ms (milliseconds)
+     * @returns The latency of the pipeline in ms
      */
     public double getPipelineLatency() {
         return tl.getDouble(0.0);
     }
 
     /*
-     * Returns the vertices of the target
-     * @returns The vertices of the target as a array of points
+     * This method gets the vertices of the target
+     * @returns The vertices of the target
      */
     public double[][] getCorners() {
         double[] x = tcornx.getDoubleArray(new double[]{0.0, 0.0});
@@ -124,9 +121,7 @@ public final class Limelight {
     }
 
     /*
-     * Set the operating mode of the Limelight, either VISION (which runs the pipeline) or DRIVER (which disables
-     * the pipeline, and brings the exposure up)
-     * @returns nothing
+     * This method sets the operating mode of the Limelight
      */
     public void setCamMode(CamMode mode) {
         switch (mode) {
@@ -139,9 +134,7 @@ public final class Limelight {
     }
 
     /*
-     * Set the mode of the LED's of the Limelight. The options are DEFAULT, which sets it to whatever is specified in the pipeline,
-     * OFF, which turns them off, ON, which turns the LED's on, and BLINK, which makes the LED's blink
-     * @returns nothing
+     * This method sets the mode of the LED's of the Limelight
      */
     public void setLedMode(LedMode mode) {
         switch (mode) {
@@ -161,7 +154,7 @@ public final class Limelight {
     }
 
     /*
-     * Can control whether you want the Limelight to take snapshots or not. When it's taking snapshots, it will do it
+     * This method sets whether you want the Limelight to take snapshots or not. When it's taking snapshots, it will do it
      * twice every second.
      */
     public void setSnapshotsEnabled(boolean enabled) {
@@ -173,7 +166,7 @@ public final class Limelight {
     }
 
     /*
-     * Set which pipeline you want to use (0-9)
+     * This method sets which pipeline you want to use (0-9)
      * @returns nothing
      */
     public void setPipeline(int pipeline) {
@@ -201,17 +194,25 @@ public final class Limelight {
     }
 
     /*
-     * Returns the NetworkTable being used to get values from the Limelight
+     * This method gets the NetworkTable being used to get values from the Limelight
      */
     public NetworkTable getTable() {
         return table;
     }
 
+    /*
+     * It can be set to VISION (which runs the pipeline) or DRIVER
+     * (which disables the pipeline, and brings the exposure up).
+     */
     public enum CamMode {
         VISION,
         DRIVER
     }
 
+    /*
+     * The options are DEFAULT, which sets it to whatever is specified in the pipeline,
+     * OFF, which turns them off, ON, which turns the LED's on, and BLINK, which makes the LED's blink
+     */
     public enum LedMode {
         DEFAULT,
         ON,
