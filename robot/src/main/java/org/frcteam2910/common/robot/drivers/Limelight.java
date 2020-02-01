@@ -26,14 +26,14 @@ public final class Limelight {
     private final NetworkTableEntry snapshot;
 
     /*
-     * This method creates an instance of the Limelight, assuming the name is "limelight"
+     * Creates an instance of the Limelight, assuming the name is "limelight"
      */
     public Limelight() {
         this(NetworkTableInstance.getDefault().getTable("limelight"));
     }
 
     /*
-     * This is a method that creates an instance of the Limelight class given the name of the Limelight. For example,
+     * Creates an instance of the Limelight class given the name of the Limelight. For example,
      * if the Limelight is called "limelight-cargo", pass in "cargo".
      * @param name The name of the Limelight
      */
@@ -42,7 +42,7 @@ public final class Limelight {
     }
 
     /*
-     * This method creates an instance of the Limelight class given its NetworkTable
+     * Creates an instance of the Limelight class given its NetworkTable
      * @param table The Networktable used to create the Limelight
      */
     public Limelight(NetworkTable table) {
@@ -174,10 +174,7 @@ public final class Limelight {
     }
 
     /*
-     * Changes what the Limelight streams - either the standard stream, PIP_MAIN (The secondary camera stream is placed
-     * in the lower-right corner of the primary camera stream), or PIP_SECONDARY (The primary camera stream is placed in
-     * the lower-right corner of the secondary camera stream)
-     * @returns nothing
+     * Changes what the Limelight streams
      */
     public void setStreamMode(StreamMode mode) {
         switch (mode) {
@@ -202,37 +199,55 @@ public final class Limelight {
 
     /*
      * Represents the different operating modes of the Limelight
-     * VISION - brings the exposure down and runs the pipeline
-     * DRIVER - disables the pipeline, and brings the exposure up
      */
     public enum CamMode {
+        /*
+         * brings the exposure down and runs the pipeline
+         */
         VISION,
+        /*
+         * disables the pipeline, and brings the exposure up
+         */
         DRIVER
     }
 
     /*
      * Represents the different LED modes of the Limelight
-     * DEFAULT - sets it to whatever is specified in the pipeline,
-     * OFF - turns them off,
-     * ON - turns the LED's on
-     * BLINK - makes the LED's blink
      */
     public enum LedMode {
+        /*
+         * Sets the LED's to whatever is specified in the pipeline
+         */
         DEFAULT,
+        /*
+         * Turns the LED's on
+         */
         ON,
+        /*
+         * Turns the LED's off
+         */
         OFF,
+        /*
+         * Makes the LED's blink
+         */
         BLINK
     }
 
     /*
      * Represents the different streaming modes of the camera
-     * STANDARD - Side-by-side streams if a webcam is attached to Limelight
-     * PIP_MAIN - The secondary camera stream is placed in the lower-right corner of the primary camera stream
-     * PIP_SECONDARY - The primary camera stream is placed in the lower-right corner of the secondary camera stream
      */
     public enum StreamMode {
+        /*
+         * Side-by-side streams if a webcam is attached to Limelight
+         */
         STANDARD,
+        /*
+         * The secondary camera stream is placed in the lower-right corner of the primary camera stream
+         */
         PIP_MAIN,
+        /*
+         * The primary camera stream is placed in the lower-right corner of the secondary camera stream
+         */
         PIP_SECONDARY
     }
 }
