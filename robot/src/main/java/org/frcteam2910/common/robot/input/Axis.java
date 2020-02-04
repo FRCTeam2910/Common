@@ -1,5 +1,6 @@
 package org.frcteam2910.common.robot.input;
 
+import edu.wpi.first.wpilibj2.command.button.Button;
 import org.frcteam2910.common.robot.Utilities;
 
 public abstract class Axis {
@@ -56,5 +57,14 @@ public abstract class Axis {
 		}
 
 		return value;
+	}
+
+	public Button getButton(double tolerance) {
+		return new Button() {
+			@Override
+			public boolean get() {
+				return Math.abs(Axis.this.get()) > tolerance;
+			}
+		};
 	}
 }
