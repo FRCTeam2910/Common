@@ -9,6 +9,8 @@ public abstract class SwerveModule {
     private final Object sensorMutex = new Object();
     private double currentAngle = 0.0;
     private double currentDistance = 0.0;
+    private double currentDriveCurrent = 0.0;
+    private double currentVelocity = 0.0;
 
     private final Object stateMutex = new Object();
     private double targetSpeed = 0.0;
@@ -59,6 +61,20 @@ public abstract class SwerveModule {
     protected abstract double readDistance();
 
     /**
+     * Reads the current draw of the drive motor in amps.
+     *
+     * @return the current draw of the drive motor in amps
+     */
+    protected abstract double readDriveCurrent();
+
+    /**
+     * Reads the drive encoder to get the velocity of the module wheel in inches.
+     *
+     * @return the velocity of the module in inches per second
+     */
+    protected abstract double readVelocity();
+
+    /**
      * Sets the target angle.
      *
      * @param angle the target angle in radians
@@ -104,23 +120,25 @@ public abstract class SwerveModule {
     }
 
     /**
-     * Gets the current velocity of the wheel.
+     * Gets the amount of current being drawn by the drive motor.
      *
-     * TODO: Allow implementors to specify the current velocity without overriding this method.
-     * @return the velocity of the module.
+     * @return the amount of current being drawn by the drive motor.
      */
-    public double getCurrentVelocity() {
-        return 0;
+    public final double getDriveCurrent() {
+        synchronized (sensorMutex) {
+            return currentDriveCurrent;
+        }
     }
 
     /**
-     * Gets the amount of current being drawn by the drive motor.
+     * Gets the current velocity of the wheel.
      *
-     * TODO: Allow implementors to specify current draw without overriding this method.
-     * @return the amount of current being drawn by the drive motor.
+     * @return the velocity of the module.
      */
-    public double getDriveCurrent() {
-        return 0;
+    public final double getCurrentVelocity() {
+        synchronized (sensorMutex) {
+            return currentVelocity;
+        }
     }
 
     public Vector2 getTargetVelocity() {
@@ -201,6 +219,8 @@ public abstract class SwerveModule {
         synchronized (sensorMutex) {
             currentAngle = readAngle();
             currentDistance = readDistance();
+            currentDriveCurrent = readDriveCurrent();
+            currentVelocity = readVelocity();
         }
     }
 

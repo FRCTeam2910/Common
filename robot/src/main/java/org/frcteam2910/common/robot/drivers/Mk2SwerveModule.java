@@ -107,29 +107,18 @@ public class Mk2SwerveModule extends SwerveModule {
         }
     }
 
+    @Override
+    protected double readDriveCurrent() {
+        synchronized (canLock) {
+            return driveCurrent;
+        }
+    }
+
+    @Override
     protected double readVelocity() {
         synchronized (canLock) {
             return driveVelocity;
         }
-    }
-
-    protected double readDriveCurrent() {
-        double localDriveCurrent;
-        synchronized (canLock) {
-            localDriveCurrent = driveCurrent;
-        }
-
-        return localDriveCurrent;
-    }
-
-    @Override
-    public double getCurrentVelocity() {
-        return readVelocity();
-    }
-
-    @Override
-    public double getDriveCurrent() {
-        return readDriveCurrent();
     }
 
     @Override

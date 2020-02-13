@@ -370,10 +370,6 @@ public class Mk2SwerveModuleBuilder {
     }
 
     private final class SwerveModuleImpl extends SwerveModule {
-        private final Object sensorLock = new Object();
-        private double currentDraw = 0.0;
-        private double velocity = 0.0;
-
         public SwerveModuleImpl() {
             super(modulePosition);
 
@@ -387,7 +383,8 @@ public class Mk2SwerveModuleBuilder {
             return angleSupplier.getAsDouble();
         }
 
-        protected double readCurrentDraw() {
+        @Override
+        protected double readDriveCurrent() {
             if (currentDrawSupplier == null) {
                 return Double.NaN;
             }
@@ -404,26 +401,13 @@ public class Mk2SwerveModuleBuilder {
             return distanceSupplier.getAsDouble();
         }
 
+        @Override
         protected double readVelocity() {
             if (velocitySupplier == null) {
                 return Double.NaN;
             }
 
             return velocitySupplier.getAsDouble();
-        }
-
-        @Override
-        public double getCurrentVelocity() {
-            synchronized (sensorLock) {
-                return velocity;
-            }
-        }
-
-        @Override
-        public double getDriveCurrent() {
-            synchronized (sensorLock) {
-                return currentDraw;
-            }
         }
 
         @Override
@@ -434,19 +418,6 @@ public class Mk2SwerveModuleBuilder {
         @Override
         protected void setDriveOutput(double output) {
             driveOutputConsumer.accept(output);
-        }
-
-        @Override
-        public void updateSensors() {
-            super.updateSensors();
-
-            double newCurrentDraw = readCurrentDraw();
-            double newVelocity = readVelocity();
-
-            synchronized (sensorLock) {
-                currentDraw = newCurrentDraw;
-                velocity = newVelocity;
-            }
         }
 
         @Override

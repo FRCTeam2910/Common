@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 public final class MockSwerveModule extends SwerveModule {
 	private double angle;
 	private double distance;
+	private double driveCurrent;
+	private double velocity;
 	private double targetAngle;
 	private double driveOutput;
 
@@ -31,6 +33,24 @@ public final class MockSwerveModule extends SwerveModule {
 
 	public void writeDistance(double distance) {
 		this.distance = distance;
+	}
+
+	@Override
+	public double readDriveCurrent() {
+		return driveCurrent;
+	}
+
+	public void writeDriveCurrent(double driveCurrent) {
+		this.driveCurrent = driveCurrent;
+	}
+
+	@Override
+	public double readVelocity() {
+		return velocity;
+	}
+
+	public void writeVelocity(double velocity) {
+		this.velocity = velocity;
 	}
 
 	@Override

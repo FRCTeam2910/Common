@@ -4,8 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import org.frcteam2910.common.math.Vector2;
 import org.frcteam2910.common.drivers.SwerveModule;
+import org.frcteam2910.common.math.Vector2;
 
 import static org.frcteam2910.common.robot.Constants.CAN_TIMEOUT_MS;
 
@@ -116,6 +116,16 @@ public final class Mk1SwerveModule extends SwerveModule {
     @Override
     public double readDistance() {
         return driveMotor.getSelectedSensorPosition() / driveTicksPerUnit;
+    }
+
+    @Override
+    protected double readDriveCurrent() {
+        return driveMotor.getSupplyCurrent();
+    }
+
+    @Override
+    protected double readVelocity() {
+        return driveMotor.getSelectedSensorVelocity() / driveTicksPerUnit * (1000.0 / 100.0);
     }
 
     @Override
