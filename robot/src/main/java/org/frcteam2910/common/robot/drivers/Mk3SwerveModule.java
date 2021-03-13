@@ -50,9 +50,9 @@ public class Mk3SwerveModule extends SwerveModule {
             this.driveDistance = unadjustedDriveCounts * (1.0 / driveCountsPerInch);
         }
 
-        double driveRpm = driveMotor.getSelectedSensorVelocity(); // TODO Verify
+        double driveCountPerHundredMillis = driveMotor.getSelectedSensorVelocity();
         synchronized (canLock) {
-            this.driveVelocity = driveRpm * (1.0 / 60.0) * (1.0 / driveCountsPerInch);
+            this.driveVelocity = (driveCountPerHundredMillis * 10) / driveCountsPerInch;
         }
 
         double driveCurrent = driveMotor.getStatorCurrent();
@@ -101,7 +101,7 @@ public class Mk3SwerveModule extends SwerveModule {
             }
         }
 
-        double currentWheelAngle = unadjustedSteeringAngle + (moduleAngleToAdd * this.steerCountsPerDegree);
+        double currentWheelAngle = unadjustedSteeringAngle + moduleAngleToAdd;
         synchronized (canLock) {
             this.currentWheelAngle = currentWheelAngle;
         }
