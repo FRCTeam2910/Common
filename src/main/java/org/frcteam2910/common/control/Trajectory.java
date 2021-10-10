@@ -14,6 +14,11 @@ public class Trajectory {
     private double[] pathStateStartTimes;
 
     public Trajectory(Path path, TrajectoryConstraint[] trajectoryConstraints, double sampleDistance) {
+        this(path, trajectoryConstraints, sampleDistance, 0.0, 0.0);
+    }
+
+    public Trajectory(Path path, TrajectoryConstraint[] trajectoryConstraints, double sampleDistance,
+                      double trajectoryStartingVelocity, double trajectoryEndingVelocity) {
         this.path = path;
 
         double distance = 0.0;
@@ -21,7 +26,7 @@ public class Trajectory {
                 path.calculate(distance),
                 0.0,
                 0.0,
-                0.0, // Trajectory starting velocity
+                trajectoryStartingVelocity, // Trajectory starting velocity
                 0.0
         );
         while (distance < path.getLength()) {
@@ -96,7 +101,7 @@ public class Trajectory {
         for (int i = constrainedPathStates.size() - 1; i >= 0; i--) {
             ConstrainedPathState constrainedState = constrainedPathStates.get(i);
 
-            constrainedState.endingVelocity = 0.0; // Trajectory ending velocity
+            constrainedState.endingVelocity = trajectoryEndingVelocity; // Trajectory ending velocity
             if (i != constrainedPathStates.size() - 1) {
                 constrainedState.endingVelocity = constrainedPathStates.get(i + 1).startingVelocity;
             }
@@ -155,6 +160,11 @@ public class Trajectory {
             } else {
                 break;
             }
+        }
+
+        if (mid >= constrainedPathStates.size()) {
+            // Out of bounds
+            return new State(path.calculate(0.0), 0.0, 0.0);
         }
 
         ConstrainedPathState constrainedPathState = constrainedPathStates.get(mid);
