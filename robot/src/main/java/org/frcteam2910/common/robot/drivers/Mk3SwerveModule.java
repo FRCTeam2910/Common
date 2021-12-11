@@ -14,6 +14,8 @@ import java.util.Optional;
 
 import org.frcteam2910.common.robot.Constants;
 
+import javax.annotation.Nullable;
+
 public class Mk3SwerveModule extends SwerveModule {
     private static final double TALONFX_COUNTS_PER_REVOLUTION = 2048;
     private static final double CAN_UPDATE_RATE = 50.0;
@@ -24,6 +26,7 @@ public class Mk3SwerveModule extends SwerveModule {
     private final double absoluteEncoderAngleOffset;
 
     private TalonFX steeringMotor;
+    @Nullable
     private CANCoder angleEncoder;
     private TalonFX driveMotor;
 
@@ -65,7 +68,7 @@ public class Mk3SwerveModule extends SwerveModule {
             drivePercentOutput = this.drivePercentOutput;
         }
         if (drivePercentOutput.isPresent()) {
-            this.driveMotor.set(TalonFXControlMode.Position.PercentOutput, drivePercentOutput.get());
+            this.driveMotor.set(TalonFXControlMode.PercentOutput, drivePercentOutput.get());
         }
 
         StickyFaults faults = new StickyFaults();
@@ -135,7 +138,7 @@ public class Mk3SwerveModule extends SwerveModule {
      * @param angleEncoder   The analog input for the angle encoder
      */
     public Mk3SwerveModule(Vector2 modulePosition, double angleOffset, double angleGearRatio, double driveGearRatio,
-                           TalonFX angleMotor, TalonFX driveMotor, CANCoder angleEncoder) {
+                           TalonFX angleMotor, TalonFX driveMotor, @Nullable CANCoder angleEncoder) {
         super(modulePosition);
         this.absoluteEncoderAngleOffset = Math.toDegrees(angleOffset);
         this.steeringMotor = angleMotor;
@@ -169,11 +172,15 @@ public class Mk3SwerveModule extends SwerveModule {
         canUpdateNotifier.startPeriodic(1.0 / CAN_UPDATE_RATE);
     }
 
+    // TODO this is modified jack in the bot code i want to either pr it in or remove it eventually
     public void resetAngleOffsetWithAbsoluteEncoder() {
         // Absolute position is reported in degrees
         // Not running this on CAN thread since we only poll this when necessary, so
         // losing a few ms of main loop to reduce CAN bas usage is worth it
-        double offsetInDegrees = angleEncoder.getAbsolutePosition() - absoluteEncoderAngleOffset;
+        double offsetInDegrees = -absoluteEncoderAngleOffset;
+        if (angleEncoder != null) {
+            offsetInDegrees+= angleEncoder.getAbsolutePosition();
+        }
         if (offsetInDegrees < 0) {
             offsetInDegrees += 360;
         }
