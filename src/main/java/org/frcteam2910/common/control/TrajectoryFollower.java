@@ -104,6 +104,7 @@ public abstract class TrajectoryFollower<DriveSignalType> {
                 reset();
             } else if (isFinished()) {
                 currentTrajectory = null;
+
                 return Optional.empty();
             }
 
