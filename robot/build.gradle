@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow'
     id 'java-library'
     id 'maven-publish'
     id 'edu.wpi.first.GradleRIO'
@@ -8,36 +9,21 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-wpi {
-    maven {
-        useLocal false
-    }
-}
 
 dependencies {
-    compileOnly group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.3.4'
+    shadow group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.10.0'
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
-    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
-    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
-
-    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
-    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
-
-    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
-    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
-    simulationDebug wpi.sim.enableDebug()
-
-    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
-    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
-    simulationRelease wpi.sim.enableRelease()
-
     // Depend on the common library
     api project.parent
 
-    errorprone group: 'com.google.errorprone', name: 'error_prone_core', version: '2.3.4'
+    errorprone group: 'com.google.errorprone', name: 'error_prone_core', version: '2.10.0'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone.disableWarningsInGeneratedCode = true
 }
 
 publishing {
