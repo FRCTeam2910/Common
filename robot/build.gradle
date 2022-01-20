@@ -9,6 +9,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
+wpi.maven.useLocal = false
 
 dependencies {
     shadow group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.10.0'
