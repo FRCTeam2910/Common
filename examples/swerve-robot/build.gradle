@@ -12,13 +12,8 @@ application {
     mainClassName 'frc.swerverobot.Main'
 }
 
-wpi {
-    maven {
-        useLocal false
-    }
-
-    deps.vendor.loadFrom(rootProject.project(':robot'))
-}
+wpi.maven.useLocal = false
+wpi.vendor.loadFrom(rootProject.project(':robot'))
 
 deploy {
     targets {
