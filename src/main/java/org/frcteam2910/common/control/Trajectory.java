@@ -32,6 +32,7 @@ public class Trajectory {
         while (distance < path.getLength()) {
             Path.State startingState = path.calculate(distance);
 
+
             double profileLength = sampleDistance;
             if (distance + sampleDistance > path.getLength()) {
                 profileLength = path.getLength() - distance;
