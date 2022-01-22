@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import org.frcteam2910.common.robot.Constants;
 
-//import javax.annotation.Nullable;
+import javax.annotation.Nullable;
 
 public class Mk3SwerveModule extends SwerveModule {
     private static final double TALONFX_COUNTS_PER_REVOLUTION = 2048;
@@ -26,7 +26,7 @@ public class Mk3SwerveModule extends SwerveModule {
     private final double absoluteEncoderAngleOffset;
 
     private TalonFX steeringMotor;
-    //@Nullable
+    @Nullable
     private CANCoder angleEncoder;
     private TalonFX driveMotor;
 
@@ -138,7 +138,7 @@ public class Mk3SwerveModule extends SwerveModule {
      * @param angleEncoder   The analog input for the angle encoder
      */
     public Mk3SwerveModule(Vector2 modulePosition, double angleOffset, double angleGearRatio, double driveGearRatio,
-                           TalonFX angleMotor, TalonFX driveMotor, /*@Nullable*/ CANCoder angleEncoder) {
+                           TalonFX angleMotor, TalonFX driveMotor, @Nullable CANCoder angleEncoder) {
         super(modulePosition);
         this.absoluteEncoderAngleOffset = Math.toDegrees(angleOffset);
         this.steeringMotor = angleMotor;

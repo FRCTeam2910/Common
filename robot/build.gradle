@@ -1,5 +1,4 @@
 plugins {
-    id 'com.github.johnrengelman.shadow'
     id 'java-library'
     id 'maven-publish'
     id 'edu.wpi.first.GradleRIO'
@@ -12,7 +11,8 @@ targetCompatibility = JavaVersion.VERSION_11
 wpi.maven.useLocal = false
 
 dependencies {
-    shadow group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.10.0'
+    compileOnly group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.10.0'
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
@@ -33,15 +33,4 @@ publishing {
             from components.java
         }
     }
-
-  repositories {
-    maven {
-      name = "GitHubPackages"
-      url = "https://maven.pkg.github.com/jamesdooley4/Common"
-      credentials {
-        username = System.getenv("GITHUB_ACTOR")
-        password = System.getenv("GITHUB_TOKEN")
-      }
-    }
-  }
 }
