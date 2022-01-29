@@ -1,6 +1,5 @@
 plugins {
     id 'application'
-    id 'com.github.johnrengelman.shadow'
     id 'edu.wpi.first.GradleRIO'
     id 'net.ltgt.errorprone'
 }
@@ -12,26 +11,34 @@ application {
     mainClassName 'frc.swerverobot.Main'
 }
 
-wpi {
-    maven {
-        useLocal false
-    }
+wpi.maven.useLocal = false
+wpi.vendor.loadFrom(rootProject.project(':robot'))
 
-    deps.vendor.loadFrom(rootProject.project(':robot'))
-}
-
+// Define my targets (RoboRIO) and artifacts (deployable files)
+// This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
-        roboRIO('roborio') {
-            team = frc.getTeamOrDefault(2910)
-        }
-    }
-    artifacts {
-        frcJavaArtifact('frcJava') {
-            jar = 'shadowJar'
-            targets << 'roborio'
+        roborio(getTargetTypeClass('RoboRIO')) {
+            // Team number is loaded either from the .wpilib/wpilib_preferences.json
+            // or from command line. If not found an exception will be thrown.
+            // You can use getTeamOrDefault(team) instead of getTeamNumber if you
+            // want to store a team number in this file.
+            team = project.frc.getTeamOrDefault(2910)
+            debug = project.frc.getDebugOrDefault(false)
 
-            debug = frc.getDebugOrDefault(false)
+            artifacts {
+                // First part is artifact name, 2nd is artifact type
+                // getTargetTypeClass is a shortcut to get the class type using a string
+
+                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                }
+
+                // Static files artifact
+                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                    files = project.fileTree('src/main/deploy')
+                    directory = '/home/lvuser/deploy'
+                }
+            }
         }
     }
 }
@@ -39,15 +46,22 @@ deploy {
 dependencies {
     compileOnly group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.3.4'
 
-    implementation wpi.deps.wpilib()
-    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+    implementation wpi.java.deps.wpilib()
+    implementation wpi.java.vendor.java()
 
-    implementation wpi.deps.vendor.java()
-    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
+    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
-    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
+    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+
+    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+    simulationDebug wpi.sim.enableDebug()
+
+    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+    simulationRelease wpi.sim.enableRelease()
 
     implementation rootProject.project(':robot')
 

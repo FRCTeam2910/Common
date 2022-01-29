@@ -8,27 +8,23 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-wpi {
-    maven {
-        useLocal false
-    }
-}
+wpi.maven.useLocal = false
 
 dependencies {
-    compileOnly group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.3.4'
+    compileOnly group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.10.0'
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
-    api wpi.deps.wpilib()
-    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
-
-    api wpi.deps.vendor.java()
-    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+    implementation wpi.java.deps.wpilib()
+    implementation wpi.java.vendor.java()
 
     // Depend on the common library
     api project.parent
 
-    errorprone group: 'com.google.errorprone', name: 'error_prone_core', version: '2.3.4'
+    errorprone group: 'com.google.errorprone', name: 'error_prone_core', version: '2.10.0'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone.disableWarningsInGeneratedCode = true
 }
 
 publishing {
