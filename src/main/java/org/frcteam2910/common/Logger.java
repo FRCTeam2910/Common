@@ -46,6 +46,7 @@ public class Logger {
 		}
 	}
 
+	@SuppressWarnings("JavaUtilDate")
 	private static void log(PrintStream out, Severity severity, String name, String msg) {
 		if (name == null)
 			out.format("<%s> (%s) [%s]: %s%n", RUN_INSTANCE_UUID, new Date(), severity, msg);
