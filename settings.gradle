@@ -7,7 +7,4 @@ pluginManagement {
 
 rootProject.name = 'common'
 
-include 'robot'
-// Example projects
-include 'examples:swerve-robot'
-include 'examples:trajectory-generation'
+
