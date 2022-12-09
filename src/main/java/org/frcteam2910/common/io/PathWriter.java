@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.ejml.simple.SimpleMatrix;
 import org.frcteam2910.common.control.Path;
 import org.frcteam2910.common.control.PathSegment;
@@ -11,7 +12,6 @@ import org.frcteam2910.common.io.json.InterpolatingDoubleJsonHandler;
 import org.frcteam2910.common.io.json.PathSegmentJsonHandler;
 import org.frcteam2910.common.io.json.Rotation2JsonHandler;
 import org.frcteam2910.common.io.json.SimpleMatrixJsonHandler;
-import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.util.InterpolatingDouble;
 
 import java.io.Flushable;
@@ -26,7 +26,7 @@ public final class PathWriter implements AutoCloseable, Flushable {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(InterpolatingDouble.class, new InterpolatingDoubleJsonHandler())
                 .registerTypeHierarchyAdapter(PathSegment.class, new PathSegmentJsonHandler())
-                .registerTypeAdapter(Rotation2.class, new Rotation2JsonHandler())
+                .registerTypeAdapter(Rotation2d.class, new Rotation2JsonHandler())
                 .registerTypeAdapter(SimpleMatrix.class, new SimpleMatrixJsonHandler())
                 .enableComplexMapKeySerialization()
                 .create();

@@ -1,33 +1,34 @@
 package org.frcteam2910.common.control;
 
-import org.frcteam2910.common.math.Rotation2;
-import org.frcteam2910.common.math.Vector2;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.frcteam2910.common.util.InterpolatingDouble;
 import org.frcteam2910.common.util.InterpolatingTreeMap;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 public class Path {
     private final PathSegment[] segments;
-    private final InterpolatingTreeMap<InterpolatingDouble, Rotation2> rotationMap = new InterpolatingTreeMap<>();
+    private final InterpolatingTreeMap<InterpolatingDouble, Rotation2d> rotationMap = new InterpolatingTreeMap<>();
     private final double[] distancesFromStart;
 
     private final double length;
 
-    public Path(PathSegment[] segments, Map<Double, Rotation2> rotationMap) {
+    public Path(PathSegment[] segments, Map<Double, Rotation2d> rotationMap) {
         this.segments = segments;
 
-        for (Map.Entry<Double, Rotation2> rotationEntry : rotationMap.entrySet()) {
+        for (Map.Entry<Double, Rotation2d> rotationEntry : rotationMap.entrySet()) {
             this.rotationMap.put(new InterpolatingDouble(rotationEntry.getKey()), rotationEntry.getValue());
         }
 
         distancesFromStart = new double[segments.length];
-        double length = 0.0;
+        double cumulativeLength = 0.0;
         for (int i = 0; i < segments.length; i++) {
-            distancesFromStart[i] = length;
-            length += segments[i].getLength();
+            distancesFromStart[i] = cumulativeLength;
+            cumulativeLength += segments[i].getLength();
         }
-        this.length = length;
+        this.length = cumulativeLength;
     }
 
     private double getDistanceToSegmentStart(int segment) {
@@ -82,18 +83,18 @@ public class Path {
         return segments;
     }
 
-    public InterpolatingTreeMap<InterpolatingDouble, Rotation2> getRotationMap() {
+    public InterpolatingTreeMap<InterpolatingDouble, Rotation2d> getRotationMap() {
         return rotationMap;
     }
 
     public static class State {
         private final double distance;
-        private final Vector2 position;
-        private final Rotation2 heading;
-        private final Rotation2 rotation;
+        private final Translation2d position;
+        private final Rotation2d heading;
+        private final Rotation2d rotation;
         private final double curvature;
 
-        public State(double distance, Vector2 position, Rotation2 heading, Rotation2 rotation, double curvature) {
+        public State(double distance, Translation2d position, Rotation2d heading, Rotation2d rotation, double curvature) {
             this.distance = distance;
             this.position = position;
             this.heading = heading;
@@ -105,20 +106,30 @@ public class Path {
             return distance;
         }
 
-        public Vector2 getPosition() {
+        public Translation2d getPosition() {
             return position;
         }
 
-        public Rotation2 getHeading() {
+        public Rotation2d getHeading() {
             return heading;
         }
 
-        public Rotation2 getRotation() {
+        public Rotation2d getRotation() {
             return rotation;
         }
 
         public double getCurvature() {
             return curvature;
         }
+        @Override
+        public String toString() {
+            final DecimalFormat fmt = new DecimalFormat("#0.000");
+            return "(distance," + fmt.format(getDistance()) +
+                    ",position," + getPosition() +
+                    ",heading," + getHeading() +
+                    ",rotation," + getRotation() +
+                    ",curvature," + fmt.format(getCurvature()) +" )";
+        }
+
     }
 }

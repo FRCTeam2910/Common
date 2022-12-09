@@ -1,7 +1,7 @@
 package org.frcteam2910.common.math.spline;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import org.ejml.simple.SimpleMatrix;
-import org.frcteam2910.common.math.Vector2;
 
 import static org.frcteam2910.common.math.spline.SplineHelper.binomial;
 
@@ -20,22 +20,22 @@ class BezierSplineHelper {
         return matrix;
     }
 
-    public static SimpleMatrix createBasisWeightMatrix(Vector2... controlPoints) {
+    public static SimpleMatrix createBasisWeightMatrix(Translation2d... controlPoints) {
         SimpleMatrix basisWeightMatrix = new SimpleMatrix(controlPoints.length, 2);
         for (int i = 0; i < controlPoints.length; i++) {
-            basisWeightMatrix.setRow(i, 0, controlPoints[i].x, controlPoints[i].y);
+            basisWeightMatrix.setRow(i, 0, controlPoints[i].getX(), controlPoints[i].getY());
         }
         return basisWeightMatrix;
     }
 
-    public static Vector2[] basisWeightMatrixToControlPoints(SimpleMatrix basisWeightMatrix) {
+    public static Translation2d[] basisWeightMatrixToControlPoints(SimpleMatrix basisWeightMatrix) {
         if (basisWeightMatrix.numCols() != 2) {
             throw new IllegalArgumentException("Basis weight matrix must have 2 columns");
         }
 
-        Vector2[] controlPoints = new Vector2[basisWeightMatrix.numRows()];
+        Translation2d[] controlPoints = new Translation2d[basisWeightMatrix.numRows()];
         for (int i = 0; i < controlPoints.length; i++) {
-            controlPoints[i] = new Vector2(basisWeightMatrix.get(i, 0), basisWeightMatrix.get(i, 1));
+            controlPoints[i] = new Translation2d(basisWeightMatrix.get(i, 0), basisWeightMatrix.get(i, 1));
         }
         return controlPoints;
     }

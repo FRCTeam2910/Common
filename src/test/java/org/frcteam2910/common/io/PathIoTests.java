@@ -1,10 +1,10 @@
 package org.frcteam2910.common.io;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.frcteam2910.common.control.Path;
 import org.frcteam2910.common.control.SplinePathBuilder;
 import org.frcteam2910.common.math.MathUtils;
-import org.frcteam2910.common.math.Rotation2;
-import org.frcteam2910.common.math.Vector2;
 import org.junit.Test;
 
 import java.io.*;
@@ -40,8 +40,8 @@ public class PathIoTests {
      */
     @Test
     public void backwardsCompatibilityTest() throws IOException {
-        Path expectedPath = new SplinePathBuilder(Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO)
-                .bezier(new Vector2(5.0, 0.0), new Vector2(45.0, 50.0), new Vector2(50.0, 50.0), Rotation2.fromDegrees(90.0))
+        Path expectedPath = new SplinePathBuilder(new Translation2d(), new Rotation2d(), new Rotation2d())
+                .bezier(new Translation2d(5.0, 0.0), new Translation2d(45.0, 50.0), new Translation2d(50.0, 50.0), Rotation2d.fromDegrees(90.0))
                 .build();
 
         try (InputStream in = getClass().getResourceAsStream("example_path.json")) {
@@ -56,9 +56,9 @@ public class PathIoTests {
 
     @Test
     public void readerIsCompatibleWithWriter() throws IOException {
-        Path expectedPath = new SplinePathBuilder(Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO)
-                .bezier(new Vector2(5.0, 0.0), new Vector2(45.0, 50.0), new Vector2(50.0, 50.0), Rotation2.fromDegrees(90.0))
-                .hermite(new Vector2(0.0, 0.0), Rotation2.fromDegrees(180.0), Rotation2.fromDegrees(-90))
+        Path expectedPath = new SplinePathBuilder(new Translation2d(), new Rotation2d(), new Rotation2d())
+                .bezier(new Translation2d(5.0, 0.0), new Translation2d(45.0, 50.0), new Translation2d(50.0, 50.0), Rotation2d.fromDegrees(90.0))
+                .hermite(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(180.0), Rotation2d.fromDegrees(-90))
                 .build();
 
         File tempFile = File.createTempFile("pathbuffer-", ".tmp");

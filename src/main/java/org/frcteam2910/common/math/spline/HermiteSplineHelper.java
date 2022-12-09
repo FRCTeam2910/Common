@@ -1,10 +1,12 @@
 package org.frcteam2910.common.math.spline;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.ejml.simple.SimpleMatrix;
-import org.frcteam2910.common.math.Rotation2;
-import org.frcteam2910.common.math.Vector2;
-
 class HermiteSplineHelper {
+    private HermiteSplineHelper() {
+
+    }
     /**
      * Creates the basis weight matrix for a cubic hermite spline.
      *
@@ -14,18 +16,18 @@ class HermiteSplineHelper {
      * @param endTangent   The tangent of the spline at t = 1.
      * @return The basis weights for the spline.
      */
-    public static SimpleMatrix createBasisWeightMatrix(Vector2 start, Vector2 startTangent,
-                                                       Vector2 end, Vector2 endTangent) {
+    public static SimpleMatrix createBasisWeightMatrix(Translation2d start, Translation2d startTangent,
+                                                       Translation2d end, Translation2d endTangent) {
         // The basis weight matrix for hermite cubic splines is the following:
         // [x0  y0 ]
         // [x1  y1 ]
         // [dx0 dy0]
         // [dx1 dy1]
         return new SimpleMatrix(new double[][]{
-                new double[]{start.x, start.y},
-                new double[]{end.x, end.y},
-                new double[]{startTangent.x, startTangent.y},
-                new double[]{endTangent.x, endTangent.y}
+                new double[]{start.getX(), start.getY()},
+                new double[]{end.getX(), end.getY()},
+                new double[]{startTangent.getX(), startTangent.getY()},
+                new double[]{endTangent.getX(), endTangent.getY()}
         });
     }
 
@@ -38,13 +40,13 @@ class HermiteSplineHelper {
      * @param endHeading   The heading of the spline at t = 1.
      * @return The basis weights for the spline.
      */
-    public static SimpleMatrix createBasisWeightMatrix(Vector2 start, Rotation2 startHeading,
-                                                       Vector2 end, Rotation2 endHeading) {
-        double scale = 2.0 * end.subtract(start).length;
+    public static SimpleMatrix createBasisWeightMatrix(Translation2d start, Rotation2d startHeading,
+                                                       Translation2d end, Rotation2d endHeading) {
+        double scale = 2.0 * end.minus(start).getNorm();
 
         return createBasisWeightMatrix(
-                start, Vector2.fromAngle(startHeading).scale(scale),
-                end, Vector2.fromAngle(endHeading).scale(scale)
+                start, new Translation2d(startHeading.getCos(), startHeading.getSin()).times(scale),
+                end, new Translation2d(endHeading.getCos(), endHeading.getSin()).times(scale)
         );
     }
 }
