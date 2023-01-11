@@ -1,7 +1,7 @@
 package org.frcteam2910.common.control;
 
-import org.frcteam2910.common.math.RigidTransform2;
-import org.frcteam2910.common.math.Vector2;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.frcteam2910.common.util.HolonomicDriveSignal;
 import org.frcteam2910.common.util.HolonomicFeedforward;
 
@@ -28,31 +28,35 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
     }
 
     @Override
-    protected HolonomicDriveSignal calculateDriveSignal(RigidTransform2 currentPose, Vector2 velocity,
-                                               double rotationalVelocity, Trajectory trajectory, double time,
-                                               double dt) {
+    protected HolonomicDriveSignal calculateDriveSignal(Pose2d currentPose, Translation2d velocity,
+                                                        double rotationalVelocity, Trajectory trajectory, double time,
+                                                        double dt) {
         if (time > trajectory.getDuration()) {
             finished = true;
-            return new HolonomicDriveSignal(Vector2.ZERO, 0.0, false);
+            return new HolonomicDriveSignal(new Translation2d(), 0.0, false);
         }
 
         lastState = trajectory.calculate(time);
 
-        Vector2 segmentVelocity = Vector2.fromAngle(lastState.getPathState().getHeading()).scale(lastState.getVelocity());
-        Vector2 segmentAcceleration = Vector2.fromAngle(lastState.getPathState().getHeading()).scale(lastState.getAcceleration());
+        Translation2d segment =  new Translation2d(
+                lastState.getPathState().getHeading().getCos(),
+                lastState.getPathState().getHeading().getSin());
 
-        Vector2 feedforwardVector = feedforward.calculateFeedforward(segmentVelocity, segmentAcceleration);
+        Translation2d segmentVelocity = segment.times(lastState.getVelocity());
+        Translation2d segmentAcceleration = segment.times(lastState.getAcceleration());
 
-        forwardController.setSetpoint(lastState.getPathState().getPosition().x);
-        strafeController.setSetpoint(lastState.getPathState().getPosition().y);
-        rotationController.setSetpoint(lastState.getPathState().getRotation().toRadians());
+        Translation2d feedforwardVector = feedforward.calculateFeedforward(segmentVelocity, segmentAcceleration);
+
+        forwardController.setSetpoint(lastState.getPathState().getPosition().getX());
+        strafeController.setSetpoint(lastState.getPathState().getPosition().getY());
+        rotationController.setSetpoint(lastState.getPathState().getRotation().getRadians());
 
         return new HolonomicDriveSignal(
-                new Vector2(
-                        forwardController.calculate(currentPose.translation.x, dt) + feedforwardVector.x,
-                        strafeController.calculate(currentPose.translation.y, dt) + feedforwardVector.y
+                new Translation2d(
+                        forwardController.calculate(currentPose.getTranslation().getX(), dt) + feedforwardVector.getX(),
+                        strafeController.calculate(currentPose.getTranslation().getY(), dt) + feedforwardVector.getY()
                 ),
-                rotationController.calculate(currentPose.rotation.toRadians(), dt),
+                rotationController.calculate(currentPose.getRotation().getRadians(), dt),
                 true
         );
     }

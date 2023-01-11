@@ -1,5 +1,7 @@
 package org.frcteam2910.common.math;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -119,4 +121,28 @@ public class MathUtils {
 			return t;
 		}
 	}
+
+	/**
+	 * Calculates the dot product of a and b and returns the length.
+	 * <p>
+	 * @param a The first vector to calculate the dot product with
+	 * @param b The second vector to calculate the dot product with
+	 * @return The length of the calculated vector
+	 **/
+	public static double dot(Translation2d a, Translation2d b) {
+		return a.getX() * b.getX() + a.getY() * b.getY();
+	}
+
+	/**
+	 * Calculates the cross product of a and b and returns the length.
+	 * <p>
+	 * @param a The first vector to calculate the cross product with
+	 * @param b The second vector to calculate the cross product with
+	 * @return The length of the calculated vector
+	**/
+	public static double cross(Translation2d a, Translation2d b) {
+		return a.getX() * b.getY() - a.getY() * b.getX();
+	}
 }
+
+

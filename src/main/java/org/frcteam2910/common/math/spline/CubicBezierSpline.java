@@ -1,13 +1,13 @@
 package org.frcteam2910.common.math.spline;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import org.ejml.simple.SimpleMatrix;
-import org.frcteam2910.common.math.Vector2;
 
 public final class CubicBezierSpline extends Spline {
     private static final SimpleMatrix BASIS_MATRIX = BezierSplineHelper.createBasisMatrix(3);
     private static final SimpleMatrix INVERSE_BASIS_MATRIX = BASIS_MATRIX.invert();
 
-    public CubicBezierSpline(Vector2 start, Vector2 controlPoint1, Vector2 controlPoint2, Vector2 end) {
+    public CubicBezierSpline(Translation2d start, Translation2d controlPoint1, Translation2d controlPoint2, Translation2d end) {
         super(BASIS_MATRIX, BezierSplineHelper.createBasisWeightMatrix(start, controlPoint1, controlPoint2, end));
     }
 
@@ -31,7 +31,7 @@ public final class CubicBezierSpline extends Spline {
         return new CubicBezierSpline(INVERSE_BASIS_MATRIX.mult(spline.getBasisMatrix()).mult(spline.getBasisWeightMatrix()));
     }
 
-    public Vector2[] getControlPoints() {
+    public Translation2d[] getControlPoints() {
         return BezierSplineHelper.basisWeightMatrixToControlPoints(getBasisWeightMatrix());
     }
 }

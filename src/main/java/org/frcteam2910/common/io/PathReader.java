@@ -2,6 +2,7 @@ package org.frcteam2910.common.io;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.ejml.simple.SimpleMatrix;
 import org.frcteam2910.common.control.Path;
 import org.frcteam2910.common.control.PathSegment;
@@ -9,7 +10,6 @@ import org.frcteam2910.common.io.json.InterpolatingDoubleJsonHandler;
 import org.frcteam2910.common.io.json.PathSegmentJsonHandler;
 import org.frcteam2910.common.io.json.Rotation2JsonHandler;
 import org.frcteam2910.common.io.json.SimpleMatrixJsonHandler;
-import org.frcteam2910.common.math.Rotation2;
 import org.frcteam2910.common.util.InterpolatingDouble;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ public final class PathReader implements AutoCloseable {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(InterpolatingDouble.class, new InterpolatingDoubleJsonHandler())
                 .registerTypeHierarchyAdapter(PathSegment.class, new PathSegmentJsonHandler())
-                .registerTypeAdapter(Rotation2.class, new Rotation2JsonHandler())
+                .registerTypeAdapter(Rotation2d.class, new Rotation2JsonHandler())
                 .registerTypeAdapter(SimpleMatrix.class, new SimpleMatrixJsonHandler())
                 .create();
         this.in = in;
@@ -46,9 +46,9 @@ public final class PathReader implements AutoCloseable {
 
             PathSegment[] pathSegments = gson.fromJson(root.get("segments"), PathSegment[].class);
 
-            Type rotationMapType = new TypeToken<TreeMap<Double, Rotation2>>() {
+            Type rotationMapType = new TypeToken<TreeMap<Double, Rotation2d>>() {
             }.getType();
-            Map<Double, Rotation2> rotations = gson.fromJson(root.get("rotations"), rotationMapType);
+            Map<Double, Rotation2d> rotations = gson.fromJson(root.get("rotations"), rotationMapType);
 
             return new Path(pathSegments, rotations);
         } catch (JsonIOException | JsonSyntaxException e) {

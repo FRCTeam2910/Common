@@ -1,8 +1,8 @@
 package org.frcteam2910.common.math.spline;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.ejml.simple.SimpleMatrix;
-import org.frcteam2910.common.math.Rotation2;
-import org.frcteam2910.common.math.Vector2;
 
 public class CubicHermiteSpline extends Spline {
     private static final SimpleMatrix BASIS_MATRIX = new SimpleMatrix(new double[][]{
@@ -13,13 +13,13 @@ public class CubicHermiteSpline extends Spline {
     });
     private static final SimpleMatrix INVERSE_BASIS_MATRIX = BASIS_MATRIX.invert();
 
-    public CubicHermiteSpline(Vector2 start, Vector2 startTangent,
-                              Vector2 end, Vector2 endTangent) {
+    public CubicHermiteSpline(Translation2d start, Translation2d startTangent,
+                              Translation2d end, Translation2d endTangent) {
         this(HermiteSplineHelper.createBasisWeightMatrix(start, startTangent, end, endTangent));
     }
 
-    public CubicHermiteSpline(Vector2 start, Rotation2 startHeading,
-                              Vector2 end, Rotation2 endHeading) {
+    public CubicHermiteSpline(Translation2d start, Rotation2d startHeading,
+                              Translation2d end, Rotation2d endHeading) {
         this(HermiteSplineHelper.createBasisWeightMatrix(start, startHeading, end, endHeading));
     }
 

@@ -1,19 +1,18 @@
 package org.frcteam2910.common.util;
 
-import org.frcteam2910.common.math.Vector2;
-
+import edu.wpi.first.math.geometry.Translation2d;
 public class HolonomicDriveSignal {
-    private final Vector2 translation;
+    private final Translation2d translation;
     private final double rotation;
     private final boolean fieldOriented;
 
-    public HolonomicDriveSignal(Vector2 translation, double rotation, boolean fieldOriented) {
+    public HolonomicDriveSignal(Translation2d translation, double rotation, boolean fieldOriented) {
         this.translation = translation;
         this.rotation = rotation;
         this.fieldOriented = fieldOriented;
     }
 
-    public Vector2 getTranslation() {
+    public Translation2d getTranslation() {
         return translation;
     }
 

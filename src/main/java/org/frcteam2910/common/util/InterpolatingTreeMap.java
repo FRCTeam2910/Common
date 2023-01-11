@@ -1,9 +1,9 @@
 package org.frcteam2910.common.util;
-
+import edu.wpi.first.math.interpolation.Interpolatable;
 import java.io.Serializable;
 import java.util.TreeMap;
 
-public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<K>, V extends Interpolable<V>>
+public class InterpolatingTreeMap<K extends InverseInterpolatable<K> & Comparable<K>, V extends Interpolatable<V>>
         extends TreeMap<K, V> implements Serializable {
     private static final long serialVersionUID = -2284755214507163440L;
 

@@ -249,4 +249,15 @@ public class Trajectory {
             return acceleration;
         }
     }
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < constrainedPathStates.size(); ++i) {
+            builder.append(i);
+            builder.append(",");
+            builder.append(constrainedPathStates.get(i).pathState.toString());
+            builder.append(System.lineSeparator());
+        }
+        return builder.toString();
+    }
 }

@@ -1,8 +1,9 @@
 package org.frcteam2910.common.math.spline;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.ejml.simple.SimpleMatrix;
-import org.frcteam2910.common.math.Rotation2;
-import org.frcteam2910.common.math.Vector2;
+import org.frcteam2910.common.math.MathUtils;
 
 public class Spline {
     private final SimpleMatrix basisMatrix;
@@ -58,27 +59,29 @@ public class Spline {
         return derivative;
     }
 
-    public Vector2 getPoint(double t) {
+    public Translation2d getPoint(double t) {
         SimpleMatrix result = SplineHelper.createPowerMatrix(getDegree(), t).mult(basisMatrix).mult(basisWeightMatrix);
 
-        return new Vector2(result.get(0), result.get(1));
+        return new Translation2d(result.get(0), result.get(1));
     }
 
-    public Rotation2 getHeading(double t) {
-        return derivative().getPoint(t).getAngle();
+    public Rotation2d getHeading(double t) {
+        var point = derivative().getPoint(t);
+        return new Rotation2d(point.getX(), point.getY());
     }
 
     public double getCurvature(double t) {
         Spline d = derivative(); // 1st derivative
         Spline dd = d.derivative(); // 2nd derivative
 
-        Vector2 dv = d.getPoint(t);
-        Vector2 ddv = dd.getPoint(t);
+        Translation2d dv = d.getPoint(t);
+        Translation2d ddv = dd.getPoint(t);
 
         // Curvature can be calculated using the following equation:
         // k = (dv x ddv) / (dv . dv)^(3/2)
         //
         // https://en.wikipedia.org/wiki/Curvature#In_terms_of_a_general_parametrization
-        return dv.cross(ddv) / (dv.dot(dv) * dv.length);
+
+        return MathUtils.cross(dv, ddv) / (MathUtils.dot(dv, dv) * dv.getNorm());
     }
 }
