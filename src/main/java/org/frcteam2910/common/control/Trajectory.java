@@ -1,9 +1,9 @@
 package org.frcteam2910.common.control;
 
-import org.frcteam2910.common.math.MathUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.frcteam2910.common.math.MathUtils;
 
 public class Trajectory {
     private final Path path;
@@ -17,8 +17,12 @@ public class Trajectory {
         this(path, trajectoryConstraints, sampleDistance, 0.0, 0.0);
     }
 
-    public Trajectory(Path path, TrajectoryConstraint[] trajectoryConstraints, double sampleDistance,
-                      double trajectoryStartingVelocity, double trajectoryEndingVelocity) {
+    public Trajectory(
+            Path path,
+            TrajectoryConstraint[] trajectoryConstraints,
+            double sampleDistance,
+            double trajectoryStartingVelocity,
+            double trajectoryEndingVelocity) {
         this.path = path;
 
         double distance = 0.0;
@@ -27,11 +31,9 @@ public class Trajectory {
                 0.0,
                 0.0,
                 trajectoryStartingVelocity, // Trajectory starting velocity
-                0.0
-        );
+                0.0);
         while (distance < path.getLength()) {
             Path.State startingState = path.calculate(distance);
-
 
             double profileLength = sampleDistance;
             if (distance + sampleDistance > path.getLength()) {
@@ -48,19 +50,17 @@ public class Trajectory {
                 maxEndingVelocity = Math.min(constraint.getMaxVelocity(endingState), maxEndingVelocity);
             }
 
-            ConstrainedPathState state = new ConstrainedPathState(
-                    startingState,
-                    profileLength,
-                    startingVelocity,
-                    maxEndingVelocity,
-                    0.0
-            );
+            ConstrainedPathState state =
+                    new ConstrainedPathState(startingState, profileLength, startingVelocity, maxEndingVelocity, 0.0);
 
-            // If the max ending velocity is lower than the starting velocity we know that we have to decelerate
+            // If the max ending velocity is lower than the starting velocity we know that we have
+            // to
+            // decelerate
             double maxDeltaVelocity = maxEndingVelocity - startingVelocity;
 
             // Calculate the optimal acceleration for this profile
-            double optimalAcceleration = Math.pow(maxDeltaVelocity, 2.0) / (2.0 * profileLength) + (startingVelocity / profileLength) * maxDeltaVelocity;
+            double optimalAcceleration = Math.pow(maxDeltaVelocity, 2.0) / (2.0 * profileLength)
+                    + (startingVelocity / profileLength) * maxDeltaVelocity;
             if (MathUtils.epsilonEquals(optimalAcceleration, 0.0)) {
                 // We are neither accelerating or decelerating
                 state.acceleration = 0.0;
@@ -70,8 +70,12 @@ public class Trajectory {
                 double maxStartingAcceleration = Double.POSITIVE_INFINITY;
                 double maxEndingAcceleration = Double.POSITIVE_INFINITY;
                 for (TrajectoryConstraint constraint : trajectoryConstraints) {
-                    maxStartingAcceleration = Math.min(constraint.getMaxAcceleration(startingState, startingVelocity), maxStartingAcceleration);
-                    maxEndingAcceleration = Math.min(constraint. getMaxAcceleration(endingState, startingVelocity), maxEndingAcceleration); // TODO: Use endingVelocity instead of startingVelocity
+                    maxStartingAcceleration = Math.min(
+                            constraint.getMaxAcceleration(startingState, startingVelocity), maxStartingAcceleration);
+                    maxEndingAcceleration = Math.min(
+                            constraint.getMaxAcceleration(endingState, startingVelocity),
+                            maxEndingAcceleration); // TODO: Use endingVelocity instead of
+                    // startingVelocity
                 }
 
                 // Take the lower of the two accelerations
@@ -87,8 +91,11 @@ public class Trajectory {
                 state.endingVelocity = startingVelocity + acceleration * duration;
                 state.acceleration = acceleration;
             } else {
-                // If we can decelerate before we reach the end of the profile, use that deceleration.
-                // This acceleration may not be achievable. When we go over the trajectory in reverse we will take care
+                // If we can decelerate before we reach the end of the profile, use that
+                // deceleration.
+                // This acceleration may not be achievable. When we go over the trajectory in
+                // reverse we
+                // will take care
                 // of this.
                 state.acceleration = optimalAcceleration;
             }
@@ -113,26 +120,32 @@ public class Trajectory {
                 // Use the deceleration constraint for when we decelerate
                 double deceleration = Double.POSITIVE_INFINITY;
                 for (TrajectoryConstraint constraint : trajectoryConstraints) {
-                    deceleration = Math.min(deceleration, constraint.getMaxDeceleration(constrainedState.pathState, constrainedState.endingVelocity));
+                    deceleration = Math.min(
+                            deceleration,
+                            constraint.getMaxDeceleration(constrainedState.pathState, constrainedState.endingVelocity));
                 }
 
                 // Find how long it takes for us to decelerate to the ending velocity
                 double decelTime = deltaVelocity / -deceleration;
 
                 // Find how far we travel while decelerating
-                double decelDist = 0.5 * deceleration * Math.pow(decelTime, 2.0) + constrainedState.endingVelocity * decelTime;
+                double decelDist =
+                        0.5 * deceleration * Math.pow(decelTime, 2.0) + constrainedState.endingVelocity * decelTime;
 
                 // If we travel too far we have to decrease the starting velocity
                 if (decelDist > constrainedState.length) {
-                    // We can't decelerate in time. Change the starting velocity of the segment so we can.
-                    double[] roots = MathUtils.quadratic(0.5 * deceleration, constrainedState.endingVelocity, -constrainedState.length);
+                    // We can't decelerate in time. Change the starting velocity of the segment so
+                    // we can.
+                    double[] roots = MathUtils.quadratic(
+                            0.5 * deceleration, constrainedState.endingVelocity, -constrainedState.length);
 
                     // Calculate the maximum time that we can decelerate
                     double maxAllowableDecelTime = Math.max(roots[0], roots[1]);
 
                     // Find what are starting velocity can be in order to end at our ending velocity
                     constrainedState.acceleration = -deceleration;
-                    constrainedState.startingVelocity = constrainedState.endingVelocity + deceleration * maxAllowableDecelTime;
+                    constrainedState.startingVelocity =
+                            constrainedState.endingVelocity + deceleration * maxAllowableDecelTime;
                 }
             }
         }
@@ -187,7 +200,12 @@ public class Trajectory {
         public double endingVelocity;
         public double acceleration;
 
-        public ConstrainedPathState(Path.State pathState, double length, double startingVelocity, double endingVelocity, double acceleration) {
+        public ConstrainedPathState(
+                Path.State pathState,
+                double length,
+                double startingVelocity,
+                double endingVelocity,
+                double acceleration) {
             this.pathState = pathState;
             this.length = length;
             this.startingVelocity = startingVelocity;
@@ -216,13 +234,10 @@ public class Trajectory {
         public State calculate(double time) {
             time = MathUtils.clamp(time, 0.0, getDuration());
 
-            double distance = 0.5 * acceleration * Math.pow(time, 2.0) + startingVelocity * time + pathState.getDistance();
+            double distance =
+                    0.5 * acceleration * Math.pow(time, 2.0) + startingVelocity * time + pathState.getDistance();
 
-            return new State(
-                    path.calculate(distance),
-                    acceleration * time + startingVelocity,
-                    acceleration
-            );
+            return new State(path.calculate(distance), acceleration * time + startingVelocity, acceleration);
         }
     }
 
@@ -249,6 +264,7 @@ public class Trajectory {
             return acceleration;
         }
     }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

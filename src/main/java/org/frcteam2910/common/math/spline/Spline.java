@@ -16,7 +16,8 @@ public class Spline {
             throw new IllegalArgumentException("The basis matrix must be a square matrix");
         }
         if (basisWeightMatrix.numRows() != basisMatrix.numCols()) {
-            throw new IllegalArgumentException("The basis weight matrix must be able to be multiplied by the basis matrix");
+            throw new IllegalArgumentException(
+                    "The basis weight matrix must be able to be multiplied by the basis matrix");
         }
         if (basisWeightMatrix.numCols() != 2) {
             throw new IllegalArgumentException("The basis weight matrix must have 2 columns");
@@ -44,13 +45,15 @@ public class Spline {
      * @return The spline's derivative.
      */
     public Spline derivative() {
-        // The derivative is used when calculating the tangent or curvature. Cache it so we don't have to calculate it
+        // The derivative is used when calculating the tangent or curvature. Cache it so we don't
+        // have
+        // to calculate it
         // multiple times.
         if (derivative == null) {
             SimpleMatrix coefficients = basisMatrix.mult(basisWeightMatrix);
             SimpleMatrix derivativeMatrix = new SimpleMatrix(coefficients.numRows() - 1, coefficients.numRows());
             for (int i = 0; i < derivativeMatrix.numRows(); i++) {
-                derivativeMatrix.set(i, i + 1, i + 1);
+                derivativeMatrix.set(i, i + 1, i + 1.0);
             }
 
             derivative = new Spline(SimpleMatrix.identity(getDegree()), derivativeMatrix.mult(coefficients));
@@ -60,7 +63,8 @@ public class Spline {
     }
 
     public Translation2d getPoint(double t) {
-        SimpleMatrix result = SplineHelper.createPowerMatrix(getDegree(), t).mult(basisMatrix).mult(basisWeightMatrix);
+        SimpleMatrix result =
+                SplineHelper.createPowerMatrix(getDegree(), t).mult(basisMatrix).mult(basisWeightMatrix);
 
         return new Translation2d(result.get(0), result.get(1));
     }

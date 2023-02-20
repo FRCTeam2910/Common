@@ -15,13 +15,10 @@ public final class SplinePathSegment extends PathSegment {
 
     @Override
     public State calculate(double distance) {
-        double t = distance / getLength();
+        double arcLength = getLength();
+        double t = arcLength > 0.0 ? distance / arcLength : 0.0;
 
-        return new State(
-                spline.getPoint(t),
-                spline.getHeading(t),
-                spline.getCurvature(t)
-        );
+        return new State(spline.getPoint(t), spline.getHeading(t), spline.getCurvature(t));
     }
 
     @Override
@@ -30,7 +27,7 @@ public final class SplinePathSegment extends PathSegment {
             length = 0.0;
             var p0 = spline.getPoint(0.0);
             for (double t = LENGTH_SAMPLE_STEP; t <= 1.0; t += LENGTH_SAMPLE_STEP) {
-                var  p1 = spline.getPoint(t);
+                var p1 = spline.getPoint(t);
                 length += p1.minus(p0).getNorm();
 
                 p0 = p1;

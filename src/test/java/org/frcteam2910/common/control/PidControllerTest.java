@@ -1,15 +1,16 @@
 package org.frcteam2910.common.control;
 
 import org.frcteam2910.common.math.MathUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class PidControllerTest {
+class PidControllerTest {
     private static final double TEST_DT = 5.0e-3;
 
     @Test
-    public void setOutputRangeTest() {
+    void setOutputRangeTest() {
         PidController pidController = new PidController(new PidConstants(1.0, 0.0, 0.0));
 
         pidController.setSetpoint(5.0);
@@ -22,10 +23,10 @@ public class PidControllerTest {
         assertEquals(-0.5, pidController.calculate(5.5, TEST_DT), MathUtils.EPSILON);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void setOutputRangeVerifyArgumentsTest() {
+    @Test
+    void setOutputRangeVerifyArgumentsTest() {
         PidController pidController = new PidController(new PidConstants(0.0, 0.0, 0.0));
 
-        pidController.setOutputRange(1.0, -1.0);
+        assertThrows(IllegalArgumentException.class, () -> pidController.setOutputRange(1.0, -1.0));
     }
 }

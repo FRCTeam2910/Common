@@ -1,5 +1,9 @@
 package org.frcteam2910.common.io;
 
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.Writer;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -13,10 +17,6 @@ import org.frcteam2910.common.io.json.PathSegmentJsonHandler;
 import org.frcteam2910.common.io.json.Rotation2JsonHandler;
 import org.frcteam2910.common.io.json.SimpleMatrixJsonHandler;
 import org.frcteam2910.common.util.InterpolatingDouble;
-
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.Writer;
 
 public final class PathWriter implements AutoCloseable, Flushable {
     private final Gson gson;

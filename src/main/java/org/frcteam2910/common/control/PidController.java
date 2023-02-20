@@ -34,7 +34,9 @@ public class PidController {
             }
         }
 
-        if (shouldClearIntegralOnErrorSignChange && !MathUtils.epsilonEquals(error, Math.copySign(error, integralAccum)) && !MathUtils.epsilonEquals(integralAccum, 0.0)) {
+        if (shouldClearIntegralOnErrorSignChange
+                && !MathUtils.epsilonEquals(error, Math.copySign(error, integralAccum))
+                && !MathUtils.epsilonEquals(integralAccum, 0.0)) {
             integralAccum = 0.0;
         }
 
@@ -50,8 +52,8 @@ public class PidController {
         }
         lastError = error;
 
-        return MathUtils.clamp(constants.p * error + constants.i * integral + constants.d * derivative,
-                minOutput, maxOutput);
+        return MathUtils.clamp(
+                constants.p * error + constants.i * integral + constants.d * derivative, minOutput, maxOutput);
     }
 
     public void reset() {

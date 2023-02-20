@@ -1,56 +1,67 @@
 package org.frcteam2910.common.util;
 
 import org.frcteam2910.common.math.MathUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DrivetrainFeedforwardConstantsTest {
+class DrivetrainFeedforwardConstantsTest {
     @Test
-    public void calculateFeedforwardTest() {
+    void calculateFeedforwardTest() {
         DrivetrainFeedforwardConstants constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 1.0);
-        assertEquals("Static constant is not applied correctly",
-                1.0, constants.calculateFeedforward(0.0, 1.0), MathUtils.EPSILON);
+        assertEquals(
+                1.0,
+                constants.calculateFeedforward(0.0, 1.0),
+                MathUtils.EPSILON,
+                "Static constant is not applied correctly");
 
         constants = new DrivetrainFeedforwardConstants(1.0, 0.0, 0.0);
-        assertEquals("Velocity constant is not applied correctly",
-                2.0, constants.calculateFeedforward(2.0, 1.0), MathUtils.EPSILON);
+        assertEquals(
+                2.0,
+                constants.calculateFeedforward(2.0, 1.0),
+                MathUtils.EPSILON,
+                "Velocity constant is not applied correctly");
 
         constants = new DrivetrainFeedforwardConstants(1.0, 0.2, 0.0);
-        assertEquals("Acceleration and velocity constant is not applied correctly",
-                0.2, constants.calculateFeedforward(0.0, 1.0), MathUtils.EPSILON);
+        assertEquals(
+                0.2,
+                constants.calculateFeedforward(0.0, 1.0),
+                MathUtils.EPSILON,
+                "Acceleration and velocity constant is not applied correctly");
     }
 
     @Test
-    public void getVelocityConstantTest() {
+    void getVelocityConstantTest() {
         DrivetrainFeedforwardConstants constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 0.0);
-        assertEquals("Incorrect velocity constant returned", 0.0,
-                constants.getVelocityConstant(), MathUtils.EPSILON);
+        assertEquals(0.0, constants.getVelocityConstant(), MathUtils.EPSILON, "Incorrect velocity constant returned");
 
         constants = new DrivetrainFeedforwardConstants(1.0, 0.0, 0.0);
-        assertEquals("Incorrect velocity constant returned",
-                1.0, constants.getVelocityConstant(), MathUtils.EPSILON);
+        assertEquals(1.0, constants.getVelocityConstant(), MathUtils.EPSILON, "Incorrect velocity constant returned");
     }
 
     @Test
-    public void getAccelerationConstantTest() {
+    void getAccelerationConstantTest() {
         DrivetrainFeedforwardConstants constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 0.0);
-        assertEquals("Incorrect acceleration constant returned",
-                0.0, constants.getAccelerationConstant(), MathUtils.EPSILON);
+        assertEquals(
+                0.0,
+                constants.getAccelerationConstant(),
+                MathUtils.EPSILON,
+                "Incorrect acceleration constant returned");
 
         constants = new DrivetrainFeedforwardConstants(0.0, 1.0, 0.0);
-        assertEquals("Incorrect acceleration constant returned", 1.0,
-                constants.getAccelerationConstant(), MathUtils.EPSILON);
+        assertEquals(
+                1.0,
+                constants.getAccelerationConstant(),
+                MathUtils.EPSILON,
+                "Incorrect acceleration constant returned");
     }
 
     @Test
-    public void getStaticConstantTest() {
+    void getStaticConstantTest() {
         DrivetrainFeedforwardConstants constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 0.0);
-        assertEquals("Incorrect static constant returned", 0.0,
-                constants.getStaticConstant(), MathUtils.EPSILON);
+        assertEquals(0.0, constants.getStaticConstant(), MathUtils.EPSILON, "Incorrect static constant returned");
 
         constants = new DrivetrainFeedforwardConstants(0.0, 0.0, 1.0);
-        assertEquals("Incorrect static constant returned", 1.0,
-                constants.getStaticConstant(), MathUtils.EPSILON);
+        assertEquals(1.0, constants.getStaticConstant(), MathUtils.EPSILON, "Incorrect static constant returned");
     }
 }

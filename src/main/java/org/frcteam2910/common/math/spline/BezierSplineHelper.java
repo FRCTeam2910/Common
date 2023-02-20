@@ -6,14 +6,13 @@ import org.ejml.simple.SimpleMatrix;
 import static org.frcteam2910.common.math.spline.SplineHelper.binomial;
 
 class BezierSplineHelper {
-    private BezierSplineHelper() {
-    }
+    private BezierSplineHelper() {}
 
     public static SimpleMatrix createBasisMatrix(int degree) {
         SimpleMatrix matrix = new SimpleMatrix(degree + 1, degree + 1);
         for (int i = 0; i <= degree; i++) {
             for (int j = 0; j <= i; j++) {
-                matrix.set(i, j, Math.pow(-1, i - j) * binomial(degree, i) * binomial(i, j));
+                matrix.set(i, j, Math.pow(-1.0, (double) i - j) * binomial(degree, i) * binomial(i, j));
             }
         }
 

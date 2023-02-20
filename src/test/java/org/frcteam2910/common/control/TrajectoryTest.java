@@ -4,10 +4,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import org.frcteam2910.common.Constants;
 import org.frcteam2910.common.util.MovingAverage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class TrajectoryTest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+
+class TrajectoryTest {
     private static final double SAMPLE_DISTANCE = 1.0e-2;
 
     private static final double DT = 5.0e-3;
@@ -21,14 +24,15 @@ public class TrajectoryTest {
     private static final double ALLOWABLE_VELOCITY_ERROR = 0.01;
 
     private static final TrajectoryConstraint[] CONSTRAINTS = {
-            new CentripetalAccelerationConstraint(7.5),
-            new MaxAccelerationConstraint(MAX_ACCELERATION),
-            new FeedforwardConstraint(MAX_FEEDFORWARD, KV, KA, true)
+        new CentripetalAccelerationConstraint(7.5),
+        new MaxAccelerationConstraint(MAX_ACCELERATION),
+        new FeedforwardConstraint(MAX_FEEDFORWARD, KV, KA, true)
     };
 
     @Test
-    public void obeysConstraints() {
-        Path path = new SplinePathBuilder(new Translation2d(), Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(90.0))
+    void obeysConstraints() {
+        Path path = new SplinePathBuilder(
+                        new Translation2d(), Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(90.0))
                 .hermite(new Translation2d(50.0, 50.0), Rotation2d.fromDegrees(90.0), new Rotation2d())
                 .build();
         Trajectory trajectory = new Trajectory(path, CONSTRAINTS, SAMPLE_DISTANCE);
@@ -42,28 +46,37 @@ public class TrajectoryTest {
                 maximumVelocity = Math.min(maximumVelocity, constraint.getMaxVelocity(currentState.getPathState()));
             }
 
-            Assert.assertTrue("Velocity exceeded maximum velocity",
-                    maximumVelocity + ALLOWABLE_VELOCITY_ERROR >= Math.abs(currentState.getVelocity()));
+            assertThat(
+                    "Velocity exceeded maximum velocity",
+                    maximumVelocity + ALLOWABLE_VELOCITY_ERROR,
+                    greaterThanOrEqualTo(Math.abs(currentState.getVelocity())));
 
             double maximumAcceleration = Double.POSITIVE_INFINITY;
             for (TrajectoryConstraint constraint : CONSTRAINTS) {
                 if (currentState.getAcceleration() > 0.0) {
-                    maximumAcceleration = Math.min(maximumAcceleration, constraint.getMaxAcceleration(currentState.getPathState(), currentState.getVelocity()));
+                    maximumAcceleration = Math.min(
+                            maximumAcceleration,
+                            constraint.getMaxAcceleration(currentState.getPathState(), currentState.getVelocity()));
                 } else {
-                    maximumAcceleration = Math.min(maximumAcceleration, constraint.getMaxDeceleration(currentState.getPathState(), currentState.getVelocity()));
+                    maximumAcceleration = Math.min(
+                            maximumAcceleration,
+                            constraint.getMaxDeceleration(currentState.getPathState(), currentState.getVelocity()));
                 }
             }
 
-            Assert.assertTrue("Acceleration exceeded maximum acceleration",
-                    maximumAcceleration + ALLOWABLE_ACCELERATION_ERROR >= Math.abs(currentState.getAcceleration()));
+            assertThat(
+                    "Acceleration exceeded maximum acceleration",
+                    maximumAcceleration + ALLOWABLE_ACCELERATION_ERROR,
+                    greaterThanOrEqualTo(Math.abs(currentState.getAcceleration())));
         }
     }
 
     @Test
-    public void speedTest() {
+    void speedTest() {
         final int speedRuns = 10;
 
-        Path loggedPath = new SplinePathBuilder(new Translation2d(), Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(90.0))
+        Path loggedPath = new SplinePathBuilder(
+                        new Translation2d(), Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(90.0))
                 .hermite(new Translation2d(50.0, 50.0), Rotation2d.fromDegrees(90.0), new Rotation2d())
                 .build();
         Trajectory loggedTrajectory = new Trajectory(loggedPath, CONSTRAINTS, SAMPLE_DISTANCE);
@@ -76,7 +89,8 @@ public class TrajectoryTest {
         for (int run = 1; run <= speedRuns; run++) {
             long start = System.nanoTime();
 
-            Path path = new SplinePathBuilder(new Translation2d(), Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(90.0))
+            Path path = new SplinePathBuilder(
+                            new Translation2d(), Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(90.0))
                     .hermite(new Translation2d(50.0, 50.0), Rotation2d.fromDegrees(90.0), new Rotation2d())
                     .build();
             Trajectory trajectory = new Trajectory(path, CONSTRAINTS, SAMPLE_DISTANCE);
@@ -100,7 +114,7 @@ public class TrajectoryTest {
         }
 
         // TODO - fix this SonarLint rule blocker
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
 
         System.out.printf("Generated %d trajectories%n", speedRuns);
         System.out.printf("Trajectory duration: %.3f s%n", loggedTrajectory.getDuration());

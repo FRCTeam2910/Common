@@ -1,16 +1,15 @@
 package org.frcteam2910.common.math.spline;
 
-import org.ejml.simple.SimpleMatrix;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.ejml.simple.SimpleMatrix;
 
 class SplineHelper {
     private static final Object BINOMIAL_LOOKUP_TABLE_LOCK = new Object();
     private static List<int[]> binomialLookupTable = new ArrayList<>();
 
-    private SplineHelper() {
-    }
+    private SplineHelper() {}
 
     public static int binomial(int order, int k) {
         synchronized (BINOMIAL_LOOKUP_TABLE_LOCK) {
@@ -20,7 +19,8 @@ class SplineHelper {
                 nextRow[0] = 1;
 
                 for (int i = 1; i < s; i++) {
-                    nextRow[i] = binomialLookupTable.get(s - 1)[i - 1] + binomialLookupTable.get(s - 1)[i];
+                    nextRow[i] = binomialLookupTable.get(s - 1)[i - 1]
+                            + binomialLookupTable.get(s - 1)[i];
                 }
                 nextRow[s] = 1;
 

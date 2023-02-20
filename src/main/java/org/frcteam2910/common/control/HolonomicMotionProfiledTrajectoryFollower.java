@@ -16,8 +16,8 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
 
     private boolean finished = false;
 
-    public HolonomicMotionProfiledTrajectoryFollower(PidConstants translationConstants, PidConstants rotationConstants,
-                                                     HolonomicFeedforward feedforward) {
+    public HolonomicMotionProfiledTrajectoryFollower(
+            PidConstants translationConstants, PidConstants rotationConstants, HolonomicFeedforward feedforward) {
         this.forwardController = new PidController(translationConstants);
         this.strafeController = new PidController(translationConstants);
         this.rotationController = new PidController(rotationConstants);
@@ -28,9 +28,13 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
     }
 
     @Override
-    protected HolonomicDriveSignal calculateDriveSignal(Pose2d currentPose, Translation2d velocity,
-                                                        double rotationalVelocity, Trajectory trajectory, double time,
-                                                        double dt) {
+    protected HolonomicDriveSignal calculateDriveSignal(
+            Pose2d currentPose,
+            Translation2d velocity,
+            double rotationalVelocity,
+            Trajectory trajectory,
+            double time,
+            double dt) {
         if (time > trajectory.getDuration()) {
             finished = true;
             return new HolonomicDriveSignal(new Translation2d(), 0.0, false);
@@ -38,7 +42,7 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
 
         lastState = trajectory.calculate(time);
 
-        Translation2d segment =  new Translation2d(
+        Translation2d segment = new Translation2d(
                 lastState.getPathState().getHeading().getCos(),
                 lastState.getPathState().getHeading().getSin());
 
@@ -54,11 +58,9 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
         return new HolonomicDriveSignal(
                 new Translation2d(
                         forwardController.calculate(currentPose.getTranslation().getX(), dt) + feedforwardVector.getX(),
-                        strafeController.calculate(currentPose.getTranslation().getY(), dt) + feedforwardVector.getY()
-                ),
+                        strafeController.calculate(currentPose.getTranslation().getY(), dt) + feedforwardVector.getY()),
                 rotationController.calculate(currentPose.getRotation().getRadians(), dt),
-                true
-        );
+                true);
     }
 
     public Trajectory.State getLastState() {

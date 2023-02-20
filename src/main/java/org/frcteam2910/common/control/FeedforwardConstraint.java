@@ -1,7 +1,8 @@
 package org.frcteam2910.common.control;
 
 /**
- * Constrain both the velocity and acceleration based on the equation <code>F = K<sub>V</sub>*V + K<sub>A</sub>*A</code>.
+ * Constrain both the velocity and acceleration based on the equation <code>
+ * F = K<sub>V</sub>*V + K<sub>A</sub>*A</code>.
  */
 public class FeedforwardConstraint extends TrajectoryConstraint {
     private final double targetFeedforward;
@@ -30,14 +31,10 @@ public class FeedforwardConstraint extends TrajectoryConstraint {
     @Override
     public double getMaxAcceleration(Path.State state, double velocity) {
         return (targetFeedforward - kV * velocity) / kA;
-
     }
 
     @Override
     public double getMaxDeceleration(Path.State state, double velocity) {
-        return getMaxAcceleration(
-                state,
-                fastDeceleration ? -velocity : velocity
-        );
+        return getMaxAcceleration(state, fastDeceleration ? -velocity : velocity);
     }
 }

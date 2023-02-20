@@ -1,12 +1,12 @@
 package org.frcteam2910.common.io.json;
 
+import java.lang.reflect.Type;
+
 import com.google.gson.*;
 import org.ejml.simple.SimpleMatrix;
 import org.frcteam2910.common.control.PathSegment;
 import org.frcteam2910.common.control.SplinePathSegment;
 import org.frcteam2910.common.math.spline.Spline;
-
-import java.lang.reflect.Type;
 
 public final class PathSegmentJsonHandler implements JsonSerializer<PathSegment>, JsonDeserializer<PathSegment> {
     @Override
@@ -20,7 +20,8 @@ public final class PathSegmentJsonHandler implements JsonSerializer<PathSegment>
             root.add("basis", context.serialize(spline.getBasisMatrix()));
             root.add("weights", context.serialize(spline.getBasisWeightMatrix()));
         } else {
-            throw new IllegalArgumentException("Tried to serialize unknown path segment type " + typeOfSrc.getTypeName());
+            throw new IllegalArgumentException(
+                    "Tried to serialize unknown path segment type " + typeOfSrc.getTypeName());
         }
 
         root.addProperty("type", type);
@@ -29,7 +30,8 @@ public final class PathSegmentJsonHandler implements JsonSerializer<PathSegment>
     }
 
     @Override
-    public PathSegment deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public PathSegment deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
         JsonObject root = json.getAsJsonObject();
         if (!root.has("type")) {
             throw new JsonParseException("Segment does not have a type");

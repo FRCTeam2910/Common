@@ -1,7 +1,7 @@
 # FRC Team 2910 Common code repository
 
 This repository contains code that is shared between applications and robots
-that are created by FRC Team 2910, Jack in the Bot. The common library contains
+created by FRC Team 2910, Jack in the Bot. The common library contains
 code that depends on FIRST's WPILib's math and util packages, and it can run as a part of
 a desktop applications. 
 

@@ -1,7 +1,9 @@
 package org.frcteam2910.common.util;
-import edu.wpi.first.math.interpolation.Interpolatable;
+
 import java.io.Serializable;
 import java.util.TreeMap;
+
+import edu.wpi.first.math.interpolation.Interpolatable;
 
 public class InterpolatingTreeMap<K extends InverseInterpolatable<K> & Comparable<K>, V extends Interpolatable<V>>
         extends TreeMap<K, V> implements Serializable {
@@ -39,8 +41,8 @@ public class InterpolatingTreeMap<K extends InverseInterpolatable<K> & Comparabl
         K ceiling = ceilingKey(key);
 
         if (floor == null && ceiling == null) {
-            // If the floor and ceiling keys are not present, no keys are in the map and there is nothing to
-            // interpolate.
+            // If the floor and ceiling keys are not present, no keys are in the map and there is
+            // nothing to interpolate.
             return null;
         } else if (floor == null) {
             // The key is before the first entry in the map

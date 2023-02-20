@@ -1,12 +1,12 @@
 package org.frcteam2910.common.control;
 
+import java.util.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import org.frcteam2910.common.math.spline.CubicBezierSpline;
 import org.frcteam2910.common.math.spline.CubicHermiteSpline;
 import org.frcteam2910.common.math.spline.Spline;
-
-import java.util.*;
 
 public final class SplinePathBuilder {
     private List<PathSegment> segmentList = new ArrayList<>();
@@ -32,26 +32,19 @@ public final class SplinePathBuilder {
     }
 
     public SplinePathBuilder bezier(Translation2d controlPoint1, Translation2d controlPoint2, Translation2d end) {
-        addSpline(new CubicBezierSpline(
-                lastState.getPosition(),
-                controlPoint1,
-                controlPoint2,
-                end
-        ));
+        addSpline(new CubicBezierSpline(lastState.getPosition(), controlPoint1, controlPoint2, end));
         return this;
     }
 
-    public SplinePathBuilder bezier(Translation2d controlPoint1, Translation2d controlPoint2, Translation2d end, Rotation2d rotation) {
+    public SplinePathBuilder bezier(
+            Translation2d controlPoint1, Translation2d controlPoint2, Translation2d end, Rotation2d rotation) {
         bezier(controlPoint1, controlPoint2, end);
         rotationMap.put(length, rotation);
         return this;
     }
 
     public SplinePathBuilder hermite(Translation2d position, Rotation2d heading) {
-        addSpline(new CubicHermiteSpline(
-                lastState.getPosition(), lastState.getHeading(),
-                position, heading
-        ));
+        addSpline(new CubicHermiteSpline(lastState.getPosition(), lastState.getHeading(), position, heading));
         return this;
     }
 

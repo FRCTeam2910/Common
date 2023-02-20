@@ -1,12 +1,12 @@
 package org.frcteam2910.common.control;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import org.frcteam2910.common.util.Angles;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import org.frcteam2910.common.util.Angles;
 
 public final class SimplePathBuilder {
     private List<PathSegment> segmentList = new ArrayList<>();
@@ -65,7 +65,7 @@ public final class SimplePathBuilder {
 
         private final double curvature;
 
-        private  final double length;
+        private final double length;
 
         public ArcSegment(Translation2d start, Translation2d end, Translation2d center) {
             this.center = center;
@@ -89,19 +89,18 @@ public final class SimplePathBuilder {
         public State calculate(double distance) {
             double percentage = distance / length;
 
-            Translation2d sampleHeading = deltaStart.rotateBy(Rotation2d.fromDegrees(percentage + (clockwise ? -1.0 : 1.0) * 90));
+            Translation2d sampleHeading =
+                    deltaStart.rotateBy(Rotation2d.fromDegrees(percentage + (clockwise ? -1.0 : 1.0) * 90));
             Rotation2d newHeading = new Rotation2d(sampleHeading.getX(), sampleHeading.getY());
 
             return new State(
-                    center.plus(deltaStart.rotateBy(Rotation2d.fromDegrees(percentage))),
-                    newHeading,
-                    curvature
-            );
+                    center.plus(deltaStart.rotateBy(Rotation2d.fromDegrees(percentage))), newHeading, curvature);
         }
 
         @Override
         public double getLength() {
-            return length; //deltaStart.length * Vector2.getAngleBetween(deltaStart, deltaEnd).toRadians();
+            return length; // deltaStart.length * Vector2.getAngleBetween(deltaStart,
+            // deltaEnd).toRadians();
         }
     }
 
@@ -118,11 +117,7 @@ public final class SimplePathBuilder {
 
         @Override
         public State calculate(double distance) {
-            return new State(
-                    start.plus(delta.times(distance / getLength())),
-                    heading,
-                    0.0
-            );
+            return new State(start.plus(delta.times(distance / getLength())), heading, 0.0);
         }
 
         @Override

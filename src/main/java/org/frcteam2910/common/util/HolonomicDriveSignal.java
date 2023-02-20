@@ -1,6 +1,7 @@
 package org.frcteam2910.common.util;
 
 import edu.wpi.first.math.geometry.Translation2d;
+
 public class HolonomicDriveSignal {
     private final Translation2d translation;
     private final double rotation;

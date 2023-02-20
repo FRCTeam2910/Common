@@ -1,8 +1,8 @@
 package org.frcteam2910.common.util;
 
-import edu.wpi.first.math.geometry.Translation2d;
-
 import java.util.List;
+
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class Angles {
 
@@ -10,7 +10,6 @@ public class Angles {
 
     /**
      * Gets the angle between two 2d points (x,y) and (x1,y1)
-     * <p>
      *
      * @param p1 start point [x, y]
      * @param p2 finish point [x1, y1]
@@ -23,7 +22,6 @@ public class Angles {
 
     /**
      * Gets the angle between two 2d points (x,y) and (x1,y1)
-     * <p>
      *
      * @param p1 start point
      * @param p2 finish point
@@ -36,9 +34,8 @@ public class Angles {
 
     /**
      * Normalizes the angle to be 0 to 2*pi.
-     * <p>
-     * 
-     * @param angleInRadians The angle in radians to normalize.
+     *
+     * @param angleInRadians The angle to normalize in radians.
      * @return A normalized angle between 0 and 2 * pi
      */
     public static double normalizeAnglePositive(final double angleInRadians) {
@@ -47,10 +44,9 @@ public class Angles {
 
     /**
      * Normalizes the angle to be -pi &lt;= result &lt; pi.
-     * <p>
-     * 
-     * @param angleInRadians The angle in radians to normalize.
-     * @return A normalized angle between -pi and pi
+     *
+     * @param angleInRadians The angle to normalize in radians.
+     * @return A normalized angle between -pi and pi.
      */
     public static double normalizeAngle(final double angleInRadians) {
         var angle = normalizeAnglePositive(angleInRadians);
@@ -63,13 +59,11 @@ public class Angles {
 
     /**
      * Given 2 angles, return the shortest angular difference.
-     * <p>
-     * ;
+     *
      * @param fromAngleInRadians From angle in radians
-     * @param toAngleInRadians   To angle in radians
-     * @return The result will always be -pi &lt;= result &lt; pi.
-     *         Adding the result to "from" will always get you an equivalent angle
-     *         to "to".
+     * @param toAngleInRadians To angle in radians
+     * @return The result will always be -pi &lt;= result &lt; pi. Adding the result to "from" will
+     *     always get you an equivalent angle to "to".
      */
     public static double shortestAngularDistance(final double fromAngleInRadians, final double toAngleInRadians) {
         return normalizeAngle(toAngleInRadians - fromAngleInRadians);

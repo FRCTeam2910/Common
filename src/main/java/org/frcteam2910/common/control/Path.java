@@ -1,12 +1,12 @@
 package org.frcteam2910.common.control;
 
+import java.text.DecimalFormat;
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import org.frcteam2910.common.util.InterpolatingDouble;
 import org.frcteam2910.common.util.InterpolatingTreeMap;
-
-import java.text.DecimalFormat;
-import java.util.Map;
 
 public class Path {
     private final PathSegment[] segments;
@@ -71,8 +71,7 @@ public class Path {
                 state.getPosition(),
                 state.getHeading(),
                 rotationMap.getInterpolated(new InterpolatingDouble(distance)),
-                state.getCurvature()
-        );
+                state.getCurvature());
     }
 
     public double getLength() {
@@ -94,7 +93,8 @@ public class Path {
         private final Rotation2d rotation;
         private final double curvature;
 
-        public State(double distance, Translation2d position, Rotation2d heading, Rotation2d rotation, double curvature) {
+        public State(
+                double distance, Translation2d position, Rotation2d heading, Rotation2d rotation, double curvature) {
             this.distance = distance;
             this.position = position;
             this.heading = heading;
@@ -121,15 +121,21 @@ public class Path {
         public double getCurvature() {
             return curvature;
         }
+
         @Override
         public String toString() {
             final DecimalFormat fmt = new DecimalFormat("#0.000");
-            return "(distance," + fmt.format(getDistance()) +
-                    ",position," + getPosition() +
-                    ",heading," + getHeading() +
-                    ",rotation," + getRotation() +
-                    ",curvature," + fmt.format(getCurvature()) +" )";
+            return "(distance,"
+                    + fmt.format(getDistance())
+                    + ",position,"
+                    + getPosition()
+                    + ",heading,"
+                    + getHeading()
+                    + ",rotation,"
+                    + getRotation()
+                    + ",curvature,"
+                    + fmt.format(getCurvature())
+                    + " )";
         }
-
     }
 }

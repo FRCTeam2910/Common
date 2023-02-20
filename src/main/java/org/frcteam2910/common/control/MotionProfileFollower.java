@@ -1,8 +1,8 @@
 package org.frcteam2910.common.control;
 
-import org.frcteam2910.common.motion.MotionProfile;
-
 import java.util.Optional;
+
+import org.frcteam2910.common.motion.MotionProfile;
 
 public class MotionProfileFollower {
     private final Object profileLock = new Object();
@@ -21,9 +21,7 @@ public class MotionProfileFollower {
         this.kA = kA;
     }
 
-    public double update(double currentPosition,
-                         double time,
-                         double dt) {
+    public double update(double currentPosition, double time, double dt) {
         MotionProfile profile;
         double timeSinceStart;
 

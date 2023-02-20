@@ -7,7 +7,8 @@ public final class CubicBezierSpline extends Spline {
     private static final SimpleMatrix BASIS_MATRIX = BezierSplineHelper.createBasisMatrix(3);
     private static final SimpleMatrix INVERSE_BASIS_MATRIX = BASIS_MATRIX.invert();
 
-    public CubicBezierSpline(Translation2d start, Translation2d controlPoint1, Translation2d controlPoint2, Translation2d end) {
+    public CubicBezierSpline(
+            Translation2d start, Translation2d controlPoint1, Translation2d controlPoint2, Translation2d end) {
         super(BASIS_MATRIX, BezierSplineHelper.createBasisWeightMatrix(start, controlPoint1, controlPoint2, end));
     }
 
@@ -28,7 +29,8 @@ public final class CubicBezierSpline extends Spline {
 
         // B1 * W1 = B2 * W2
         // W1 = B1^-1 * B2 * W2
-        return new CubicBezierSpline(INVERSE_BASIS_MATRIX.mult(spline.getBasisMatrix()).mult(spline.getBasisWeightMatrix()));
+        return new CubicBezierSpline(
+                INVERSE_BASIS_MATRIX.mult(spline.getBasisMatrix()).mult(spline.getBasisWeightMatrix()));
     }
 
     public Translation2d[] getControlPoints() {

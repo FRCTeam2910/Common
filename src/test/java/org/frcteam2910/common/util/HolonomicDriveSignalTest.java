@@ -2,13 +2,13 @@ package org.frcteam2910.common.util;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import org.frcteam2910.common.math.MathUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class HolonomicDriveSignalTest {
+class HolonomicDriveSignalTest {
     @Test
-    public void getTranslationTest() {
+    void getTranslationTest() {
         HolonomicDriveSignal signal = new HolonomicDriveSignal(new Translation2d(), 0.0, false);
         assertEquals(new Translation2d(), signal.getTranslation());
 
@@ -17,7 +17,7 @@ public class HolonomicDriveSignalTest {
     }
 
     @Test
-    public void getRotationTest() {
+    void getRotationTest() {
         HolonomicDriveSignal signal = new HolonomicDriveSignal(new Translation2d(), 0.0, false);
         assertEquals(0.0, signal.getRotation(), MathUtils.EPSILON);
 
@@ -26,7 +26,7 @@ public class HolonomicDriveSignalTest {
     }
 
     @Test
-    public void isFieldOrientedTest() {
+    void isFieldOrientedTest() {
         HolonomicDriveSignal signal = new HolonomicDriveSignal(new Translation2d(), 0.0, false);
         assertFalse(signal.isFieldOriented());
 

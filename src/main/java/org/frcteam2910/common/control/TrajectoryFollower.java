@@ -1,41 +1,47 @@
 package org.frcteam2910.common.control;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-
-import java.util.Optional;
 
 public abstract class TrajectoryFollower<DriveSignalType> {
     private final Object trajectoryLock = new Object();
 
     /**
      * The trajectory that is currently being followed. Null if no trajectory is being followed.
-     * <p>
-     * Protected by {@link #trajectoryLock}
+     *
+     * <p>Protected by {@link #trajectoryLock}
      */
     private Trajectory currentTrajectory = null;
 
     /**
-     * The time that the current trajectory started to be followed. NaN if the trajectory has not been started yet.
-     * <p>
-     * Protected by {@link #trajectoryLock}
+     * The time that the current trajectory started to be followed. NaN if the trajectory has not
+     * been started yet.
+     *
+     * <p>Protected by {@link #trajectoryLock}
      */
     private double startTime = Double.NaN;
 
     /**
      * Calculates the drive signal required to follow the trajectory.
      *
-     * @param currentPose        the current pose of the robot
-     * @param velocity           the translational velocity of the robot
+     * @param currentPose the current pose of the robot
+     * @param velocity the translational velocity of the robot
      * @param rotationalVelocity the rotational velocity of the robot
-     * @param trajectory         the trajectory to follow
-     * @param time               the amount of time that has elapsed since the current trajectory started to be followed
-     * @param dt                 the amount of time that has elapsed since the update loop was last ran
+     * @param trajectory the trajectory to follow
+     * @param time the amount of time that has elapsed since the current trajectory started to be
+     *     followed
+     * @param dt the amount of time that has elapsed since the update loop was last ran
      * @return the signal required to follow the trajectory
      */
-    protected abstract DriveSignalType calculateDriveSignal(Pose2d currentPose, Translation2d velocity,
-                                                            double rotationalVelocity, Trajectory trajectory,
-                                                            double time, double dt);
+    protected abstract DriveSignalType calculateDriveSignal(
+            Pose2d currentPose,
+            Translation2d velocity,
+            double rotationalVelocity,
+            Trajectory trajectory,
+            double time,
+            double dt);
 
     /**
      * Gets if the follower is done following the path.
@@ -44,14 +50,10 @@ public abstract class TrajectoryFollower<DriveSignalType> {
      */
     protected abstract boolean isFinished();
 
-    /**
-     * Resets the follower's internal state. This is called when a new trajectory is started.
-     */
+    /** Resets the follower's internal state. This is called when a new trajectory is started. */
     protected abstract void reset();
 
-    /**
-     * Cancels the currently running trajectory.
-     */
+    /** Cancels the currently running trajectory. */
     public final void cancel() {
         synchronized (trajectoryLock) {
             currentTrajectory = null;
@@ -77,18 +79,18 @@ public abstract class TrajectoryFollower<DriveSignalType> {
     }
 
     /**
-     * Updates the follower and returns the calculated drive signal that should be applied to the robot in order to
-     * follow the current trajectory.
+     * Updates the follower and returns the calculated drive signal that should be applied to the
+     * robot in order to follow the current trajectory.
      *
-     * @param currentPose        the current pose of the robot
-     * @param velocity           the translational velocity of the robot
+     * @param currentPose the current pose of the robot
+     * @param velocity the translational velocity of the robot
      * @param rotationalVelocity the rotational velocity of the robot
-     * @param time               the current time
-     * @param dt                 the time since update was last called
+     * @param time the current time
+     * @param dt the time since update was last called
      * @return the drive signal required to follow the current path if any
      */
-    public final Optional<DriveSignalType> update(Pose2d currentPose, Translation2d velocity,
-                                                  double rotationalVelocity, double time, double dt) {
+    public final Optional<DriveSignalType> update(
+            Pose2d currentPose, Translation2d velocity, double rotationalVelocity, double time, double dt) {
         Trajectory trajectory;
         double timeSinceStart;
 
@@ -98,7 +100,8 @@ public abstract class TrajectoryFollower<DriveSignalType> {
                 return Optional.empty();
             }
 
-            // If the trajectory has not been started, update the start time and reset the follower state
+            // If the trajectory has not been started, update the start time and reset the follower
+            // state
             if (Double.isNaN(startTime)) {
                 startTime = time;
                 reset();
@@ -112,8 +115,8 @@ public abstract class TrajectoryFollower<DriveSignalType> {
             timeSinceStart = time - startTime;
         }
 
-        DriveSignalType signal = calculateDriveSignal(currentPose, velocity, rotationalVelocity, trajectory,
-                timeSinceStart, dt);
+        DriveSignalType signal =
+                calculateDriveSignal(currentPose, velocity, rotationalVelocity, trajectory, timeSinceStart, dt);
 
         return Optional.of(signal);
     }

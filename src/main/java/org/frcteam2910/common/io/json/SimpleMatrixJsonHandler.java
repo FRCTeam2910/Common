@@ -1,9 +1,9 @@
 package org.frcteam2910.common.io.json;
 
+import java.lang.reflect.Type;
+
 import com.google.gson.*;
 import org.ejml.simple.SimpleMatrix;
-
-import java.lang.reflect.Type;
 
 public final class SimpleMatrixJsonHandler implements JsonSerializer<SimpleMatrix>, JsonDeserializer<SimpleMatrix> {
     @Override
@@ -22,7 +22,8 @@ public final class SimpleMatrixJsonHandler implements JsonSerializer<SimpleMatri
     }
 
     @Override
-    public SimpleMatrix deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public SimpleMatrix deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
         double[][] arr = context.deserialize(json, double[][].class);
 
         return new SimpleMatrix(arr);

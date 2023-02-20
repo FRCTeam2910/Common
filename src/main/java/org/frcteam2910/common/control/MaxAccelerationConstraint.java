@@ -1,8 +1,6 @@
 package org.frcteam2910.common.control;
 
-/**
- * A constraint that limits the acceleration.
- */
+/** A constraint that limits the acceleration. */
 public class MaxAccelerationConstraint extends TrajectoryConstraint {
     private final double maxAcceleration;
     private final double maxDeceleration;

@@ -14,7 +14,7 @@ public abstract class TrajectoryConstraint {
     /**
      * Gets the maximum acceleration this constraint allows for a path state and velocity.
      *
-     * @param state    the path state.
+     * @param state the path state.
      * @param velocity the velocity.
      * @return the maximum acceleration.
      */
@@ -25,7 +25,7 @@ public abstract class TrajectoryConstraint {
     /**
      * Gets the maximum deceleration this constraint allows for a path state and velocity.
      *
-     * @param state    the path state.
+     * @param state the path state.
      * @param velocity the velocity.
      * @return the maximum deceleration.s
      */
