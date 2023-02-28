@@ -24,11 +24,11 @@ allprojects {
 }
 
 dependencies {
-    api group: 'edu.wpi.first.wpimath', name: 'wpimath-java', version: '2023.4.1'
-    api group: 'edu.wpi.first.wpimath', name: 'wpimath-jni', version: '2023.4.1', classifier: 'windowsx86-64'
+    api group: 'edu.wpi.first.wpimath', name: 'wpimath-java', version: '2023.4.2'
+    api group: 'edu.wpi.first.wpimath', name: 'wpimath-jni', version: '2023.4.2', classifier: 'windowsx86-64'
 
-    api group: 'edu.wpi.first.wpiutil', name: 'wpiutil-java', version: '2023.4.1'
-    api group: 'edu.wpi.first.wpiutil', name: 'wpiutil-jni', version: '2023.4.1', classifier: 'windowsx86-64'
+    api group: 'edu.wpi.first.wpiutil', name: 'wpiutil-java', version: '2023.4.2'
+    api group: 'edu.wpi.first.wpiutil', name: 'wpiutil-jni', version: '2023.4.2', classifier: 'windowsx86-64'
 
     api group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.4'
